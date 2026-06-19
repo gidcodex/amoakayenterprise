@@ -1,7 +1,7 @@
 import { inngest } from "./client";
 import prisma from "@/lib/prisma";
 
-// CREATE USER
+// CREATE USER - Inngest Function to save user data to a database
 export const syncUserCreation = inngest.createFunction(
   {
     id: "sync-user-create",
@@ -21,7 +21,7 @@ export const syncUserCreation = inngest.createFunction(
   }
 );
 
-// UPDATE USER
+// UPDATE USER - Inngest Function to update user in  database
 export const syncUserUpdation = inngest.createFunction(
   {
     id: "sync-user-update",
@@ -41,7 +41,7 @@ export const syncUserUpdation = inngest.createFunction(
   }
 );
 
-// DELETE USER
+// DELETE USER - Inngest Function to delete user data to a database
 export const syncUserDeletion = inngest.createFunction(
   {
     id: "sync-user-delete",
@@ -55,3 +55,24 @@ export const syncUserDeletion = inngest.createFunction(
     });
   }
 );
+
+// Inggest Function to delete coupon on expiry
+
+export const deleteCouponOnExpiry = inngest.createFunction(
+    {
+      id: "delete-coupon-on-expiry",
+      triggers: [{ event: "app/coupon.expired" }],
+    },
+    async ({event, step}) => {
+      const { data } = event;
+      const expiryDate = new Date(data.expires_at)
+      await step.sleepUntil('wait-for-expiry', expiryDate)
+
+      await step.run('delete-coupon-from-database', async () => {
+        await prisma.coupon.delete({
+        where: { code: data.code },
+         });
+        
+      })
+    }
+)
