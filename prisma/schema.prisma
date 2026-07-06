@@ -1,162 +1,358 @@
 generator client {
-    provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
- 
+
 datasource db {
-    provider  = "postgresql"
-    url       = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-// Required for creating a User: id, name, email, image, cart (optional JSON string)
 model User {
-    id    String @id
-    name  String
-    email String
-    image String
-    cart  Json   @default("{}")
+  id    String @id
+  name  String
+  email String
+  image String
+  cart  Json   @default("{}")
 
-    // Relations
-    ratings     Rating[]
-    Address     Address[]
-    store       Store?
-    buyerOrders Order[]   @relation("BuyerRelation")
+  ratings        Rating[]
+  Address        Address[]
+  store          Store?
+  buyerOrders    Order[]         @relation("BuyerRelation")
+  returnRequests ReturnRequest[]
 }
 
-// Required for creating a Product: name, description, mrp, price, images, category, storeId
 model Product {
-    id          String   @id @default(cuid())
-    name        String
-    description String
-    mrp         Float
-    price       Float
-    images      String[]
-    category    String
-    inStock     Boolean  @default(true)
-    storeId     String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  mrp         Float
+  price       Float
+  images      String[]
 
-    // Relations
-    store      Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
-    orderItems OrderItem[]
-    rating     Rating[]
+  category        String?
+  categoryId      String?
+  subcategoryId   String?
+  childCategoryId String?
+
+  stock      Int     @default(0)
+  lowStockAt Int     @default(5)
+  inStock    Boolean @default(true)
+
+  storeId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store          Store          @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  categoryRef    Category?      @relation(fields: [categoryId], references: [id])
+  subcategoryRef Subcategory?   @relation(fields: [subcategoryId], references: [id])
+  childCategory  ChildCategory? @relation(fields: [childCategoryId], references: [id])
+
+  orderItems     OrderItem[]
+  rating         Rating[]
+  inventoryLogs  InventoryLog[]
+  returnRequests ReturnRequest[]
+}
+
+model InventoryLog {
+  id        String @id @default(cuid())
+  productId String
+  storeId   String
+
+  type     InventoryLogType
+  quantity Int
+  oldStock Int
+  newStock Int
+  note     String?
+
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  store   Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+}
+
+model ReturnRequest {
+  id String @id @default(cuid())
+
+  orderId   String
+  productId String
+  userId    String
+  storeId   String
+
+  reason  String
+  details String?
+  status  ReturnStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  store   Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@unique([orderId, productId, userId])
+}
+
+model Order {
+  id             String        @id @default(cuid())
+  trackingNumber String?       @unique
+  total          Float
+  status         OrderStatus   @default(ORDER_PLACED)
+  userId         String
+  storeId        String
+  addressId      String
+  isPaid         Boolean       @default(false)
+  paymentMethod  PaymentMethod
+
+  courierName  String?
+  courierPhone String?
+  courierEmail String?
+
+  isAdminSeen Boolean   @default(false)
+  adminSeenAt DateTime?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  isCouponUsed Boolean  @default(false)
+  coupon       Json     @default("{}")
+
+  orderItems     OrderItem[]
+  trackingEvents TrackingEvent[]
+  returnRequests ReturnRequest[]
+
+  user    User    @relation("BuyerRelation", fields: [userId], references: [id])
+  store   Store   @relation(fields: [storeId], references: [id])
+  address Address @relation(fields: [addressId], references: [id])
+}
+
+model TrackingEvent {
+  id        String        @id @default(cuid())
+  orderId   String
+  status    OrderStatus
+  note      String?
+  actor     TrackingActor
+  actorName String?
+  createdAt DateTime      @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id String @id @default(cuid())
+
+  title   String
+  message String
+  type    NotificationType
+
+  link   String?
+  isRead Boolean @default(false)
+
+  userId  String?
+  storeId String?
+  role    NotificationRole @default(ADMIN)
+
+  createdAt DateTime @default(now())
+}
+
+model OrderItem {
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@id([orderId, productId])
+}
+
+model Rating {
+  id        String   @id @default(cuid())
+  rating    Int
+  review    String
+  userId    String
+  productId String
+  orderId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId, orderId])
+}
+
+model Address {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  email     String
+  street    String
+  city      String
+  state     String
+  zip       String
+  country   String
+  phone     String
+  createdAt DateTime @default(now())
+
+  Order Order[]
+  user  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Coupon {
+  code        String   @id
+  description String
+  discount    Float
+  forNewUser  Boolean
+  forMember   Boolean  @default(false)
+  isPublic    Boolean
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+}
+
+model Store {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  name        String
+  description String
+  username    String   @unique
+  address     String
+  status      String   @default("pending")
+  isActive    Boolean  @default(false)
+  logo        String
+  email       String
+  contact     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  Product       Product[]
+  Order         Order[]
+  InventoryLog  InventoryLog[]
+  ReturnRequest ReturnRequest[]
+  user          User            @relation(fields: [userId], references: [id])
+}
+
+model ContactMessage {
+  id      String @id @default(cuid())
+  name    String
+  email   String
+  subject String
+  message String
+
+  isRead Boolean @default(false)
+
+  createdAt DateTime @default(now())
+}
+
+model AdminSettings {
+  id String @id @default(cuid())
+
+  marketplaceOpen         Boolean @default(true)
+  allowSellerApplications Boolean @default(true)
+  autoApproveStores       Boolean @default(false)
+
+  allowCOD    Boolean @default(true)
+  allowStripe Boolean @default(true)
+
+  shippingFee      Float   @default(5)
+  plusFreeShipping Boolean @default(true)
+
+  monthlyRevenueGoal Float @default(5000)
+
+  supportEmail       String @default("support@amoakaydeals.com")
+  maintenanceMessage String @default("Marketplace is currently under maintenance. Please check back later.")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  image     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subcategories Subcategory[]
+  products      Product[]
+}
+
+model Subcategory {
+  id         String   @id @default(cuid())
+  name       String
+  slug       String
+  image      String?
+  categoryId String
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  category        Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  childCategories ChildCategory[]
+  products        Product[]
+}
+
+model ChildCategory {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String
+  image         String?
+  subcategoryId String
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  subcategory Subcategory @relation(fields: [subcategoryId], references: [id], onDelete: Cascade)
+  products    Product[]
 }
 
 enum OrderStatus {
-    ORDER_PLACED
-    PROCESSING
-    SHIPPED
-    DELIVERED
+  ORDER_PLACED
+  PROCESSING
+  SHIPPED
+  DELIVERED
 }
 
 enum PaymentMethod {
-    COD
-    STRIPE
+  COD
+  STRIPE
 }
 
-// Required for creating an Order: total, userId, storeId, addressId, isPaid, paymentMethod, isCouponUsed, coupon (JSON), orderItems (nested)
-model Order {
-    id            String        @id @default(cuid())
-    total         Float
-    status        OrderStatus   @default(ORDER_PLACED)
-    userId        String
-    storeId       String
-    addressId     String
-    isPaid        Boolean       @default(false)
-    paymentMethod PaymentMethod
-    createdAt     DateTime      @default(now())
-    updatedAt     DateTime      @updatedAt
-    isCouponUsed  Boolean       @default(false)
-    coupon        Json          @default("{}")
-    orderItems    OrderItem[]
-
-    // Relations
-    user    User    @relation("BuyerRelation", fields: [userId], references: [id])
-    store   Store   @relation(fields: [storeId], references: [id])
-    address Address @relation(fields: [addressId], references: [id])
+enum TrackingActor {
+  ADMIN
+  STORE_OWNER
+  COURIER
 }
 
-// Required for creating an OrderItem: orderId, productId, quantity, price
-model OrderItem {
-    orderId   String
-    productId String
-    quantity  Int
-    price     Float
-
-    // Relations
-    order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-    product Product @relation(fields: [productId], references: [id])
-
-    @@id([orderId, productId])
+enum NotificationType {
+  ORDER
+  MESSAGE
+  STORE
+  COURIER
+  DELIVERY
+  COUPON
 }
 
-// Required for creating a Rating: rating, review, userId, productId
-model Rating {
-    id        String   @id @default(cuid())
-    rating    Int
-    review    String
-    userId    String
-    productId String
-    orderId   String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    // Relations
-    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-    @@unique([userId, productId, orderId])
+enum NotificationRole {
+  ADMIN
+  CUSTOMER
+  SELLER
 }
 
-// Required for creating an Address: userId, name, email, street, city, state, zip, country, phone
-model Address {
-    id        String   @id @default(cuid())
-    userId    String
-    name      String
-    email     String
-    street    String
-    city      String
-    state     String
-    zip       String
-    country   String
-    phone     String
-    createdAt DateTime @default(now())
-
-    // Relations
-    Order Order[]
-    user  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+enum InventoryLogType {
+  RESTOCK
+  SALE
+  ADJUSTMENT
+  OUT_OF_STOCK
+  LOW_STOCK
 }
 
-// Required for creating a Coupon: code, description, discount, forNewUser, isPublic, expiresAt
-model Coupon {
-    code        String   @id
-    description String
-    discount    Float
-    forNewUser  Boolean
-    forMember   Boolean  @default(false)
-    isPublic    Boolean
-    expiresAt   DateTime
-    createdAt   DateTime @default(now())
-}
-
-// Required for creating a Store: userId, name, username, email, contact, logo, description, address (optional: , status, isActive)
-model Store {
-    id          String   @id @default(cuid())
-    userId      String   @unique
-    name        String
-    description String
-    username    String   @unique
-    address     String
-    status      String   @default("pending")
-    isActive    Boolean  @default(false)
-    logo        String
-    email       String
-    contact     String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-
-    Product Product[]
-    Order   Order[]
-    user    User      @relation(fields: [userId], references: [id])
+enum ReturnStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REFUNDED
 }

@@ -1,186 +1,452 @@
 'use client'
-import { useEffect, useState } from "react"
-import Loading from "@/components/Loading"
-import { orderDummyData } from "@/assets/assets"
-import { useAuth } from "@clerk/nextjs"
-import axios from "axios"
-import toast from "react-hot-toast"
+
+import { useEffect, useState } from "react";
+import Loading from "@/components/Loading";
+import { useAuth } from "@clerk/nextjs";
+import axios from "axios";
+import toast from "react-hot-toast";
+import {
+  User,
+  MapPin,
+  CreditCard,
+  Truck,
+  X,
+  Eye,
+} from "lucide-react";
+
+const statuses = ["ORDER_PLACED", "PROCESSING", "SHIPPED", "DELIVERED"];
+
+const statusStyles = {
+  ORDER_PLACED: "bg-blue-100 text-blue-700",
+  PROCESSING: "bg-yellow-100 text-yellow-700",
+  SHIPPED: "bg-purple-100 text-purple-700",
+  DELIVERED: "bg-green-100 text-green-700",
+};
 
 export default function StoreOrders() {
-    const [orders, setOrders] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [selectedOrder, setSelectedOrder] = useState(null)
-    const [isModalOpen, setIsModalOpen] = useState(false)
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
-    
-    const { getToken } = useAuth()
+  const [courierName, setCourierName] = useState("");
+  const [courierPhone, setCourierPhone] = useState("");
+  const [courierEmail, setCourierEmail] = useState("");
 
-    const fetchOrders = async () => {
-       try {
-          const token = await getToken()
-          const { data } = await axios.get('/api/store/orders', {
-             headers: { Authorization: `Bearer ${token}`}
-          })
-          setOrders(data.orders)
-       } catch (error) {
-          toast.error(error?.response?.data?.error || error.message)
-       }finally{
-          setLoading(false)
-       }
+  const { getToken } = useAuth();
+  const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
+
+  const fetchOrders = async () => {
+    try {
+      const token = await getToken();
+
+      const { data } = await axios.get("/api/store/orders", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setOrders(data.orders);
+    } catch (error) {
+      toast.error(error?.response?.data?.error || error.message);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const updateOrderStatus = async (orderId, status) => {
-        // Logic to update the status of an order
-        try {
-          const token = await getToken()
-          await axios.post('/api/store/orders',{orderId, status}, {
-             headers: { Authorization: `Bearer ${token}`}
-          })
-          setOrders(prev =>
-             prev.map(order =>
-             order.id === orderId ? {...order, status} : order
-             )
+  const updateOrderStatus = async (orderId, status) => {
+    try {
+      const token = await getToken();
+
+      await axios.post(
+        "/api/store/orders",
+        { orderId, status },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === orderId ? { ...order, status } : order
         )
-        toast.success('Order status updated!')
-       } catch (error) {
-          toast.error(error?.response?.data?.error || error.message)
-       }
+      );
 
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder((prev) => ({ ...prev, status }));
+      }
+
+      toast.success("Order status updated.");
+    } catch (error) {
+      toast.error(error?.response?.data?.error || error.message);
     }
+  };
 
-    const openModal = (order) => {
-        setSelectedOrder(order)
-        setIsModalOpen(true)
+  const assignCourier = async (orderId) => {
+    try {
+      if (!courierName || !courierPhone) {
+        return toast.error("Courier name and phone are required.");
+      }
+
+      const token = await getToken();
+
+      const { data } = await axios.post(
+        "/api/store/orders/assign-courier",
+        {
+          orderId,
+          courierName,
+          courierPhone,
+          courierEmail,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === orderId
+            ? {
+                ...order,
+                courierName,
+                courierPhone,
+                courierEmail,
+                status: "PROCESSING",
+              }
+            : order
+        )
+      );
+
+      setSelectedOrder((prev) => ({
+        ...prev,
+        courierName,
+        courierPhone,
+        courierEmail,
+        status: "PROCESSING",
+      }));
+
+      toast.success(data.message || "Courier assigned successfully.");
+    } catch (error) {
+      toast.error(error?.response?.data?.error || error.message);
     }
+  };
 
-    const closeModal = () => {
-        setSelectedOrder(null)
-        setIsModalOpen(false)
-    }
+  const openOrder = (order) => {
+    setSelectedOrder(order);
+    setCourierName(order.courierName || "");
+    setCourierPhone(order.courierPhone || "");
+    setCourierEmail(order.courierEmail || "");
+  };
 
-    useEffect(() => {
-        fetchOrders()
-    }, [])
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
-    if (loading) return <Loading />
+  if (loading) return <Loading />;
 
-    return (
-        <>
-            <h1 className="text-2xl text-slate-500 mb-5">Store <span className="text-slate-800 font-medium">Orders</span></h1>
-            {orders.length === 0 ? (
-                <p>No orders found</p>
-            ) : (
-                <div className="overflow-x-auto max-w-4xl rounded-md shadow border border-gray-200">
-                    <table className="w-full text-sm text-left text-gray-600">
-                        <thead className="bg-gray-50 text-gray-700 text-xs uppercase tracking-wider">
-                            <tr>
-                                {["Sr. No.", "Customer", "Total", "Payment", "Coupon", "Status", "Date"].map((heading, i) => (
-                                    <th key={i} className="px-4 py-3">{heading}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {orders.map((order, index) => (
-                                <tr
-                                    key={order.id}
-                                    className="hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
-                                    onClick={() => openModal(order)}
-                                >
-                                    <td className="pl-6 text-green-600" >
-                                        {index + 1}
-                                    </td>
-                                    <td className="px-4 py-3">{order.user?.name}</td>
-                                    <td className="px-4 py-3 font-medium text-slate-800">${order.total}</td>
-                                    <td className="px-4 py-3">{order.paymentMethod}</td>
-                                    <td className="px-4 py-3">
-                                        {order.isCouponUsed ? (
-                                            <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
-                                                {order.coupon?.code}
-                                            </span>
-                                        ) : (
-                                            "—"
-                                        )}
-                                    </td>
-                                    <td className="px-4 py-3" onClick={(e) => { e.stopPropagation() }}>
-                                        <select
-                                            value={order.status}
-                                            onChange={e => updateOrderStatus(order.id, e.target.value)}
-                                            className="border-gray-300 rounded-md text-sm focus:ring focus:ring-blue-200"
-                                        >
-                                            <option value="ORDER_PLACED">ORDER_PLACED</option>
-                                            <option value="PROCESSING">PROCESSING</option>
-                                            <option value="SHIPPED">SHIPPED</option>
-                                            <option value="DELIVERED">DELIVERED</option>
-                                        </select>
-                                    </td>
-                                    <td className="px-4 py-3 text-gray-500">
-                                        {new Date(order.createdAt).toLocaleString()}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+  return (
+    <div className="text-slate-500 pb-16">
+      <div className="mb-8">
+        <h1 className="text-2xl">
+          Store <span className="text-slate-800 font-medium">Orders</span>
+        </h1>
+        <p className="text-sm text-slate-400 mt-1">
+          Manage customer orders, delivery status, and payment details.
+        </p>
+      </div>
+
+      {orders.length === 0 ? (
+        <div className="bg-white rounded-3xl border border-slate-100 shadow-lg p-10 text-center">
+          <p className="text-slate-400">No orders found.</p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[1050px] text-sm">
+              <thead className="bg-slate-50 border-b border-slate-100">
+                <tr className="text-left text-slate-500">
+                  <th className="px-6 py-4 font-semibold">Tracking No.</th>
+                  <th className="px-6 py-4 font-semibold">Customer</th>
+                  <th className="px-6 py-4 font-semibold">Products</th>
+                  <th className="px-6 py-4 font-semibold">Total</th>
+                  <th className="px-6 py-4 font-semibold">Payment</th>
+                  <th className="px-6 py-4 font-semibold">Status</th>
+                  <th className="px-6 py-4 font-semibold">Date</th>
+                  <th className="px-6 py-4 font-semibold text-right">Action</th>
+                </tr>
+              </thead>
+
+              <tbody className="divide-y divide-slate-100">
+                {orders.map((order) => (
+                  <tr key={order.id} className="hover:bg-slate-50 transition">
+                    <td className="px-6 py-5">
+                      <p className="font-semibold text-slate-900 max-w-[180px] truncate">
+                        {order.trackingNumber || order.id}
+                      </p>
+                    </td>
+
+                    <td className="px-6 py-5">
+                      <p className="font-medium text-slate-800">
+                        {order.user?.name}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {order.user?.email}
+                      </p>
+                    </td>
+
+                    <td className="px-6 py-5">
+                      <p className="font-medium text-slate-700">
+                        {order.orderItems?.length || 0} item(s)
+                      </p>
+                    </td>
+
+                    <td className="px-6 py-5 font-bold text-green-600">
+                      {currency}{order.total}
+                    </td>
+
+                    <td className="px-6 py-5">
+                      <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
+                        {order.paymentMethod}
+                      </span>
+                    </td>
+
+                    <td className="px-6 py-5">
+                      <select
+                        value={order.status}
+                        onChange={(e) =>
+                          updateOrderStatus(order.id, e.target.value)
+                        }
+                        className={`px-3 py-2 rounded-xl text-xs font-semibold outline-none border border-transparent ${
+                          statusStyles[order.status] ||
+                          "bg-slate-100 text-slate-600"
+                        }`}
+                      >
+                        {statuses.map((status) => (
+                          <option key={status} value={status}>
+                            {status.replace(/_/g, " ")}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+
+                    <td className="px-6 py-5 text-slate-500">
+                      {new Date(order.createdAt).toDateString()}
+                    </td>
+
+                    <td className="px-6 py-5 text-right">
+                      <button
+                        onClick={() => openOrder(order)}
+                        className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-semibold transition"
+                      >
+                        <Eye size={16} />
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {selectedOrder && (
+        <OrderDetailsModal
+          order={selectedOrder}
+          currency={currency}
+          onClose={() => setSelectedOrder(null)}
+          updateOrderStatus={updateOrderStatus}
+          assignCourier={assignCourier}
+          courierName={courierName}
+          setCourierName={setCourierName}
+          courierPhone={courierPhone}
+          setCourierPhone={setCourierPhone}
+          courierEmail={courierEmail}
+          setCourierEmail={setCourierEmail}
+        />
+      )}
+    </div>
+  );
+}
+
+function OrderDetailsModal({
+  order,
+  currency,
+  onClose,
+  updateOrderStatus,
+  assignCourier,
+  courierName,
+  setCourierName,
+  courierPhone,
+  setCourierPhone,
+  courierEmail,
+  setCourierEmail,
+}) {
+  return (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-[2rem] shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 relative"
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-5 right-5 bg-slate-100 hover:bg-slate-200 p-2 rounded-full"
+        >
+          <X size={18} />
+        </button>
+
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">
+          Order Details
+        </h2>
+
+        <p className="text-sm text-slate-500 mb-6">
+          Tracking: {order.trackingNumber || order.id}
+        </p>
+
+        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <InfoCard icon={<User />} title="Customer">
+            <p className="font-semibold">{order.user?.name}</p>
+            <p className="text-sm text-slate-500">{order.user?.email}</p>
+            <p className="text-sm text-slate-500">{order.address?.phone}</p>
+          </InfoCard>
+
+          <InfoCard icon={<MapPin />} title="Delivery Address">
+            <p className="text-sm text-slate-600 leading-7">
+              {order.address?.street}, {order.address?.city},{" "}
+              {order.address?.state}, {order.address?.zip},{" "}
+              {order.address?.country}
+            </p>
+          </InfoCard>
+
+          <InfoCard icon={<CreditCard />} title="Payment">
+            <p className="font-semibold">{order.paymentMethod}</p>
+            <p className="text-sm text-slate-500">
+              Paid: {order.isPaid ? "Yes" : "No"}
+            </p>
+            <p className="text-lg font-bold text-green-600 mt-2">
+              {currency}{order.total}
+            </p>
+          </InfoCard>
+
+          <InfoCard icon={<Truck />} title="Update Status">
+            <select
+              value={order.status}
+              onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+              className="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-4 focus:ring-green-100"
+            >
+              {statuses.map((status) => (
+                <option key={status} value={status}>
+                  {status.replace(/_/g, " ")}
+                </option>
+              ))}
+            </select>
+          </InfoCard>
+
+          <InfoCard icon={<Truck />} title="Assign Courier">
+            <div className="space-y-3">
+              <input
+                type="text"
+                placeholder="Courier name"
+                value={courierName}
+                onChange={(e) => setCourierName(e.target.value)}
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-4 focus:ring-green-100"
+              />
+
+              <input
+                type="text"
+                placeholder="Courier phone"
+                value={courierPhone}
+                onChange={(e) => setCourierPhone(e.target.value)}
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-4 focus:ring-green-100"
+              />
+
+              <input
+                type="email"
+                placeholder="Courier email optional"
+                value={courierEmail}
+                onChange={(e) => setCourierEmail(e.target.value)}
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-4 focus:ring-green-100"
+              />
+
+              <button
+                onClick={() => assignCourier(order.id)}
+                className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold"
+              >
+                Assign Courier
+              </button>
+            </div>
+          </InfoCard>
+
+          <InfoCard icon={<Truck />} title="Current Courier">
+  {order.courierName ? (
+    <div className="space-y-1">
+      <p className="font-semibold text-slate-900">{order.courierName}</p>
+      <p className="text-sm text-slate-500">{order.courierPhone}</p>
+      <p className="text-sm text-slate-500">
+        {order.courierEmail || "No email provided"}
+      </p>
+    </div>
+  ) : (
+    <p className="text-sm text-slate-500">No courier assigned yet.</p>
+  )}
+</InfoCard>
+        </div>
+
+        <div className="mt-8">
+          <h3 className="text-xl font-bold text-slate-900 mb-5">
+            Ordered Products
+          </h3>
+
+          <div className="space-y-4">
+            {order.orderItems?.map((item, index) => (
+              <div
+                key={index}
+                className="flex flex-col sm:flex-row gap-5 bg-slate-50 border border-slate-100 rounded-3xl p-5"
+              >
+                <img
+                  src={item.product.images?.[0]}
+                  alt={item.product?.name}
+                  className="w-full sm:w-24 h-44 sm:h-24 object-cover rounded-2xl bg-white"
+                />
+
+                <div>
+                  <p className="font-bold text-slate-900">
+                    {item.product?.name}
+                  </p>
+                  <p className="text-sm text-slate-500 mt-2">
+                    Quantity: {item.quantity}
+                  </p>
+                  <p className="text-lg font-bold text-green-600 mt-2">
+                    {currency}{item.price}
+                  </p>
                 </div>
-            )}
+              </div>
+            ))}
+          </div>
+        </div>
 
-            {/* Modal */}
-            {isModalOpen && selectedOrder && (
-                <div onClick={closeModal} className="fixed inset-0 flex items-center justify-center bg-black/50 text-slate-700 text-sm backdrop-blur-xs z-50" >
-                    <div onClick={e => e.stopPropagation()} className="bg-white rounded-lg shadow-lg max-w-2xl w-full p-6 relative">
-                        <h2 className="text-xl font-semibold text-slate-900 mb-4 text-center">
-                            Order Details
-                        </h2>
+        <div className="flex justify-end mt-8">
+          <button
+            onClick={onClose}
+            className="bg-slate-800 hover:bg-black text-white px-6 py-3 rounded-xl font-semibold"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-                        {/* Customer Details */}
-                        <div className="mb-4">
-                            <h3 className="font-semibold mb-2">Customer Details</h3>
-                            <p><span className="text-green-700">Name:</span> {selectedOrder.user?.name}</p>
-                            <p><span className="text-green-700">Email:</span> {selectedOrder.user?.email}</p>
-                            <p><span className="text-green-700">Phone:</span> {selectedOrder.address?.phone}</p>
-                            <p><span className="text-green-700">Address:</span> {`${selectedOrder.address?.street}, ${selectedOrder.address?.city}, ${selectedOrder.address?.state}, ${selectedOrder.address?.zip}, ${selectedOrder.address?.country}`}</p>
-                        </div>
+function InfoCard({ icon, title, children }) {
+  return (
+    <div className="bg-slate-50 border border-slate-100 rounded-3xl p-5">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-11 h-11 rounded-2xl bg-green-100 text-green-600 flex items-center justify-center">
+          {icon}
+        </div>
+        <h3 className="font-bold text-slate-900">{title}</h3>
+      </div>
 
-                        {/* Products */}
-                        <div className="mb-4">
-                            <h3 className="font-semibold mb-2">Products</h3>
-                            <div className="space-y-2">
-                                {selectedOrder.orderItems.map((item, i) => (
-                                    <div key={i} className="flex items-center gap-4 border border-slate-100 shadow rounded p-2">
-                                        <img
-                                            src={item.product.images?.[0].src || item.product.images?.[0]}
-                                            alt={item.product?.name}
-                                            className="w-16 h-16 object-cover rounded"
-                                        />
-                                        <div className="flex-1">
-                                            <p className="text-slate-800">{item.product?.name}</p>
-                                            <p>Qty: {item.quantity}</p>
-                                            <p>Price: ${item.price}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Payment & Status */}
-                        <div className="mb-4">
-                            <p><span className="text-green-700">Payment Method:</span> {selectedOrder.paymentMethod}</p>
-                            <p><span className="text-green-700">Paid:</span> {selectedOrder.isPaid ? "Yes" : "No"}</p>
-                            {selectedOrder.isCouponUsed && (
-                                <p><span className="text-green-700">Coupon:</span> {selectedOrder.coupon.code} ({selectedOrder.coupon.discount}% off)</p>
-                            )}
-                            <p><span className="text-green-700">Status:</span> {selectedOrder.status}</p>
-                            <p><span className="text-green-700">Order Date:</span> {new Date(selectedOrder.createdAt).toLocaleString()}</p>
-                        </div>
-
-                        {/* Actions */}
-                        <div className="flex justify-end">
-                            <button onClick={closeModal} className="px-4 py-2 bg-slate-200 rounded hover:bg-slate-300" >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </>
-    )
+      {children}
+    </div>
+  );
 }
