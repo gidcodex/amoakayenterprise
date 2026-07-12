@@ -103,9 +103,35 @@ const OrderSummary = ({ totalPrice, items }) => {
 
       const orderData = {
         addressId: selectedAddress.id,
-        items,
         paymentMethod,
-      };
+        items: items.map((item) => {
+        const variantImages =
+        item.variant?.images?.length > 0
+        ? item.variant.images
+        : item.variant?.image
+        ? [item.variant.image]
+        : [];
+
+  return {
+    id: item.id,
+    quantity: item.quantity,
+    variantId: item.variantId || null,
+    variant: item.variant
+      ? {
+          id: item.variant.id,
+          name: item.variant.name,
+          value: item.variant.value,
+          price: item.variant.price,
+          stock: item.variant.stock,
+          image: variantImages[0] || null,
+          images: variantImages,
+        }
+      : null,
+    variantImage: variantImages[0] || null,
+    variantImages,
+  };
+}),
+};
 
       if (coupon) {
         orderData.couponCode = coupon.code;

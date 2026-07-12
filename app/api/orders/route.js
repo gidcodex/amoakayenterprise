@@ -130,21 +130,43 @@ export async function POST(request) {
         );
       }
 
-      if (!product.inStock || product.stock <= 0) {
-        return NextResponse.json(
-          { error: `${product.name} is out of stock.` },
-          { status: 400 }
-        );
-      }
+     let availableStock = product.stock;
+     let selectedVariant = null;
 
-      if (item.quantity > product.stock) {
-        return NextResponse.json(
-          {
-            error: `Only ${product.stock} unit(s) of ${product.name} available.`,
-          },
-          { status: 400 }
-        );
-      }
+  if (item.variantId) {
+  selectedVariant = await prisma.productVariant.findFirst({
+    where: {
+      id: item.variantId,
+      productId: product.id,
+    },
+  });
+
+  if (!selectedVariant) {
+    return NextResponse.json(
+      { error: "Selected product variant was not found." },
+      { status: 404 }
+    );
+  }
+
+  availableStock = selectedVariant.stock;
+}
+
+if (!product.inStock || availableStock <= 0) {
+  return NextResponse.json(
+    { error: `${product.name} is out of stock.` },
+    { status: 400 }
+  );
+}
+
+if (item.quantity > availableStock) {
+  return NextResponse.json(
+    {
+      error: `Only ${availableStock} unit(s) of ${product.name} available.`,
+    },
+    { status: 400 }
+  );
+}
+item.variant = selectedVariant;
 
       const storeId = product.storeId;
 
@@ -152,11 +174,14 @@ export async function POST(request) {
         ordersByStore.set(storeId, []);
       }
 
+     const itemPrice = item.variant?.price || product.price;
+
       ordersByStore.get(storeId).push({
-        ...item,
-        price: product.price,
-        product,
-      });
+      ...item,
+      price: itemPrice,
+      product,
+     });
+
     }
 
     let orderIds = [];
@@ -208,52 +233,113 @@ export async function POST(request) {
           },
 
           orderItems: {
-            create: sellerItems.map((item) => ({
-              productId: item.id,
-              quantity: item.quantity,
-              price: item.price,
-            })),
-          },
+               create: sellerItems.map((item) => {
+               const variantImages =
+               item.variant?.images?.length > 0
+             ? item.variant.images
+             : item.variant?.image
+             ? [item.variant.image]
+             : [];
+
+    return {
+      productId: item.id,
+      quantity: item.quantity,
+      price: item.price,
+
+      variantId: item.variantId || null,
+      variantName: item.variant?.name || null,
+      variantValue: item.variant?.value || null,
+      variantImage: variantImages[0] || null,
+      variantImages,
+    };
+  }),
+},
+
         },
       });
 
-      for (const item of sellerItems) {
+   for (const item of sellerItems) {
   const product = item.product;
-  const oldStock = product.stock || 0;
-  const newStock = Math.max(oldStock - item.quantity, 0);
 
-  await prisma.product.update({
-    where: { id: item.id },
-    data: {
-      stock: newStock,
-      inStock: newStock > 0,
-    },
-  });
+  let oldStock = product.stock || 0;
+  let newStock = Math.max(oldStock - item.quantity, 0);
 
-  await prisma.inventoryLog.create({
-    data: {
-      productId: item.id,
-      storeId,
-      type: "SALE",
-      quantity: item.quantity,
-      oldStock,
-      newStock,
-      note: `Stock reduced by ${item.quantity} after order ${trackingNumber}.`,
-    },
-  });
+  if (item.variantId) {
+    const variant = await prisma.productVariant.findUnique({
+      where: { id: item.variantId },
+    });
 
-  if (newStock === 0) {
-    await prisma.inventoryLog.create({
+    if (!variant) {
+      return NextResponse.json(
+        { error: "Selected product variant was not found." },
+        { status: 404 }
+      );
+    }
+
+    oldStock = variant.stock || 0;
+    newStock = Math.max(oldStock - item.quantity, 0);
+
+    await prisma.productVariant.update({
+      where: { id: item.variantId },
       data: {
-        productId: item.id,
-        storeId,
-        type: "OUT_OF_STOCK",
-        quantity: 0,
-        oldStock,
-        newStock,
-        note: `${product.name} is now out of stock after order ${trackingNumber}.`,
+        stock: newStock,
       },
     });
+  } else {
+    await prisma.product.update({
+      where: { id: item.id },
+      data: {
+        stock: newStock,
+        inStock: newStock > 0,
+      },
+    });
+  }
+
+ const variantImages =
+  item.variant?.images?.length > 0
+    ? item.variant.images
+    : item.variant?.image
+    ? [item.variant.image]
+    : [];
+
+await prisma.inventoryLog.create({
+  data: {
+    productId: item.id,
+    storeId,
+    type: "SALE",
+    quantity: item.quantity,
+    oldStock,
+    newStock,
+
+    variantId: item.variantId || null,
+    variantName: item.variant?.name || null,
+    variantValue: item.variant?.value || null,
+    variantImage: variantImages[0] || null,
+    variantImages,
+
+    note: `Stock reduced by ${item.quantity} after order ${trackingNumber}.`,
+  },
+});
+
+  if (newStock === 0) {
+   await prisma.inventoryLog.create({
+  data: {
+    productId: item.id,
+    storeId,
+    type: "OUT_OF_STOCK",
+    quantity: 0,
+    oldStock,
+    newStock,
+
+    variantId: item.variantId || null,
+    variantName: item.variant?.name || null,
+    variantValue: item.variant?.value || null,
+    variantImage: variantImages[0] || null,
+    variantImages,
+
+    note: `${product.name} is now out of stock after order ${trackingNumber}.`,
+  },
+});
 
     await prisma.notification.create({
       data: {
@@ -266,17 +352,25 @@ export async function POST(request) {
       },
     });
   } else if (newStock <= product.lowStockAt) {
+    
     await prisma.inventoryLog.create({
-      data: {
-        productId: item.id,
-        storeId,
-        type: "LOW_STOCK",
-        quantity: newStock,
-        oldStock,
-        newStock,
-        note: `${product.name} is low in stock after order ${trackingNumber}.`,
-      },
-    });
+   data: {
+    productId: item.id,
+    storeId,
+    type: "LOW_STOCK",
+    quantity: newStock,
+    oldStock,
+    newStock,
+
+    variantId: item.variantId || null,
+    variantName: item.variant?.name || null,
+    variantValue: item.variant?.value || null,
+    variantImage: variantImages[0] || null,
+    variantImages,
+
+    note: `${product.name} is low in stock after order ${trackingNumber}.`,
+  },
+});
 
     await prisma.notification.create({
       data: {

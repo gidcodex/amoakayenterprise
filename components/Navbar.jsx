@@ -1,19 +1,28 @@
-'use client'
+"use client";
 
 import {
+  GitCompare,
+  Heart,
+  Menu,
   PackageIcon,
   Search,
   ShoppingCart,
-  Menu,
-  X,
   Truck,
   User,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useUser, useClerk, UserButton, Protect } from "@clerk/nextjs";
+import {
+  Protect,
+  UserButton,
+  useClerk,
+  useUser,
+} from "@clerk/nextjs";
+
+import CategoryMegaMenu from "@/components/CategoryMegaMenu";
 import NotificationBell from "@/components/NotificationBell";
 
 const Navbar = () => {
@@ -22,13 +31,39 @@ const Navbar = () => {
   const router = useRouter();
 
   const [search, setSearch] = useState("");
-  const cartCount = useSelector((state) => state.cart.total);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    router.push(`/shop?search=${search}`);
+  const cartCount = useSelector(
+    (state) => state.cart.total
+  );
+
+  const wishlistCount = useSelector(
+    (state) => state.wishlist.ids.length
+  );
+
+  const compareCount = useSelector(
+    (state) => state.compare.items.length
+  );
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+
+    const trimmedSearch = search.trim();
+
+    if (!trimmedSearch) return;
+
+    router.push(
+      `/shop?search=${encodeURIComponent(trimmedSearch)}`
+    );
+
     setMobileMenuOpen(false);
+  };
+
+  const handleWishlistClick = (event) => {
+    if (!user) {
+      event.preventDefault();
+      openSignIn();
+    }
   };
 
   const handleNavClick = () => {
@@ -36,57 +71,158 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="relative bg-white">
-      <div className="mx-6">
-        <div className="flex items-center justify-between max-w-7xl mx-auto py-4 transition-all">
-          <Link href="/" className="relative text-4xl font-semibold text-slate-700">
-            <span className="text-green-600">Amoakay</span>deals
-            <span className="text-green-600 text-5xl leading-0">.</span>
+    <nav className="relative z-50 border-b border-slate-200 bg-white">
+      <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between gap-4 py-4 lg:gap-5">
+          {/* Premium logo */}
+          <Link
+            href="/"
+            className="group relative inline-flex shrink-0 items-end pr-9 2xl:pr-11"
+            aria-label="Amoakay Deals homepage"
+          >
+            <span className="flex items-baseline whitespace-nowrap text-[25px] font-black tracking-[-0.045em] sm:text-[30px] 2xl:text-[32px]">
+              <span className="bg-gradient-to-r from-green-600 via-emerald-500 to-green-700 bg-clip-text text-transparent">
+                Amoakay
+              </span>
+
+              <span className="ml-0.5 text-slate-700 transition-colors duration-300 group-hover:text-slate-900">
+                deals
+              </span>
+
+              <span className="ml-0.5 text-4xl leading-none text-green-600 sm:text-5xl">
+                .
+              </span>
+            </span>
+
+            {/* Subtle logo underline */}
+            <span className="absolute bottom-[-4px] left-0 h-[2px] w-10 rounded-full bg-gradient-to-r from-green-600 to-emerald-400 transition-all duration-300 group-hover:w-24" />
 
             <Protect plan="plus">
-              <p className="absolute text-xs font-semibold -top-1 -right-8 px-3 p-0.5 rounded-full flex items-center gap-2 text-white bg-green-500">
+              <span className="absolute right-0 top-[-9px] rounded-full bg-gradient-to-r from-green-600 to-emerald-500 px-3 py-1 text-[11px] font-bold lowercase tracking-wide text-white shadow-md shadow-green-200">
                 plus
-              </p>
+              </span>
             </Protect>
           </Link>
 
-          <div className="hidden sm:flex items-center gap-4 lg:gap-8 text-slate-600">
-            <Link href="/">Home</Link>
-            <Link href="/shop">Shop</Link>
-            <Link href="/track-order" className="flex items-center gap-1">
-              <Truck size={17} />
-              Track Order
-            </Link>
-            <Link href="/about">About</Link>
-            <Link href="/contact">Contact</Link>
+          {/* Category menu with separate spacing */}
+          <div className="hidden shrink-0 xl:block xl:ml-2 2xl:ml-5">
+         <CategoryMegaMenu mode="navbar" />
+        </div>
 
+          {/* Desktop navigation */}
+             <div className="hidden min-w-0 flex-1 items-center justify-end gap-2 text-slate-600 sm:flex xl:gap-3 2xl:gap-5">
+             <div className="hidden shrink-0 items-center gap-3 xl:flex 2xl:gap-5">
+              <Link
+                href="/"
+                className="font-medium transition hover:text-green-600"
+              >
+                Home
+              </Link>
+
+              <Link
+                href="/shop"
+                className="font-medium transition hover:text-green-600"
+              >
+                Shop
+              </Link>
+
+              <Link
+                href="/track-order"
+                className="flex items-center gap-1 font-medium transition hover:text-green-600"
+              >
+                <Truck size={17} />
+                Track
+              </Link>
+             <Link
+  href="/about"
+  className="hidden font-medium transition hover:text-green-600 2xl:block"
+>
+  About
+</Link>
+
+<Link
+  href="/contact"
+  className="hidden font-medium transition hover:text-green-600 2xl:block"
+>
+  Contact
+</Link>
+              
+
+              
+            </div>
+
+            {/* Desktop search */}
             <form
               onSubmit={handleSearch}
-              className="hidden xl:flex items-center w-xs text-sm gap-2 bg-slate-100 px-4 py-3 rounded-full"
-            >
-              <Search size={18} className="text-slate-600" />
-              <input
-                className="w-full bg-transparent outline-none placeholder-slate-600"
-                type="text"
-                placeholder="Search products"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                required
-              />
-            </form>
+              className="hidden xl:flex min-w-[210px] flex-1 xl:max-w-[320px] 2xl:max-w-[500px] items-center gap-3 rounded-full border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm transition-all duration-300 focus-within:border-green-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-green-100"
+              >
+             <Search
+             size={18}
+             className="shrink-0 text-slate-500"
+             />
 
-            <Link href="/cart" className="relative flex items-center gap-2 text-slate-600">
-              <ShoppingCart size={18} />
-              Cart
-              <button className="absolute -top-1 left-3 text-[8px] text-white bg-slate-600 size-3.5 rounded-full">
-                {cartCount}
-              </button>
+           <input
+           type="text"
+           placeholder="Search products..."
+           value={search}
+           onChange={(e) => setSearch(e.target.value)}
+           required
+           className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-slate-400"
+           />
+           </form>
+
+            {/* Wishlist */}
+            <Link
+              href="/wishlist"
+              onClick={handleWishlistClick}
+              className="relative rounded-full p-2.5 transition hover:bg-slate-100 hover:text-green-600"
+              title="Wishlist"
+            >
+              <Heart size={21} />
+
+              {wishlistCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] text-white">
+                  {wishlistCount}
+                </span>
+              )}
             </Link>
 
+            {/* Compare */}
+            <Link
+              href="/compare"
+              className="relative rounded-full p-2.5 transition hover:bg-slate-100 hover:text-green-600"
+              title="Compare Products"
+            >
+              <GitCompare size={21} />
+
+              {compareCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-blue-600 px-1 text-[10px] text-white">
+                  {compareCount}
+                </span>
+              )}
+            </Link>
+
+            {/* Cart */}
+            <Link
+              href="/cart"
+              className="relative rounded-full p-2.5 transition hover:bg-slate-100 hover:text-green-600"
+              title="Cart"
+            >
+              <ShoppingCart size={21} />
+
+              {cartCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-slate-700 px-1 text-[10px] text-white">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+
+            {/* Account */}
             {!user ? (
               <button
-                onClick={openSignIn}
-                className="px-8 py-2 bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-full"
+                type="button"
+                onClick={() => openSignIn()}
+                className="rounded-full bg-gradient-to-r from-green-600 to-emerald-500 px-6 py-2.5 font-semibold text-white shadow-md shadow-green-200 transition hover:from-green-700 hover:to-emerald-600"
               >
                 Login
               </button>
@@ -99,13 +235,19 @@ const Navbar = () => {
                     <UserButton.Action
                       labelIcon={<User size={16} />}
                       label="My Account"
-                      onClick={() => router.push("/account")}
+                      onClick={() =>
+                        router.push("/account")
+                      }
                     />
 
                     <UserButton.Action
-                      labelIcon={<PackageIcon size={16} />}
+                      labelIcon={
+                        <PackageIcon size={16} />
+                      }
                       label="My Orders"
-                      onClick={() => router.push("/orders")}
+                      onClick={() =>
+                        router.push("/orders")
+                      }
                     />
                   </UserButton.MenuItems>
                 </UserButton>
@@ -113,90 +255,146 @@ const Navbar = () => {
             )}
           </div>
 
+          {/* Mobile hamburger */}
           <div className="sm:hidden">
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            <button
+              type="button"
+              onClick={() =>
+                setMobileMenuOpen((current) => !current)
+              }
+              className="rounded-lg p-2 text-slate-700 transition hover:bg-slate-100"
+              aria-label={
+                mobileMenuOpen
+                  ? "Close navigation menu"
+                  : "Open navigation menu"
+              }
+            >
+              {mobileMenuOpen ? (
+                <X size={25} />
+              ) : (
+                <Menu size={25} />
+              )}
             </button>
           </div>
         </div>
       </div>
 
+      {/* Mobile navigation */}
       {mobileMenuOpen && (
-        <div className="sm:hidden absolute top-full left-0 w-full bg-white shadow-md z-50">
-          <div className="flex flex-col gap-4 p-4 text-slate-700">
-            <Link href="/" onClick={handleNavClick}>Home</Link>
-            <Link href="/shop" onClick={handleNavClick}>Shop</Link>
+        <div className="absolute left-0 top-full z-50 w-full border-t border-slate-200 bg-white shadow-xl sm:hidden">
+          <div className="flex max-h-[calc(100vh-80px)] flex-col gap-1 overflow-y-auto p-4 text-slate-700">
+            <div className="mb-3 border-b border-slate-100 pb-4">
+              <CategoryMegaMenu mode="navbar" />
+            </div>
+
+            <Link
+              href="/"
+              onClick={handleNavClick}
+              className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
+            >
+              Home
+            </Link>
+
+            <Link
+              href="/shop"
+              onClick={handleNavClick}
+              className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
+            >
+              Shop
+            </Link>
+
             <Link
               href="/track-order"
               onClick={handleNavClick}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
             >
               <Truck size={17} />
               Track Order
             </Link>
-            <Link href="/about" onClick={handleNavClick}>About</Link>
-            <Link href="/contact" onClick={handleNavClick}>Contact</Link>
-            <Link href="/cart" onClick={handleNavClick}>
+
+            <Link
+              href="/about"
+              onClick={handleNavClick}
+              className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
+            >
+              About
+            </Link>
+
+            <Link
+              href="/contact"
+              onClick={handleNavClick}
+              className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
+            >
+              Contact
+            </Link>
+
+            <Link
+              href="/wishlist"
+              onClick={(event) => {
+                handleWishlistClick(event);
+
+                if (user) {
+                  handleNavClick();
+                }
+              }}
+              className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
+            >
+              Wishlist ({wishlistCount})
+            </Link>
+
+            <Link
+              href="/compare"
+              onClick={handleNavClick}
+              className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
+            >
+              Compare ({compareCount})
+            </Link>
+
+            <Link
+              href="/cart"
+              onClick={handleNavClick}
+              className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
+            >
               Cart ({cartCount})
             </Link>
 
             <form
               onSubmit={handleSearch}
-              className="flex items-center gap-2 bg-slate-100 px-3 py-2 rounded-full"
+              className="mt-3 flex items-center gap-2 rounded-full bg-slate-100 px-4 py-3"
             >
-              <Search size={16} />
+              <Search size={17} />
+
               <input
-                className="w-full bg-transparent outline-none text-sm"
                 type="text"
                 placeholder="Search products"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                required
+                onChange={(event) =>
+                  setSearch(event.target.value)
+                }
+                className="w-full bg-transparent text-sm outline-none"
               />
             </form>
 
-            <div className="pt-2 border-t">
-              {!user ? (
-                <button
-                  onClick={openSignIn}
-                  className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full w-full"
-                >
-                  Login
-                </button>
-              ) : (
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center justify-between">
-                    <NotificationBell />
-                    <UserButton />
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      router.push("/account");
-                      setMobileMenuOpen(false);
-                    }}
-                    className="text-left text-sm text-slate-600"
-                  >
-                    My Account
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      router.push("/orders");
-                      setMobileMenuOpen(false);
-                    }}
-                    className="text-left text-sm text-slate-600"
-                  >
-                    My Orders
-                  </button>
-                </div>
-              )}
-            </div>
+            {!user ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  openSignIn();
+                }}
+                className="mt-3 w-full rounded-full bg-gradient-to-r from-green-600 to-emerald-500 px-6 py-3 font-semibold text-white"
+              >
+                Login
+              </button>
+            ) : (
+              <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-4">
+                <NotificationBell />
+                <UserButton />
+              </div>
+            )}
           </div>
         </div>
       )}
-
-      <hr className="border-gray-300" />
     </nav>
   );
 };

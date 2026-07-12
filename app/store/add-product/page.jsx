@@ -6,26 +6,42 @@ import axios from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { getSpecFields } from "@/lib/productSpecifications";
 
 export default function StoreAddProduct() {
   const [categories, setCategories] = useState([]);
   const [images, setImages] = useState({ 1: null, 2: null, 3: null, 4: null });
 
   const [productInfo, setProductInfo] = useState({
-    name: "",
-    description: "",
-    mrp: 0,
-    price: 0,
-    category: "",
-    categoryId: "",
-    subcategoryId: "",
-    childCategoryId: "",
-    stock: 0,
-    lowStockAt: 5,
-  });
+  name: "",
+  description: "",
+  mrp: 0,
+  price: 0,
+  category: "",
+  categoryId: "",
+  subcategoryId: "",
+  childCategoryId: "",
+  stock: 0,
+  lowStockAt: 5,
+
+  specifications: {
+    brand: "",
+    model: "",
+    display: "",
+    ram: "",
+    storage: "",
+    processor: "",
+    camera: "",
+    battery: "",
+    os: "",
+    connectivity: "",
+    warranty: "",
+  },
+});
 
   const [loading, setLoading] = useState(false);
   const [aiUsed, setAiUsed] = useState(false);
+  const [variants, setVariants] = useState([]);
 
   const { getToken } = useAuth();
 
@@ -36,6 +52,16 @@ export default function StoreAddProduct() {
   const selectedSubcategory = selectedCategory?.subcategories?.find(
     (sub) => sub.id === productInfo.subcategoryId
   );
+
+  const selectedChildCategory = selectedSubcategory?.childCategories?.find(
+  (child) => child.id === productInfo.childCategoryId
+);
+
+const specFields = getSpecFields(
+  selectedCategory?.name,
+  selectedSubcategory?.name,
+  selectedChildCategory?.name
+);
 
   const fetchCategories = async () => {
     try {
@@ -127,68 +153,146 @@ export default function StoreAddProduct() {
     }
   };
 
-  const onSubmitHandler = async (e) => {
-    e.preventDefault();
+  const addVariant = () => {
+  setVariants([
+    ...variants,
+    {
+      name: "",
+      value: "",
+      price: "",
+      stock: "",
+      image: [],
+    },
+  ]);
+};
 
-    try {
-      if (!images[1] && !images[2] && !images[3] && !images[4]) {
-        return toast.error("Please upload at least one image");
-      }
+const updateVariant = (index, field, value) => {
+  const updated = [...variants];
+  updated[index][field] = value;
+  setVariants(updated);
+};
 
-      if (!productInfo.categoryId) {
-        return toast.error("Please select a category");
-      }
+const removeVariant = (index) => {
+  setVariants(variants.filter((_, i) => i !== index));
+};
 
-      setLoading(true);
+const handleSpecificationChange = (field, value) => {
+  setProductInfo((prev) => ({
+    ...prev,
+    specifications: {
+      ...prev.specifications,
+      [field]: value,
+    },
+  }));
+};
 
-      const formData = new FormData();
+ const onSubmitHandler = async (e) => {
+  e.preventDefault();
 
-      formData.append("name", productInfo.name);
-      formData.append("description", productInfo.description);
-      formData.append("mrp", productInfo.mrp);
-      formData.append("price", productInfo.price);
-      formData.append("category", productInfo.category);
-      formData.append("categoryId", productInfo.categoryId);
-      formData.append("subcategoryId", productInfo.subcategoryId);
-      formData.append("childCategoryId", productInfo.childCategoryId);
-      formData.append("stock", productInfo.stock);
-      formData.append("lowStockAt", productInfo.lowStockAt);
-
-      Object.keys(images).forEach((key) => {
-        if (images[key]) {
-          formData.append("images", images[key]);
-        }
-      });
-
-      const token = await getToken();
-
-      const { data } = await axios.post("/api/store/product", formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      toast.success(data.message);
-
-      setProductInfo({
-        name: "",
-        description: "",
-        mrp: 0,
-        price: 0,
-        category: "",
-        categoryId: "",
-        subcategoryId: "",
-        childCategoryId: "",
-        stock: 0,
-        lowStockAt: 5,
-      });
-
-      setImages({ 1: null, 2: null, 3: null, 4: null });
-      setAiUsed(false);
-    } catch (error) {
-      toast.error(error?.response?.data?.error || error.message);
-    } finally {
-      setLoading(false);
+  try {
+    if (!images[1] && !images[2] && !images[3] && !images[4]) {
+      return toast.error("Please upload at least one image");
     }
-  };
+
+    if (!productInfo.categoryId) {
+      return toast.error("Please select a category");
+    }
+
+    setLoading(true);
+
+    const formData = new FormData();
+
+    formData.append("name", productInfo.name);
+    formData.append("description", productInfo.description);
+    formData.append("mrp", productInfo.mrp);
+    formData.append("price", productInfo.price);
+    formData.append("category", productInfo.category);
+    formData.append("categoryId", productInfo.categoryId);
+    formData.append("subcategoryId", productInfo.subcategoryId);
+    formData.append("childCategoryId", productInfo.childCategoryId);
+    formData.append("stock", productInfo.stock);
+    formData.append("lowStockAt", productInfo.lowStockAt);
+
+const variantsForUpload = variants.map((variant, index) => ({
+  name: variant.name,
+  value: variant.value,
+  price: variant.price,
+  stock: variant.stock,
+  imageKeys:
+    variant.images?.length > 0
+      ? variant.images.map((_, imageIndex) => `variantImage_${index}_${imageIndex}`)
+      : [],
+}));
+
+formData.append("variants", JSON.stringify(variantsForUpload));
+
+variants.forEach((variant, index) => {
+  if (variant.images?.length > 0) {
+    variant.images.forEach((image, imageIndex) => {
+      formData.append(`variantImage_${index}_${imageIndex}`, image);
+    });
+  }
+});
+
+formData.append(
+  "specifications",
+  JSON.stringify(productInfo.specifications || {})
+);
+    formData.append(
+      "specifications",
+      JSON.stringify(productInfo.specifications || {})
+    );
+
+    Object.keys(images).forEach((key) => {
+      if (images[key]) {
+        formData.append("images", images[key]);
+      }
+    });
+
+    const token = await getToken();
+
+    const { data } = await axios.post("/api/store/product", formData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    toast.success(data.message);
+
+    setProductInfo({
+      name: "",
+      description: "",
+      mrp: 0,
+      price: 0,
+      category: "",
+      categoryId: "",
+      subcategoryId: "",
+      childCategoryId: "",
+      stock: 0,
+      lowStockAt: 5,
+
+      specifications: {
+        brand: "",
+        model: "",
+        display: "",
+        ram: "",
+        storage: "",
+        processor: "",
+        camera: "",
+        battery: "",
+        os: "",
+        connectivity: "",
+        warranty: "",
+      },
+    });
+
+    setImages({ 1: null, 2: null, 3: null, 4: null });
+    setAiUsed(false);
+    setVariants([]);
+  } catch (error) {
+    toast.error(error?.response?.data?.error || error.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <form
@@ -367,7 +471,148 @@ export default function StoreAddProduct() {
               </option>
             ))}
           </select>
-        </label>
+                </label>
+      </div>
+
+      {/* Product Variants */}
+      <div className="mt-8 max-w-4xl">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl text-slate-800 font-medium">
+            Product Variants
+          </h2>
+
+          <button
+            type="button"
+            onClick={addVariant}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Add Variant
+          </button>
+        </div>
+
+        {variants.length > 0 ? (
+          <div className="space-y-4">
+            {variants.map((variant, index) => (
+              
+              <div
+  key={index}
+  className="grid md:grid-cols-6 gap-3 border border-slate-200 rounded-xl p-4 items-center"
+>
+  {/* Variant Image */}
+  <label className="h-14 rounded-lg border border-dashed border-slate-300 bg-slate-50 flex items-center justify-center cursor-pointer overflow-hidden">
+  {variant.images?.length > 0 ? (
+  <img
+    src={URL.createObjectURL(variant.images[0])}
+    alt="Variant"
+    className="w-full h-full object-contain p-1"
+  />
+) : (
+  <span className="text-xs text-slate-400">Images</span>
+)}
+
+   <input
+      type="file"
+      accept="image/*"
+      multiple
+      hidden
+      onChange={(e) =>
+    updateVariant(index, "images", Array.from(e.target.files))
+  }
+/>
+  </label>
+
+  {/* Variant Name */}
+  <input
+    type="text"
+    placeholder="Name (e.g. Color)"
+    value={variant.name}
+    onChange={(e) =>
+      updateVariant(index, "name", e.target.value)
+    }
+    className="p-2 px-4 border border-slate-200 rounded outline-none"
+  />
+
+  {/* Variant Value */}
+  <input
+    type="text"
+    placeholder="Value (e.g. Black)"
+    value={variant.value}
+    onChange={(e) =>
+      updateVariant(index, "value", e.target.value)
+    }
+    className="p-2 px-4 border border-slate-200 rounded outline-none"
+  />
+
+  {/* Extra Price */}
+  <input
+    type="number"
+    placeholder="Extra Price"
+    value={variant.price}
+    onChange={(e) =>
+      updateVariant(index, "price", e.target.value)
+    }
+    className="p-2 px-4 border border-slate-200 rounded outline-none"
+  />
+
+  {/* Stock */}
+  <input
+    type="number"
+    placeholder="Stock"
+    value={variant.stock}
+    onChange={(e) =>
+      updateVariant(index, "stock", e.target.value)
+    }
+    className="p-2 px-4 border border-slate-200 rounded outline-none"
+  />
+
+  {/* Remove Button */}
+  <button
+    type="button"
+    onClick={() => removeVariant(index)}
+    className="bg-red-100 text-red-600 rounded hover:bg-red-200 py-2"
+  >
+    Remove
+  </button>
+</div>
+
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-slate-400">
+            No variants added yet.
+          </p>
+        )}
+     
+             </div>
+
+      {/* Technical Specifications */}
+      <div className="mt-8 max-w-4xl bg-white border border-slate-100 rounded-2xl shadow-lg shadow-slate-200/50 overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-50 via-white to-sky-50 px-6 py-5 border-b border-blue-100">
+          <h2 className="text-xl text-slate-900 font-bold">
+            Technical Specifications
+          </h2>
+
+          <p className="text-sm text-slate-400 mt-1">
+            Add device details for product comparison and customer information.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-5 p-6">
+          {specFields.map(([field, label, placeholder]) => (
+            <label key={field} className="flex flex-col gap-2 text-sm">
+              <span className="font-medium text-slate-700">{label}</span>
+
+              <input
+                 type="text"
+                 value={productInfo.specifications?.[field] || ""}
+                 onChange={(e) => handleSpecificationChange(field, e.target.value)}
+                 placeholder={placeholder}
+                 className="w-full p-3 px-4 outline-none border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-300"
+               />
+
+            </label>
+          ))}
+        </div>
       </div>
 
       <button
@@ -376,6 +621,7 @@ export default function StoreAddProduct() {
       >
         Add Product
       </button>
+
     </form>
   );
 }

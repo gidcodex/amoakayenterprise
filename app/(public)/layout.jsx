@@ -13,6 +13,7 @@ import { fetchProducts } from "@/lib/features/product/productSlice";
 import { fetchCart, uploadCart } from "@/lib/features/cart/cartSlice";
 import { fetchAddress } from "@/lib/features/address/addressSlice";
 import { fetchUserRatings } from "@/lib/features/rating/ratingSlice";
+import { fetchWishlist } from "@/lib/features/wishlist/wishlistSlice";
 
 export default function PublicLayout({ children }) {
   const dispatch = useDispatch();
@@ -28,13 +29,14 @@ export default function PublicLayout({ children }) {
   }, [dispatch]);
 
   // Load user data
-  useEffect(() => {
-    if (user) {
-      dispatch(fetchCart({ getToken }));
-      dispatch(fetchAddress({ getToken }));
-      dispatch(fetchUserRatings({ getToken }));
-    }
-  }, [user, dispatch, getToken]);
+useEffect(() => {
+  if (user) {
+    dispatch(fetchCart({ getToken }));
+    dispatch(fetchAddress({ getToken }));
+    dispatch(fetchUserRatings({ getToken }));
+    dispatch(fetchWishlist({ getToken }));
+  }
+}, [user, dispatch, getToken]);
 
   // Sync cart
   useEffect(() => {

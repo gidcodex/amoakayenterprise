@@ -1,49 +1,77 @@
 import Link from "next/link";
-import { ShoppingBag, Truck } from "lucide-react";
+import { ShoppingBag, Truck, ArrowRight } from "lucide-react";
 
 export default function WelcomeBanner({ user }) {
   return (
-    <div className="relative overflow-hidden rounded-[2rem] border border-blue-100 bg-gradient-to-br from-white via-blue-50 to-blue-100 p-8 md:p-10 shadow-xl shadow-blue-100">
+    <section className="relative overflow-hidden border border-slate-200 bg-white">
 
-      {/* Decorative Background */}
-      <div className="absolute -top-16 -right-16 h-64 w-64 rounded-full bg-blue-300/20 blur-3xl"></div>
-      <div className="absolute -bottom-24 -left-20 h-72 w-72 rounded-full bg-cyan-300/20 blur-3xl"></div>
+      {/* Left Accent */}
+      <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-blue-600 via-cyan-500 to-green-500" />
 
-      <div className="relative z-10">
-        <p className="text-blue-600 text-sm font-bold tracking-wider uppercase">
-          Customer Center
-        </p>
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-50/70 via-white to-cyan-50/50" />
 
-        <h1 className="text-3xl md:text-5xl font-bold text-slate-900 mt-3 leading-tight">
+      {/* Decorative Blobs */}
+      <div className="absolute -top-20 right-0 h-72 w-72 rounded-full bg-blue-100 blur-3xl opacity-50" />
+      <div className="absolute -bottom-20 left-1/2 h-56 w-56 rounded-full bg-cyan-100 blur-3xl opacity-40" />
+
+      {/* Grid Pattern */}
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "linear-gradient(#1e40af 1px, transparent 1px), linear-gradient(to right, #1e40af 1px, transparent 1px)",
+          backgroundSize: "36px 36px",
+        }}
+      />
+
+      <div className="relative px-8 py-10 md:px-12 md:py-14">
+
+        <span className="inline-flex items-center rounded-full bg-blue-100 px-4 py-1 text-xs font-bold uppercase tracking-wider text-blue-700">
+          Customer Dashboard
+        </span>
+
+        <h1 className="mt-5 text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-slate-900">
           Welcome back,
           <br />
           {user?.firstName || "Customer"} 👋
         </h1>
 
-        <p className="text-slate-600 mt-5 max-w-2xl leading-8 text-base">
-          Manage your orders, monitor deliveries, review your purchases,
-          request returns, and continue shopping from your personalized
+        <p className="mt-6 max-w-3xl text-slate-600 text-lg leading-8">
+          Manage your orders, monitor deliveries, request returns,
+          download invoices and continue shopping from one beautiful
           dashboard.
         </p>
 
-        <div className="flex flex-wrap gap-4 mt-8">
+        {/* Buttons */}
+        <div className="mt-10 flex flex-wrap gap-4">
+
           <Link
             href="/shop"
-            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-blue-300"
+            className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 px-8 py-3 font-semibold text-white shadow-lg shadow-green-300 transition-all duration-300 hover:from-green-700 hover:to-emerald-600 hover:-translate-y-0.5"
           >
             <ShoppingBag size={18} />
+
             Continue Shopping
+
+            <ArrowRight
+              size={16}
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            />
           </Link>
 
           <Link
             href="/track-order"
-            className="inline-flex items-center gap-2 rounded-2xl border border-blue-200 bg-white px-6 py-3 font-semibold text-blue-700 transition-all duration-300 hover:bg-blue-50"
+            className="inline-flex items-center gap-3 rounded-full border border-green-300 bg-white px-8 py-3 font-semibold text-green-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-green-400 hover:bg-green-50"
           >
             <Truck size={18} />
+
             Track Orders
           </Link>
+
         </div>
+
       </div>
-    </div>
+    </section>
   );
 }

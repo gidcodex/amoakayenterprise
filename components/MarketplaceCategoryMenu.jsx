@@ -1,14 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef} from "react";
 import Link from "next/link";
 import { ChevronRight, FolderTree, ImageIcon, Menu } from "lucide-react";
+
 
 export default function MarketplaceCategoryMenu() {
   const [categories, setCategories] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeSubcategory, setActiveSubcategory] = useState(null);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      setMenuOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
 
   const fetchCategories = async () => {
     try {
@@ -33,19 +49,18 @@ export default function MarketplaceCategoryMenu() {
   if (categories.length === 0) return null;
 
   return (
-    <section className="mx-4 md:mx-6 mt-4 relative z-50">
-      <div
-        className="max-w-7xl mx-auto relative pb-2"
-        onMouseEnter={() => setMenuOpen(true)}
-        onMouseLeave={() => setMenuOpen(false)}
-      >
-        <button className="flex items-center gap-3 bg-white border border-slate-100 rounded-2xl px-6 py-4 shadow-lg shadow-slate-200/50 font-bold text-slate-900">
+  <div className="relative z-50">
+    <div ref={menuRef} className="relative pb-3">
+       <button type="button"
+        onClick={() => setMenuOpen(!menuOpen)}
+        className="flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-2.5 shadow-sm font-semibold text-slate-900 hover:bg-slate-50 transition"
+       >
           <Menu size={20} />
           All Categories
         </button>
 
         {menuOpen && (
-          <div className="absolute left-0 top-full w-full bg-white border border-slate-100 rounded-3xl shadow-2xl shadow-slate-300/60 overflow-hidden">
+           <div className="absolute left-0 top-full w-[1100px] bg-white border border-slate-100 rounded-3xl shadow-2xl shadow-slate-300/60 overflow-hidden">
             <div className="grid grid-cols-[280px_320px_1fr] min-h-[430px]">
               <div className="bg-slate-50 border-r border-slate-100 py-4">
                 {categories.map((category) => {
@@ -208,6 +223,6 @@ export default function MarketplaceCategoryMenu() {
           </div>
         )}
       </div>
-    </section>
+   </div>
   );
 }

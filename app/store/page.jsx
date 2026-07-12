@@ -140,7 +140,7 @@ const [dashboardData, setDashboardData] = useState({
         ))}
       </div>
      
-     <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-8">
+     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mt-8">
 
   <div className="bg-white rounded-2xl border p-5">
     <p className="text-sm text-slate-500">
@@ -184,7 +184,7 @@ const [dashboardData, setDashboardData] = useState({
 
 </div>
 
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-lg shadow-slate-200/50 p-6 mt-8">
+   <div className="bg-white rounded-3xl border border-slate-100 shadow-lg shadow-slate-200/50 p-4 sm:p-6 mt-8 overflow-x-auto">
         <h2 className="text-xl font-bold text-slate-900 mb-6">
           Store Orders & Revenue
         </h2>
@@ -411,7 +411,7 @@ function SellerRecentOrders({ orders = [], currency }) {
               href="/store/orders"
               className="block bg-slate-50 hover:bg-white border border-slate-100 rounded-2xl p-4 transition"
             >
-              <div className="flex justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
                 <div>
                   <p className="font-semibold text-slate-900">
                     {order.trackingNumber || order.id}
@@ -422,7 +422,7 @@ function SellerRecentOrders({ orders = [], currency }) {
                   </p>
                 </div>
 
-                <div className="text-right">
+                <div className="sm:text-right">
                   <p className="font-bold text-green-600">
                     {currency}
                     {order.total}
@@ -459,9 +459,9 @@ function SellerTopProducts({ products = [], currency }) {
           products.map((product, index) => (
             <div
               key={product.id}
-              className="flex items-center justify-between gap-4 bg-slate-50 border border-slate-100 rounded-2xl p-4"
+             className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-50 border border-slate-100 rounded-2xl p-4"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 min-w-0">
                 <div className="w-14 h-14 rounded-2xl bg-white overflow-hidden flex items-center justify-center">
                   {product.image && (
                     <Image
@@ -484,7 +484,7 @@ function SellerTopProducts({ products = [], currency }) {
                 </div>
               </div>
 
-              <p className="font-bold text-green-600 whitespace-nowrap">
+           <p className="font-bold text-green-600 whitespace-nowrap sm:text-right">
                 {currency}
                 {product.revenue.toFixed(2)}
               </p>

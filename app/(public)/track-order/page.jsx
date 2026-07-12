@@ -121,13 +121,13 @@ export default function TrackOrderPage() {
 
   return (
     <main className="min-h-screen bg-slate-50">
-      <section className="max-w-5xl mx-auto px-6 py-16">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
         <div className="text-center mb-10">
           <span className="inline-flex bg-blue-100 text-blue-700 px-5 py-2 rounded-full text-sm font-semibold">
             TRACK SHIPMENT
           </span>
 
-          <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mt-6">
+         <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-slate-900 mt-5 sm:mt-6">
             Track Your Package
           </h1>
 
@@ -139,7 +139,7 @@ export default function TrackOrderPage() {
 
         <form
           onSubmit={handleTrack}
-          className="bg-white border border-slate-100 rrounded-xl shadow-xl shadow-slate-200/70 p-5 md:p-7 flex flex-col md:flex-row gap-4"
+          className="bg-white border border-slate-100 rounded-xl shadow-xl shadow-slate-200/70 p-4 sm:p-5 md:p-7 flex flex-col md:flex-row gap-4"
         >
           <input
             type="text"
@@ -166,7 +166,7 @@ export default function TrackOrderPage() {
         {order && (
           <div className="mt-10">
             <div className="bg-white border border-slate-100 rounded-xl shadow-xl shadow-slate-200/70 overflow-hidden mb-6">
-              <div className="bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 p-6 md:p-8">
+              <div className="bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-500 p-5 sm:p-6 md:p-8">
                 <p className="text-slate-800 text-sm font-bold">
                   SHIPMENT STATUS
                 </p>
@@ -181,7 +181,7 @@ export default function TrackOrderPage() {
                 </p>
               </div>
 
-              <div className="p-6 md:p-8">
+              <div className="p-4 sm:p-6 md:p-8">
                 <div className="flex justify-between text-sm font-semibold text-slate-600 mb-3">
                   <span>Delivery Progress</span>
                   <span>{progressPercent}%</span>
@@ -194,7 +194,7 @@ export default function TrackOrderPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-4 gap-3 mt-6">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
                   {steps.map((step, index) => (
                     <div key={step} className="text-center">
                       <div
@@ -210,7 +210,7 @@ export default function TrackOrderPage() {
                           <Clock size={18} />
                         )}
                       </div>
-                      <p className="text-xs font-semibold text-slate-600 mt-2">
+                      <p className="text-[11px] sm:text-xs font-semibold text-slate-600 mt-2 leading-4">
                         {statusLabels[step]}
                       </p>
                     </div>
@@ -340,12 +340,12 @@ export default function TrackOrderPage() {
                   </p>
 
                   <div className="flex flex-wrap gap-3 mt-4">
-                    <span className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold">
+                    <span className="inline-flex items-center gap-2 max-w-full break-all bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold">
                       <Phone size={15} />
                       {order.store?.contact || "Support"}
                     </span>
 
-                    <span className="inline-flex items-center gap-2 bg-slate-50 text-slate-700 px-4 py-2 rounded-full text-sm font-semibold">
+                    <span className="inline-flex items-center gap-2 max-w-full break-all bg-slate-50 text-slate-700 px-4 py-2 rounded-full text-sm font-semibold">
                       <Mail size={15} />
                       {order.store?.email || "support@amoakaydeals.com"}
                     </span>
@@ -366,18 +366,34 @@ export default function TrackOrderPage() {
                 {order.orderItems?.map((item) => (
                   <div
                     key={`${item.orderId}-${item.productId}`}
-                    className="flex flex-col sm:flex-row gap-5 bg-slate-50 border border-slate-100 rounded-xl p-5"
+                    className="flex flex-col sm:flex-row gap-4 sm:gap-5 bg-slate-50 border border-slate-100 rounded-xl p-4 sm:p-5"
                   >
                     <img
-                      src={item.product.images?.[0]}
-                      alt={item.product.name}
-                      className="w-full sm:w-24 h-44 sm:h-24 object-cover rounded-md bg-slate-100"
-                    />
+                    src={
+                       item.variantImage ||
+                       item.variantImages?.[0] ||
+                       item.product.images?.[0]
+                       }
+                       alt={item.product.name}
+                       className="w-full sm:w-24 h-48 sm:h-24 object-contain rounded-lg bg-white border border-slate-100 p-3"
+                       />
 
                     <div>
                       <h3 className="font-bold text-slate-900">
                         {item.product.name}
                       </h3>
+
+                      {item.variantName && item.variantValue && (
+                     <div className="flex items-center gap-2 mt-2">
+                     <span className="px-2 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[11px] font-semibold">
+                         {item.variantName}
+                      </span>
+
+                      <span className="text-sm text-slate-600">
+                      {item.variantValue}
+                      </span>
+                     </div>
+                    )}
                       <p className="text-sm text-slate-500 mt-2">
                         Quantity: {item.quantity}
                       </p>
@@ -402,14 +418,14 @@ function Accordion({ title, icon, open, onClick, children }) {
       <button
         type="button"
         onClick={onClick}
-        className="w-full flex items-center justify-between gap-4 p-6 text-left"
+        className="w-full flex items-center justify-between gap-3 p-4 sm:p-6 text-left"
       >
-        <div className="flex items-center gap-4">
-          <div className="w-11 h-11 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
             {icon}
           </div>
 
-          <h2 className="text-lg md:text-xl font-bold text-slate-900">
+         <h2 className="text-base sm:text-lg md:text-xl font-bold text-slate-900 truncate">
             {title}
           </h2>
         </div>
@@ -421,7 +437,7 @@ function Accordion({ title, icon, open, onClick, children }) {
         )}
       </button>
 
-      {open && <div className="px-6 pb-6">{children}</div>}
+      {open && <div className="px-4 sm:px-6 pb-5 sm:pb-6">{children}</div>}
     </div>
   );
 }

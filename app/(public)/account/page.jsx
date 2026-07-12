@@ -22,6 +22,7 @@ export default function AccountPage() {
   const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
 
   const [loading, setLoading] = useState(true);
+
   const [dashboardData, setDashboardData] = useState({
     totalOrders: 0,
     activeOrders: 0,
@@ -37,7 +38,9 @@ export default function AccountPage() {
       const token = await getToken();
 
       const { data } = await axios.get("/api/account/dashboard", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       setDashboardData(data.dashboardData);
@@ -49,42 +52,45 @@ export default function AccountPage() {
   };
 
   useEffect(() => {
-    if (isLoaded) {
-      if (user) {
-        fetchDashboard();
-      } else {
-        router.push("/");
-      }
-    }
-  }, [isLoaded, user]);
+    if (!isLoaded) return;
 
-  if (!isLoaded || loading) return <Loading />;
+    if (!user) {
+      router.push("/");
+      return;
+    }
+
+    fetchDashboard();
+  }, [isLoaded, user, router]);
+
+  if (!isLoaded || loading) {
+    return <Loading />;
+  }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-4 md:px-6 py-10">
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-[280px_1fr] gap-8">
-        <AccountSidebar user={user} />
+  <main className="min-h-screen bg-slate-50 px-0 sm:px-4 md:px-6 py-4 sm:py-8 overflow-x-hidden">
+    <div className="max-w-7xl mx-auto grid grid-cols-[64px_minmax(0,1fr)] sm:grid-cols-[80px_minmax(0,1fr)] lg:grid-cols-[280px_minmax(0,1fr)] items-start gap-3 sm:gap-5 lg:gap-8">
+      <AccountSidebar user={user} />
 
-        <section className="space-y-8">
-          <WelcomeBanner user={user} />
+      <section className="min-w-0 pr-3 sm:pr-0 space-y-5 sm:space-y-8">
+        <WelcomeBanner user={user} />
 
-          <AccountSummary
-            dashboardData={dashboardData}
-            currency={currency}
-          />
+        <AccountSummary
+          dashboardData={dashboardData}
+          currency={currency}
+        />
 
-          <RecentOrdersTable
-            orders={dashboardData.recentOrders}
-            currency={currency}
-          />
+        <RecentOrdersTable
+          orders={dashboardData.recentOrders}
+          currency={currency}
+        />
 
-          <div className="grid xl:grid-cols-2 gap-6">
-            <QuickActions />
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 sm:gap-6">
+          <QuickActions />
 
-            <RecentActivity orders={dashboardData.recentOrders} />
-          </div>
-        </section>
-      </div>
-    </main>
-  );
+          <RecentActivity orders={dashboardData.recentOrders} />
+        </div>
+      </section>
+    </div>
+  </main>
+);
 }

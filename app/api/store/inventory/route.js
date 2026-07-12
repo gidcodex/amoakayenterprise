@@ -20,7 +20,6 @@ export async function GET(request) {
       orderBy: {
         createdAt: "desc",
       },
-      take: 100,
     });
 
     return NextResponse.json({ logs });

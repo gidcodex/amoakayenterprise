@@ -187,21 +187,53 @@ export default function InvoicePage() {
             </thead>
 
             <tbody>
-              {order.orderItems?.map((item) => (
-                <tr key={`${item.orderId}-${item.productId}`}>
-                  <td className="p-3 border-b">{item.product?.name}</td>
-                  <td className="p-3 border-b text-center">{item.quantity}</td>
-                  <td className="p-3 border-b text-right">
-                    {currency}
-                    {item.price}
-                  </td>
-                  <td className="p-3 border-b text-right font-semibold">
-                    {currency}
-                    {(item.price * item.quantity).toFixed(2)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+  {order.orderItems?.map((item) => {
+    const productImage =
+      item.variantImage ||
+      item.variantImages?.[0] ||
+      item.product?.images?.[0];
+
+    return (
+      <tr key={`${item.orderId}-${item.productId}`}>
+        <td className="p-3 border-b">
+          <div className="flex items-center gap-3">
+            {productImage && (
+              <img
+                src={productImage}
+                alt={item.product?.name}
+                className="w-14 h-14 object-contain bg-slate-50 border border-slate-200 rounded-md p-1"
+              />
+            )}
+
+            <div>
+              <p className="font-semibold text-slate-800">
+                {item.product?.name}
+              </p>
+
+              {item.variantName && item.variantValue && (
+                <p className="text-xs text-blue-600 font-semibold mt-1">
+                  {item.variantName}: {item.variantValue}
+                </p>
+              )}
+            </div>
+          </div>
+        </td>
+
+        <td className="p-3 border-b text-center">{item.quantity}</td>
+
+        <td className="p-3 border-b text-right">
+          {currency}
+          {item.price}
+        </td>
+
+        <td className="p-3 border-b text-right font-semibold">
+          {currency}
+          {(item.price * item.quantity).toFixed(2)}
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
           </table>
 
           <div className="flex justify-end mt-6">

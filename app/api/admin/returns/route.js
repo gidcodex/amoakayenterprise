@@ -17,14 +17,29 @@ export async function GET(request) {
         user: true,
         product: true,
         store: true,
-        order: true,
+        order: {
+          include: {
+            orderItems: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    return NextResponse.json({ returns });
+    const formattedReturns = returns.map((item) => {
+      const orderItem = item.order?.orderItems?.find(
+        (orderItem) => orderItem.productId === item.productId
+      );
+
+      return {
+        ...item,
+        orderItem: orderItem || null,
+      };
+    });
+
+    return NextResponse.json({ returns: formattedReturns });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

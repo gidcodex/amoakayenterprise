@@ -1,9 +1,12 @@
 'use client'
 import ProductDescription from "@/components/ProductDescription";
 import ProductDetails from "@/components/ProductDetails";
+import RelatedProducts from "@/components/RelatedProducts";
+import RecentlyViewed from "@/components/RecentlyViewed";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+
 
 export default function Product() {
 
@@ -12,9 +15,21 @@ export default function Product() {
     const products = useSelector(state => state.product.list);
 
     const fetchProduct = async () => {
-        const product = products.find((product) => product.id === productId);
-        setProduct(product);
-    }
+    const product = products.find((product) => product.id === productId);
+    setProduct(product);
+
+  if (product) {
+    const existing = JSON.parse(localStorage.getItem("recentlyViewed") || "[]");
+
+    const updated = [
+      product.id,
+      ...existing.filter((id) => id !== product.id),
+    ].slice(0, 10);
+
+    localStorage.setItem("recentlyViewed", JSON.stringify(updated));
+  }
+};
+
 
     useEffect(() => {
         if (products.length > 0) {
@@ -36,7 +51,13 @@ export default function Product() {
                 {product && (<ProductDetails product={product} />)}
 
                 {/* Description & Reviews */}
-                {product && (<ProductDescription product={product} />)}
+                {product && <ProductDescription product={product} />}
+
+                {/* Related Products */}
+                {product && <RelatedProducts product={product} />}
+
+                {/* Recently Viewed */}
+                    <RecentlyViewed />
             </div>
         </div>
     );

@@ -154,16 +154,32 @@ export default async function DeliveryDetailsPage({ params }) {
                       key={`${item.orderId}-${item.productId}`}
                       className="flex flex-col sm:flex-row gap-5 bg-slate-50 hover:bg-white border border-slate-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition"
                     >
+                      
                       <img
-                        src={item.product.images?.[0]}
+                        src={
+                        item.variantImage ||
+                        item.variantImages?.[0] ||
+                        item.product.images?.[0]
+                        }
                         alt={item.product.name}
-                        className="w-full sm:w-24 h-44 sm:h-24 rounded-2xl object-cover bg-slate-100"
-                      />
+                        className="w-full sm:w-24 h-44 sm:h-24 rounded-2xl object-contain bg-slate-100 p-2"
+                       />
 
                       <div className="flex-1">
                         <h3 className="font-bold text-slate-900">
                           {item.product.name}
                         </h3>
+
+                        {item.variantName && item.variantValue && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="px-2 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[11px] font-semibold">
+                           {item.variantName}
+                        </span>
+                      <span className="text-sm text-slate-600">
+                         {item.variantValue}
+                      </span>
+                 </div>
+                )}
 
                         <p className="text-sm text-slate-500 mt-2">
                           Quantity: {item.quantity}

@@ -54,6 +54,20 @@ export async function GET(request) {
         categoryRef: true,
         subcategoryRef: true,
         childCategory: true,
+        variants: true,
+        questions: {
+          include: {
+          user: {
+          select: {
+          name: true,
+          image: true,
+      },
+    },
+  },
+  orderBy: {
+    createdAt: "desc",
+  },
+},
       },
       orderBy: {
         createdAt: "desc",
@@ -64,7 +78,7 @@ export async function GET(request) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "An internal server error occurred." },
+      { error: error.code || error.message || "An internal server error occurred." },
       { status: 500 }
     );
   }

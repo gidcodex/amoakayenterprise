@@ -5,18 +5,18 @@ import Hero from "@/components/Hero";
 import Newsletter from "@/components/Newsletter";
 import OurSpecs from "@/components/OurSpec";
 import LatestProducts from "@/components/LatestProducts";
-import MarketplaceCategoryMenu from "@/components/MarketplaceCategoryMenu";
+import RecentlyViewed from "@/components/RecentlyViewed";
 
 export default function Home() {
   return (
     <div>
       <Hero />
 
-      <MarketplaceCategoryMenu />
-
       <LatestProducts />
 
       <BestSelling />
+
+       <RecentlyViewed />
 
       <OurSpecs />
 

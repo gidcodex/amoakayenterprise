@@ -60,32 +60,52 @@ export default function AdminReturnsPage() {
               {returns.length > 0 ? (
                 returns.map((item) => (
                   <tr key={item.id} className="hover:bg-slate-50 transition">
+                    
                     <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
-                          {item.product?.images?.[0] ? (
-                            <Image
-                              src={item.product.images[0]}
-                              alt={item.product?.name || "Product"}
-                              width={48}
-                              height={48}
-                              className="object-contain"
-                            />
-                          ) : (
-                            <RotateCcw size={18} className="text-slate-400" />
-                          )}
-                        </div>
+  <div className="flex items-center gap-3">
+    <div className="w-14 h-14 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
+      {item.orderItem?.variantImage ||
+      item.orderItem?.variantImages?.[0] ||
+      item.product?.images?.[0] ? (
+        <Image
+          src={
+            item.orderItem?.variantImage ||
+            item.orderItem?.variantImages?.[0] ||
+            item.product.images[0]
+          }
+          alt={item.product?.name || "Product"}
+          width={56}
+          height={56}
+          className="object-contain p-1"
+        />
+      ) : (
+        <RotateCcw size={18} className="text-slate-400" />
+      )}
+    </div>
 
-                        <div>
-                          <p className="font-bold text-slate-900 line-clamp-1">
-                            {item.product?.name}
-                          </p>
-                          <p className="text-xs text-slate-400">
-                            Order: {item.order?.trackingNumber}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
+    <div>
+      <p className="font-bold text-slate-900">
+        {item.product?.name}
+      </p>
+
+      {item.orderItem?.variantName && item.orderItem?.variantValue && (
+        <div className="flex items-center gap-2 mt-1">
+          <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[11px] font-semibold">
+            {item.orderItem.variantName}
+          </span>
+
+          <span className="text-xs text-slate-600">
+            {item.orderItem.variantValue}
+          </span>
+        </div>
+      )}
+
+      <p className="text-xs text-slate-400 mt-1">
+        Order: {item.order?.trackingNumber}
+      </p>
+    </div>
+  </div>
+</td>
 
                     <td className="px-5 py-4">
                       <p className="font-semibold text-slate-900">

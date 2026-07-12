@@ -17,12 +17,27 @@ export async function GET(request) {
       include: {
         user: true,
         product: true,
-        order: true,
+        order: {
+          include: {
+            orderItems: true,
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({ returns });
+    const formattedReturns = returns.map((item) => {
+      const orderItem = item.order?.orderItems?.find(
+        (orderItem) => orderItem.productId === item.productId
+      );
+
+      return {
+        ...item,
+        orderItem: orderItem || null,
+      };
+    });
+
+    return NextResponse.json({ returns: formattedReturns });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
@@ -79,7 +94,7 @@ export async function PATCH(request) {
     let restoredQuantity = 0;
 
     if (status === "APPROVED") {
-      const orderItem = returnRequest.order.orderItems.find(
+      const orderItem = returnRequest.order?.orderItems?.find(
         (item) => item.productId === returnRequest.productId
       );
 
@@ -115,9 +130,17 @@ export async function PATCH(request) {
       include: {
         user: true,
         product: true,
-        order: true,
+        order: {
+          include: {
+            orderItems: true,
+          },
+        },
       },
     });
+
+    const orderItem = updatedReturn.order?.orderItems?.find(
+      (item) => item.productId === updatedReturn.productId
+    );
 
     await prisma.notification.createMany({
       data: [
@@ -153,7 +176,10 @@ export async function PATCH(request) {
         status === "APPROVED"
           ? "Return approved and inventory restored successfully."
           : "Return request rejected successfully.",
-      returnRequest: updatedReturn,
+      returnRequest: {
+        ...updatedReturn,
+        orderItem: orderItem || null,
+      },
     });
   } catch (error) {
     console.error(error);
