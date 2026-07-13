@@ -281,10 +281,13 @@ const Navbar = () => {
 
       {/* Mobile navigation */}
       {mobileMenuOpen && (
-        <div className="absolute left-0 top-full z-50 w-full border-t border-slate-200 bg-white shadow-xl sm:hidden">
+         <div className="absolute left-0 top-full z-[100] w-full border-t border-slate-200 bg-white shadow-xl sm:hidden">
           <div className="flex max-h-[calc(100vh-80px)] flex-col gap-1 overflow-y-auto p-4 text-slate-700">
             <div className="mb-3 border-b border-slate-100 pb-4">
-              <CategoryMegaMenu mode="navbar" />
+               <CategoryMegaMenu
+                     mode="navbar"
+                     onNavigate={handleNavClick}
+               />
             </div>
 
             <Link
@@ -387,10 +390,40 @@ const Navbar = () => {
                 Login
               </button>
             ) : (
-              <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-4">
-                <NotificationBell />
-                <UserButton />
-              </div>
+              
+               <div className="relative z-[200] mt-3 flex items-center justify-between border-t border-slate-100 pt-4">
+                  <NotificationBell />
+
+                 <UserButton
+                   appearance={{
+                      elements: {
+                       userButtonPopoverCard: "z-[9999]",
+                       userButtonPopoverRootBox: "z-[9999]",
+                       },
+                       }}
+                  >
+                  <UserButton.MenuItems>
+                   <UserButton.Action
+                       labelIcon={<User size={16} />}
+                       label="My Account"
+                        onClick={() => {
+                        setMobileMenuOpen(false);
+                        router.push("/account");
+                       }}
+                   />
+
+                   <UserButton.Action
+                    labelIcon={<PackageIcon size={16} />}
+                    label="My Orders"
+                    onClick={() => {
+                    setMobileMenuOpen(false);
+                    router.push("/orders");
+                     }}
+                   />
+                 </UserButton.MenuItems>
+                </UserButton>
+           </div>
+
             )}
           </div>
         </div>

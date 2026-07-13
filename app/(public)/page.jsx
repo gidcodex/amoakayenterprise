@@ -11,8 +11,9 @@ export default function Home() {
   return (
     <div>
       <Hero />
-
-      <LatestProducts />
+      <div className="relative z-10 mt-0 sm:-mt-16 lg:-mt-24">
+        <LatestProducts />
+     </div>
 
       <BestSelling />
 

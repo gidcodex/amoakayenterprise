@@ -1,17 +1,24 @@
 "use client";
 
 import { assets } from "@/assets/assets";
-import { ArrowRight, ChevronDown, ChevronRight, Headphones, Menu, PackageCheck, ShieldCheck, Sparkles, X,} from "lucide-react";
+import {
+  ArrowRight,
+  Headphones,
+  PackageCheck,
+  ShieldCheck,
+  Sparkles,
+  Tag,
+  Truck,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+
 import CategoriesMarquee from "./CategoriesMarquee";
 import CategoryMegaMenu from "./CategoryMegaMenu";
 
-
-
 const benefits = [
   {
-    icon: PackageCheck,
+    icon: Truck,
     title: "Fast delivery",
     text: "Reliable delivery across Ghana",
   },
@@ -28,44 +35,65 @@ const benefits = [
 ];
 
 export default function Hero() {
-  const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "₵";
+  const currency =
+    process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "₵";
 
   return (
-    <section className="bg-white">
-      {/* Top benefit strip */}
-      <div className="border-y border-slate-200 bg-slate-950 text-white">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-2 px-4 py-2 text-xs font-medium sm:grid-cols-3 sm:text-sm">
-          <div className="flex items-center justify-center gap-2">
-            <PackageCheck size={16} className="text-green-400" />
-            Free shipping on orders above {currency}900
+    <section className="overflow-hidden bg-white">
+      {/* Top marketplace strip */}
+      <div className="border-y border-slate-800 bg-slate-950 text-white">
+        <div className="mx-auto flex max-w-[1600px] items-center justify-center px-4 py-2.5 sm:px-6 lg:justify-between lg:px-8">
+          <div className="flex items-center gap-2 text-xs font-semibold sm:text-sm">
+            <PackageCheck
+              size={16}
+              className="shrink-0 text-green-400"
+            />
+
+            <span>
+              Free shipping on orders above {currency}900
+            </span>
           </div>
 
-          <div className="hidden items-center justify-center gap-2 sm:flex">
-            <ShieldCheck size={16} className="text-green-400" />
+          <div className="hidden items-center gap-2 text-sm font-medium lg:flex">
+            <ShieldCheck
+              size={16}
+              className="text-green-400"
+            />
             Secure payments and buyer protection
           </div>
 
-          <div className="hidden items-center justify-center gap-2 sm:flex">
-            <Headphones size={16} className="text-green-400" />
+          <div className="hidden items-center gap-2 text-sm font-medium xl:flex">
+            <Headphones
+              size={16}
+              className="text-green-400"
+            />
             Customer support when you need it
           </div>
+
+          <Link
+            href="/shop"
+            className="hidden items-center gap-2 text-sm font-semibold text-green-400 transition hover:text-green-300 2xl:flex"
+          >
+            Explore marketplace
+            <ArrowRight size={15} />
+          </Link>
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-8">
-
-
-        <div className="grid items-stretch gap-4 xl:grid-cols-[235px_minmax(0,1fr)_270px]">
-          {/* Desktop category sidebar */}
-          
+      <div className="mx-auto max-w-[1600px] px-3 py-5 sm:px-6 sm:py-7 lg:px-8">
+        {/* Main hero layout */}
+        <div className="grid items-stretch gap-4 xl:grid-cols-[250px_minmax(0,1fr)]">
+          {/* Desktop categories */}
           <CategoryMegaMenu
-              mode="sidebar"
-              className="hidden xl:block"
+            mode="sidebar"
+            className="hidden xl:block"
           />
-          {/* Main hero banner */}
-          <div className="relative min-h-[390px] overflow-hidden border border-blue-100 bg-gradient-to-br from-white via-blue-50 to-cyan-100 sm:min-h-[430px]">
+
+          {/* Editorial hero */}
+          <div className="relative isolate overflow-hidden border border-blue-100 bg-gradient-to-br from-white via-blue-50 to-cyan-100">
+            {/* Grid texture */}
             <div
-              className="absolute inset-0 opacity-[0.05]"
+              className="pointer-events-none absolute inset-0 opacity-[0.045]"
               style={{
                 backgroundImage:
                   "linear-gradient(#2563eb 1px, transparent 1px), linear-gradient(90deg, #2563eb 1px, transparent 1px)",
@@ -73,176 +101,200 @@ export default function Hero() {
               }}
             />
 
-            {/* Background light effects */}
-            <div className="absolute -left-24 top-0 h-80 w-80 rounded-full bg-blue-200/50 blur-3xl" />
-            <div className="absolute -bottom-28 right-0 h-96 w-96 rounded-full bg-cyan-200/60 blur-3xl" />
-            <div className="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-blue-100/70 to-transparent" />
+            {/* Background lighting */}
+            <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-blue-200/50 blur-3xl" />
 
-             <div className="relative z-10 flex min-h-[390px] flex-col px-5 py-6 sm:min-h-[430px] sm:px-8 sm:py-8 lg:px-10">
-              {/* Text column width prevents overlap */}
-              <div className="relative z-20 max-w-full md:max-w-[55%]">
-                <span className="inline-flex items-center gap-2 border border-blue-200 bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-widest text-blue-700 backdrop-blur">
+            <div className="pointer-events-none absolute -bottom-28 right-0 h-96 w-96 rounded-full bg-cyan-300/50 blur-3xl" />
+
+            <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[48%] bg-gradient-to-l from-emerald-100/60 via-blue-100/30 to-transparent md:block" />
+
+            {/* Curved decorative line */}
+            <div className="pointer-events-none absolute -bottom-48 right-[9%] hidden h-[520px] w-[520px] rounded-full border border-green-400/30 md:block" />
+
+            <div className="relative z-10 grid min-h-[470px] md:grid-cols-[minmax(0,1fr)_44%] lg:min-h-[500px]">
+              {/* Text area */}
+              <div className="relative z-20 flex flex-col justify-center px-5 py-8 sm:px-8 sm:py-10 lg:px-12">
+                <span className="inline-flex w-fit items-center gap-2 border border-blue-200 bg-white/80 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-blue-700 backdrop-blur sm:text-xs">
                   <Sparkles size={15} />
                   Premium electronics marketplace
                 </span>
 
-                <h1 className="mt-5 text-3xl font-black leading-[1.05] text-slate-950 sm:text-4xl lg:text-[48px]">
+                <h1 className="mt-6 max-w-2xl text-4xl font-black leading-[1.02] tracking-[-0.045em] text-slate-950 sm:text-5xl lg:text-[58px]">
                   Better technology.
-                  <span className="mt-2 block bg-gradient-to-r from-blue-600 to-green-500 bg-clip-text text-transparent">
+                  <span className="mt-2 block bg-gradient-to-r from-blue-600 via-cyan-500 to-green-500 bg-clip-text text-transparent">
                     Better everyday value.
                   </span>
                 </h1>
 
-                <p className="mt-4 max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
-                  Discover smartphones, laptops, tablets and home electronics
-                  from trusted sellers, with competitive prices and dependable
-                  delivery.
+                <p className="mt-6 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
+                  Shop trusted smartphones, laptops, tablets,
+                  accessories and home technology from verified
+                  sellers across Ghana.
                 </p>
 
-                <div className="mt-5 flex flex-wrap gap-3">
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                   <Link
                     href="/shop"
-                    className="inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 px-7 py-3 font-bold text-white shadow-lg shadow-green-200 transition hover:-translate-y-0.5 hover:from-green-700 hover:to-emerald-600"
+                    className="inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-green-600 to-emerald-500 px-7 py-3.5 font-bold text-white shadow-lg shadow-green-300/60 transition hover:-translate-y-0.5 hover:from-green-700 hover:to-emerald-600"
                   >
                     Shop now
-                    <ArrowRight size={17} />
+                    <ArrowRight size={18} />
                   </Link>
 
                   <Link
                     href="/track-order"
-                    className="inline-flex items-center gap-3 rounded-full border border-blue-200 bg-white/90 px-7 py-3 font-semibold text-slate-700 shadow-sm backdrop-blur transition hover:border-green-300 hover:bg-green-50 hover:text-green-700"
+                    className="inline-flex items-center justify-center gap-3 rounded-full border border-slate-300 bg-white/85 px-7 py-3.5 font-semibold text-slate-700 shadow-sm backdrop-blur transition hover:border-green-300 hover:bg-green-50 hover:text-green-700"
                   >
+                    <Truck size={18} />
                     Track an order
                   </Link>
                 </div>
 
-                <div className="mt-6 flex flex-wrap gap-6 text-sm">
+                <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-4">
                   <div>
-                    <p className="text-slate-500">Selected deals from</p>
-                    <p className="mt-1 text-2xl font-black text-slate-950">
+                    <p className="text-sm text-slate-500">
+                      Selected deals from
+                    </p>
+
+                    <p className="mt-1 text-3xl font-black tracking-tight text-slate-950">
                       {currency}300
                     </p>
                   </div>
 
-                  <div className="border-l border-slate-300 pl-6">
-                    <p className="text-slate-500">Free shipping above</p>
-                    <p className="mt-1 text-2xl font-black text-slate-950">
+                  <div className="h-14 w-px bg-slate-300" />
+
+                  <div>
+                    <p className="text-sm text-slate-500">
+                      Free shipping above
+                    </p>
+
+                    <p className="mt-1 text-3xl font-black tracking-tight text-slate-950">
                       {currency}900
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Hero image — positioned only on right half */}
-              <Image
-                  src={assets.hero_model_img}
-                  alt="Customer shopping with a smartphone"
-                  priority
-                  className="pointer-events-none absolute bottom-0 right-2 hidden max-h-[88%] w-[44%] object-contain object-bottom md:block"
-              />
+              {/* Desktop visual area */}
+              <div className="relative hidden min-h-[470px] md:block lg:min-h-[500px]">
+                {/* Deal card */}
+                <Link
+                  href="/shop"
+                  className="group absolute right-5 top-6 z-30 w-[190px] border border-white/80 bg-white/85 p-4 shadow-xl shadow-blue-200/50 backdrop-blur-md transition hover:-translate-y-1 lg:right-8 lg:top-8 lg:w-[210px]"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-orange-600">
+                        Deal of the week
+                      </p>
 
-              {/* Mobile image becomes part of normal layout */}
-              <div className="relative mt-5 flex flex-1 items-end justify-center md:hidden">
+                      <h2 className="mt-1 text-xl font-black leading-tight text-slate-900">
+                        Save up to 20%
+                      </h2>
+                    </div>
+
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-600">
+                      <Tag size={17} />
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex items-center justify-between">
+                    <span className="text-sm font-bold text-green-700">
+                      Shop deal
+                    </span>
+
+                    <ArrowRight
+                      size={16}
+                      className="transition group-hover:translate-x-1"
+                    />
+                  </div>
+                </Link>
+
+                {/* Supporting product image */}
+                <div className="absolute bottom-5 right-5 z-20 h-32 w-32 rounded-full bg-white/80 p-4 shadow-lg backdrop-blur lg:bottom-8 lg:right-8 lg:h-36 lg:w-36">
+                  <Image
+                    src={assets.hero_product_img1}
+                    alt="Featured electronics product"
+                    fill
+                    sizes="144px"
+                    className="object-contain p-4"
+                  />
+                </div>
+
+                {/* Main customer image */}
                 <Image
                   src={assets.hero_model_img}
                   alt="Customer shopping with a smartphone"
                   priority
-                  className="max-h-56 w-auto object-contain object-bottom sm:max-h-64"
+                  className="pointer-events-none absolute bottom-0 left-1/2 z-10 max-h-[88%] w-[78%] -translate-x-1/2 object-contain object-bottom"
+                />
+              </div>
+
+              {/* Mobile customer image */}
+              <div className="relative flex min-h-[285px] items-end justify-center overflow-hidden px-5 md:hidden">
+                <div className="absolute bottom-6 left-5 z-20 border border-white/80 bg-white/90 p-4 shadow-xl backdrop-blur">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-orange-600">
+                    Limited offer
+                  </p>
+
+                  <p className="mt-1 text-lg font-black text-slate-900">
+                    Save up to 20%
+                  </p>
+
+                  <Link
+                    href="/shop"
+                    className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-green-700"
+                  >
+                    Shop deal
+                    <ArrowRight size={13} />
+                  </Link>
+                </div>
+
+                <Image
+                  src={assets.hero_model_img}
+                  alt="Customer shopping with a smartphone"
+                  priority
+                  className="relative z-10 max-h-[300px] w-auto object-contain object-bottom"
                 />
               </div>
             </div>
-          </div>
 
-          {/* Promotional cards */}
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
-            <Link
-              href="/shop"
-              className="group relative min-h-44 overflow-hidden border border-orange-200 bg-gradient-to-br from-white via-orange-50 to-orange-100 p-5"
-            >
-              <div className="relative z-10 max-w-[55%]">
-                <p className="text-xs font-bold uppercase tracking-wider text-orange-600">
-                  Popular now
-                </p>
+            {/* Integrated benefit strip */}
+            <div className="relative z-30 grid border-t border-slate-200 bg-white/90 backdrop-blur sm:grid-cols-3">
+              {benefits.map((benefit, index) => {
+                const Icon = benefit.icon;
 
-             <h2 className="mt-2 text-xl font-black leading-tight text-slate-900">
-                  Best-selling products
-                </h2>
+                return (
+                  <div
+                    key={benefit.title}
+                    className={`flex items-center gap-3 px-5 py-4 ${
+                      index !== benefits.length - 1
+                        ? "border-b border-slate-200 sm:border-b-0 sm:border-r"
+                        : ""
+                    }`}
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-50 text-green-600">
+                      <Icon size={19} />
+                    </div>
 
-                <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-slate-700">
-                  Shop now
-                  <ArrowRight
-                    size={16}
-                    className="transition group-hover:translate-x-1"
-                  />
-                </span>
-              </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-slate-900">
+                        {benefit.title}
+                      </p>
 
-              <Image
-                src={assets.hero_product_img1}
-                alt="Best-selling products"
-                className="absolute bottom-2 right-2 h-32 w-32 object-contain transition duration-300 group-hover:scale-105 sm:h-36 sm:w-36"
-              />
-            </Link>
-
-            <Link
-              href="/shop"
-              className="group relative min-h-44 overflow-hidden border border-blue-200 bg-gradient-to-br from-white via-blue-50 to-cyan-100 p-5"
-            >
-              <div className="relative z-10 max-w-[55%]">
-                <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
-                  Limited offer
-                </p>
-
-                <h2 className="mt-2 text-xl font-black leading-tight text-slate-900">
-                  Save up to 20%
-                </h2>
-
-                <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-slate-700">
-                  Shop deals
-                  <ArrowRight
-                    size={16}
-                    className="transition group-hover:translate-x-1"
-                  />
-                </span>
-              </div>
-
-              <Image
-                src={assets.hero_product_img2}
-                alt="Discounted products"
-                className="absolute bottom-2 right-2 h-32 w-32 object-contain transition duration-300 group-hover:scale-105 sm:h-36 sm:w-36"
-              />
-            </Link>
+                      <p className="mt-0.5 text-xs leading-5 text-slate-500">
+                        {benefit.text}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        {/* Trust benefits */}
-        <div className="mt-4 grid border border-slate-200 bg-white shadow-sm sm:grid-cols-3">
-          {benefits.map((benefit, index) => {
-            const Icon = benefit.icon;
-
-            return (
-              <div
-                key={benefit.title}
-                className={`flex items-center gap-4 px-5 py-4 ${
-                  index !== benefits.length - 1
-                    ? "border-b border-slate-200 sm:border-b-0 sm:border-r"
-                    : ""
-                }`}
-              >
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-green-50 text-green-600">
-                  <Icon size={21} />
-                </div>
-
-                <div>
-                  <p className="font-bold text-slate-900">{benefit.title}</p>
-                  <p className="mt-1 text-xs text-slate-500">{benefit.text}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="mt-6">
+        {/* Category marquee */}
+        <div className="mt-5">
           <CategoriesMarquee />
         </div>
       </div>
