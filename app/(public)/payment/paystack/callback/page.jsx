@@ -4,8 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { useDispatch } from "react-redux";
-import { fetchCart } from "@/lib/features/cart/cartSlice";
 import Link from "next/link";
+
 import {
   CheckCircle2,
   CircleAlert,
@@ -17,13 +17,13 @@ import {
   XCircle,
 } from "lucide-react";
 
+import { fetchCart } from "@/lib/features/cart/cartSlice";
+
 
 function PaystackCallbackContent() {
+  const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const { getToken } = useAuth();
-
-  const searchParams = useSearchParams();
-  const router = useRouter();
 
   const reference =
     searchParams.get("reference") ||
@@ -38,6 +38,7 @@ function PaystackCallbackContent() {
 
   const [paymentData, setPaymentData] = useState(null);
   const [retrying, setRetrying] = useState(false);
+
 
   const verifyPayment = async () => {
     if (!reference) {
@@ -68,23 +69,30 @@ function PaystackCallbackContent() {
       const data = await response.json();
 
      if (response.ok && data.status === "SUCCESSFUL") {
-        setVerificationStatus("SUCCESSFUL");
+      setVerificationStatus("SUCCESSFUL");
 
-      setMessage(
-          data.message ||
-            "Your payment has been confirmed successfully."
-      );
+  setMessage(
+    data.message ||
+      "Your payment has been confirmed successfully."
+  );
 
-      setPaymentData(data);
+  setPaymentData(data);
 
   /*
-   * Refresh Redux from the now-empty database cart.
-   * This updates the navbar cart count immediately.
+   * Refreshing Redux must not break the payment page.
+   * The database cart has already been cleared by the API.
    */
-      await dispatch(fetchCart({ getToken }));
+  try {
+    await dispatch(fetchCart({ getToken }));
+  } catch (cartError) {
+    console.error(
+      "FAILED TO REFRESH CART AFTER PAYMENT:",
+      cartError
+    );
+  }
 
-      return;
-      }
+  return;
+}
 
       if (
         response.status === 202 ||
