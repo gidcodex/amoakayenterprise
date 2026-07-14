@@ -353,6 +353,19 @@ export async function POST(request) {
             },
           });
 
+          /*
+          * Clear the buyer's cart when the webhook
+          * confirms successful payment.
+          */
+            await transactionClient.user.update({
+              where: {
+                id: payment.userId,
+              },
+                data: {
+                cart: {},
+             },
+           });
+
         return {
           alreadyProcessed: false,
           updatedOrders: updatedOrders.count,

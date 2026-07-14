@@ -1,7 +1,10 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
+import { useDispatch } from "react-redux";
+import { fetchCart } from "@/lib/features/cart/cartSlice";
 import Link from "next/link";
 import {
   CheckCircle2,
@@ -14,7 +17,11 @@ import {
   XCircle,
 } from "lucide-react";
 
+
 function PaystackCallbackContent() {
+  const dispatch = useDispatch();
+  const { getToken } = useAuth();
+
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -60,14 +67,23 @@ function PaystackCallbackContent() {
 
       const data = await response.json();
 
-      if (response.ok && data.status === "SUCCESSFUL") {
+     if (response.ok && data.status === "SUCCESSFUL") {
         setVerificationStatus("SUCCESSFUL");
-        setMessage(
+
+      setMessage(
           data.message ||
             "Your payment has been confirmed successfully."
-        );
-        setPaymentData(data);
-        return;
+      );
+
+      setPaymentData(data);
+
+  /*
+   * Refresh Redux from the now-empty database cart.
+   * This updates the navbar cart count immediately.
+   */
+      await dispatch(fetchCart({ getToken }));
+
+      return;
       }
 
       if (

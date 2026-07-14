@@ -250,6 +250,18 @@ export async function GET(request) {
           },
         });
 
+          /* Clear the customer's cart only after
+           * Paystack confirms the payment.
+        */
+         await transactionClient.user.update({
+         where: {
+             id: userId,
+            },
+             data: {
+             cart: {},
+            },
+            });
+
         const updatedOrders =
           await transactionClient.order.findMany({
             where: {
