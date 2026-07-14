@@ -8,6 +8,7 @@ import {
   Truck,
   XIcon,
 } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import AddressModal from "./AddressModal";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,6 +17,23 @@ import { useRouter } from "next/navigation";
 import { useAuth, useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { fetchCart } from "@/lib/features/cart/cartSlice";
+import { assets } from "@/assets/assets";
+
+const mobileMoneyProviders = [
+  {
+    name: "MTN MoMo",
+    image: assets.mtn_momo_logo,
+  },
+  {
+    name: "Telecel Cash",
+    image: assets.telecel_cash_logo,
+  },
+  {
+    name: "AirtelTigo Money",
+    image: assets.airteltigo_money_logo,
+  },
+];
+
 
 const OrderSummary = ({ totalPrice, items }) => {
   const { user } = useUser();
@@ -407,24 +425,49 @@ const OrderSummary = ({ totalPrice, items }) => {
             />
           )}
 
-          {allowPaystack && (
-            <PaymentOption
-              id="PAYSTACK"
-              title="Mobile Money / Card"
-              description="MTN MoMo, Telecel Cash, AirtelTigo or card"
-              icon={Smartphone}
-              checked={
-                paymentMethod ===
-                "PAYSTACK"
-              }
-              onChange={() =>
-                setPaymentMethod(
-                  "PAYSTACK"
-                )
-              }
-              recommended
-            />
-          )}
+{allowPaystack && (
+  <PaymentOption
+    id="PAYSTACK"
+    title="Mobile Money / Card"
+    description="MTN MoMo, Telecel Cash, AirtelTigo or card"
+    icon={Smartphone}
+    checked={paymentMethod === "PAYSTACK"}
+    onChange={() => setPaymentMethod("PAYSTACK")}
+    recommended
+  >
+    <div className="mt-4 grid grid-cols-3 gap-2">
+      {mobileMoneyProviders.map((provider) => (
+        <div
+          key={provider.name}
+          title={provider.name}
+          className="flex min-h-14 items-center justify-center rounded-xl border border-slate-200 bg-white p-2 shadow-sm"
+        >
+          <Image
+            src={provider.image}
+            alt={provider.name}
+            width={90}
+            height={40}
+            className="h-8 w-full object-contain"
+          />
+        </div>
+      ))}
+    </div>
+
+    <div className="mt-3 flex items-center justify-between rounded-xl bg-slate-950 px-3 py-2.5">
+      <span className="text-xs font-semibold text-white">
+        Secured by Paystack
+      </span>
+
+      <Image
+        src={assets.paystack_logo}
+        alt="Paystack"
+        width={85}
+        height={24}
+        className="h-5 w-auto object-contain"
+      />
+    </div>
+  </PaymentOption>
+)}
 
           {settings.allowStripe && (
             <PaymentOption
@@ -685,16 +728,18 @@ function PaymentOption({
   checked,
   onChange,
   recommended = false,
+  children,
 }) {
-  return (
-    <label
-      htmlFor={id}
-      className={`relative flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition ${
-        checked
-          ? "border-green-500 bg-green-50 ring-2 ring-green-100"
-          : "border-slate-200 hover:border-green-300"
-      }`}
-    >
+ return (
+  <label
+    htmlFor={id}
+    className={`relative block cursor-pointer rounded-xl border p-3 transition ${
+      checked
+        ? "border-green-500 bg-green-50 ring-2 ring-green-100"
+        : "border-slate-200 hover:border-green-300"
+    }`}
+  >
+    <div className="flex items-center gap-3">
       <input
         type="radio"
         id={id}
@@ -714,7 +759,7 @@ function PaymentOption({
         <Icon size={19} />
       </div>
 
-      <div className="min-w-0 pr-8">
+      <div className="min-w-0 flex-1 pr-8">
         <p className="font-bold text-slate-800">
           {title}
         </p>
@@ -729,8 +774,11 @@ function PaymentOption({
           Recommended
         </span>
       )}
-    </label>
-  );
+    </div>
+
+    {checked && children}
+  </label>
+);
 }
 
 export default OrderSummary;
