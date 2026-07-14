@@ -3,12 +3,27 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const settings =
-      (await prisma.adminSettings.findFirst()) ||
-      (await prisma.adminSettings.create({ data: {} }));
+    let settings = await prisma.adminSettings.findFirst();
 
-    return NextResponse.json({ settings });
+    if (!settings) {
+      settings = await prisma.adminSettings.create({
+        data: {},
+      });
+    }
+
+    return NextResponse.json({
+      settings,
+    });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("GET SETTINGS ERROR:", error);
+
+    return NextResponse.json(
+      {
+        error:
+          error?.message ||
+          "Failed to load marketplace settings.",
+      },
+      { status: 500 }
+    );
   }
 }

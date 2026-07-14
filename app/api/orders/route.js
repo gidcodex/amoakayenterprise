@@ -9,12 +9,17 @@ export async function POST(request) {
     const { userId, has } = getAuth(request);
 
     if (!userId) {
-      return NextResponse.json({ error: "not authorized" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Not authorized." },
+        { status: 401 }
+      );
     }
 
     const settings =
       (await prisma.adminSettings.findFirst()) ||
-      (await prisma.adminSettings.create({ data: {} }));
+      (await prisma.adminSettings.create({
+        data: {},
+      }));
 
     if (!settings.marketplaceOpen) {
       return NextResponse.json(
@@ -24,58 +29,118 @@ export async function POST(request) {
     }
 
     let existingUser = await prisma.user.findUnique({
-      where: { id: userId },
+      where: {
+        id: userId,
+      },
     });
 
     if (!existingUser) {
-      const clerkUser = await fetch(
+      const clerkResponse = await fetch(
         `https://api.clerk.com/v1/users/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
           },
+          cache: "no-store",
         }
-      ).then((res) => res.json());
+      );
+
+      if (!clerkResponse.ok) {
+        return NextResponse.json(
+          { error: "Unable to retrieve your account details." },
+          { status: 502 }
+        );
+      }
+
+      const clerkUser = await clerkResponse.json();
 
       existingUser = await prisma.user.create({
         data: {
           id: userId,
           name:
-            `${clerkUser.first_name || ""} ${clerkUser.last_name || ""}`.trim() ||
-            "New User",
-          email: clerkUser.email_addresses?.[0]?.email_address || "",
+            `${clerkUser.first_name || ""} ${
+              clerkUser.last_name || ""
+            }`.trim() || "New User",
+          email:
+            clerkUser.email_addresses?.[0]?.email_address || "",
           image: clerkUser.image_url || "",
           cart: {},
         },
       });
     }
 
-    const { addressId, items, couponCode, paymentMethod } = await request.json();
+    const {
+      addressId,
+      items,
+      couponCode,
+      paymentMethod,
+    } = await request.json();
 
     if (
       !addressId ||
       !paymentMethod ||
-      !items ||
       !Array.isArray(items) ||
       items.length === 0
     ) {
       return NextResponse.json(
-        { error: "missing order details." },
+        { error: "Missing order details." },
         { status: 400 }
       );
     }
 
-    if (paymentMethod === "COD" && !settings.allowCOD) {
+    const supportedPaymentMethods = [
+      "COD",
+      "STRIPE",
+      "PAYSTACK",
+    ];
+
+    if (!supportedPaymentMethods.includes(paymentMethod)) {
       return NextResponse.json(
-        { error: "Cash on delivery is currently disabled." },
+        { error: "Unsupported payment method." },
         { status: 400 }
       );
     }
 
-    if (paymentMethod === "STRIPE" && !settings.allowStripe) {
+    if (
+      paymentMethod === "COD" &&
+      !settings.allowCOD
+    ) {
       return NextResponse.json(
-        { error: "Online card payment is currently disabled." },
+        {
+          error:
+            "Cash on delivery is currently disabled.",
+        },
         { status: 400 }
+      );
+    }
+
+    if (
+      paymentMethod === "STRIPE" &&
+      !settings.allowStripe
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Online card payment is currently disabled.",
+        },
+        { status: 400 }
+      );
+    }
+
+    const address = await prisma.address.findFirst({
+      where: {
+        id: addressId,
+        userId,
+      },
+    });
+
+    if (!address) {
+      return NextResponse.json(
+        {
+          error:
+            "Delivery address was not found or does not belong to you.",
+        },
+        { status: 404 }
       );
     }
 
@@ -83,328 +148,576 @@ export async function POST(request) {
 
     if (couponCode) {
       coupon = await prisma.coupon.findUnique({
-        where: { code: couponCode },
+        where: {
+          code: String(couponCode)
+            .trim()
+            .toUpperCase(),
+        },
       });
 
       if (!coupon) {
         return NextResponse.json(
-          { error: "Coupon not found" },
+          { error: "Coupon not found." },
           { status: 400 }
         );
       }
-    }
 
-    if (couponCode && coupon.forNewUser) {
-      const userorders = await prisma.order.findMany({
-        where: { userId },
-      });
-
-      if (userorders.length > 0) {
+      if (new Date(coupon.expiresAt) <= new Date()) {
         return NextResponse.json(
-          { error: "Coupon valid for new users" },
+          { error: "This coupon has expired." },
           { status: 400 }
         );
       }
+
+      if (coupon.forNewUser) {
+        const existingOrderCount =
+          await prisma.order.count({
+            where: {
+              userId,
+            },
+          });
+
+        if (existingOrderCount > 0) {
+          return NextResponse.json(
+            {
+              error:
+                "This coupon is valid for new customers only.",
+            },
+            { status: 400 }
+          );
+        }
+      }
     }
 
-    const isPlusMember = has({ plan: "plus" });
+    const isPlusMember = has({
+      plan: "plus",
+    });
 
-    if (couponCode && coupon.forMember && !isPlusMember) {
+    if (
+      coupon?.forMember &&
+      !isPlusMember
+    ) {
       return NextResponse.json(
-        { error: "Coupon valid for members only" },
+        {
+          error:
+            "This coupon is valid for members only.",
+        },
         { status: 400 }
       );
     }
 
     const ordersByStore = new Map();
 
-    for (const item of items) {
-      const product = await prisma.product.findUnique({
-        where: { id: item.id },
-      });
+    /*
+    |--------------------------------------------------------------------------
+    | VALIDATE PRODUCTS AND VARIANTS
+    |--------------------------------------------------------------------------
+    */
+    for (const requestedItem of items) {
+      const quantity = Number(
+        requestedItem.quantity
+      );
+
+      if (
+        !requestedItem.id ||
+        !Number.isInteger(quantity) ||
+        quantity <= 0
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "Every cart item must have a valid product and quantity.",
+          },
+          { status: 400 }
+        );
+      }
+
+      const product =
+        await prisma.product.findUnique({
+          where: {
+            id: requestedItem.id,
+          },
+          include: {
+            variants: true,
+          },
+        });
 
       if (!product) {
         return NextResponse.json(
-          { error: "One of the selected products was not found." },
+          {
+            error:
+              "One of the selected products was not found.",
+          },
           { status: 404 }
         );
       }
 
-     let availableStock = product.stock;
-     let selectedVariant = null;
-
-  if (item.variantId) {
-  selectedVariant = await prisma.productVariant.findFirst({
-    where: {
-      id: item.variantId,
-      productId: product.id,
-    },
-  });
-
-  if (!selectedVariant) {
-    return NextResponse.json(
-      { error: "Selected product variant was not found." },
-      { status: 404 }
-    );
-  }
-
-  availableStock = selectedVariant.stock;
-}
-
-if (!product.inStock || availableStock <= 0) {
-  return NextResponse.json(
-    { error: `${product.name} is out of stock.` },
-    { status: 400 }
-  );
-}
-
-if (item.quantity > availableStock) {
-  return NextResponse.json(
-    {
-      error: `Only ${availableStock} unit(s) of ${product.name} available.`,
-    },
-    { status: 400 }
-  );
-}
-item.variant = selectedVariant;
-
-      const storeId = product.storeId;
-
-      if (!ordersByStore.has(storeId)) {
-        ordersByStore.set(storeId, []);
+      if (!product.inStock) {
+        return NextResponse.json(
+          {
+            error: `${product.name} is out of stock.`,
+          },
+          { status: 400 }
+        );
       }
 
-     const itemPrice = item.variant?.price || product.price;
+      let selectedVariant = null;
+      let availableStock =
+        Number(product.stock) || 0;
 
-      ordersByStore.get(storeId).push({
-      ...item,
-      price: itemPrice,
-      product,
-     });
+      if (requestedItem.variantId) {
+        selectedVariant = product.variants.find(
+          (variant) =>
+            variant.id ===
+              requestedItem.variantId &&
+            variant.isActive
+        );
 
+        if (!selectedVariant) {
+          return NextResponse.json(
+            {
+              error: `The selected variant of ${product.name} was not found or is inactive.`,
+            },
+            { status: 404 }
+          );
+        }
+
+        availableStock =
+          Number(selectedVariant.stock) || 0;
+      } else if (product.variants.length > 0) {
+        return NextResponse.json(
+          {
+            error: `Please select a variant for ${product.name}.`,
+          },
+          { status: 400 }
+        );
+      }
+
+      if (availableStock <= 0) {
+        return NextResponse.json(
+          {
+            error: selectedVariant
+              ? `${product.name} — ${selectedVariant.value} is out of stock.`
+              : `${product.name} is out of stock.`,
+          },
+          { status: 400 }
+        );
+      }
+
+      if (quantity > availableStock) {
+        return NextResponse.json(
+          {
+            error: `Only ${availableStock} unit(s) of ${
+              product.name
+            }${
+              selectedVariant
+                ? ` — ${selectedVariant.value}`
+                : ""
+            } are available.`,
+          },
+          { status: 400 }
+        );
+      }
+
+      const itemPrice =
+        selectedVariant?.price ??
+        product.price;
+
+      const preparedItem = {
+        id: product.id,
+        quantity,
+        price: Number(itemPrice),
+        variantId:
+          selectedVariant?.id || null,
+        variant: selectedVariant,
+        product,
+      };
+
+      if (!ordersByStore.has(product.storeId)) {
+        ordersByStore.set(
+          product.storeId,
+          []
+        );
+      }
+
+      ordersByStore
+        .get(product.storeId)
+        .push(preparedItem);
     }
 
-    let orderIds = [];
+    const orderIds = [];
     let fullAmount = 0;
     let isShippingFeeAdded = false;
 
-    for (const [storeId, sellerItems] of ordersByStore.entries()) {
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE ONE ORDER PER SELLER
+    |--------------------------------------------------------------------------
+    */
+    for (const [
+      storeId,
+      sellerItems,
+    ] of ordersByStore.entries()) {
       let total = sellerItems.reduce(
-        (acc, item) => acc + item.price * item.quantity,
+        (sum, item) =>
+          sum +
+          Number(item.price) *
+            Number(item.quantity),
         0
       );
 
-      if (couponCode) {
-        total -= (total * coupon.discount) / 100;
+      if (coupon) {
+        total -=
+          (total * Number(coupon.discount)) /
+          100;
       }
 
       if (!isShippingFeeAdded) {
-        if (!(isPlusMember && settings.plusFreeShipping)) {
-          total += Number(settings.shippingFee || 0);
+        if (
+          !(
+            isPlusMember &&
+            settings.plusFreeShipping
+          )
+        ) {
+          total += Number(
+            settings.shippingFee || 0
+          );
         }
 
         isShippingFeeAdded = true;
       }
 
-      fullAmount += parseFloat(total.toFixed(2));
+      total = Number(total.toFixed(2));
+      fullAmount += total;
 
       const trackingNumber = `AMK-${Date.now()}-${Math.floor(
-        Math.random() * 1000
+        1000 + Math.random() * 9000
       )}`;
 
-      const order = await prisma.order.create({
-        data: {
-          trackingNumber,
-          userId,
-          storeId,
-          addressId,
-          total: parseFloat(total.toFixed(2)),
-          paymentMethod,
-          isCouponUsed: coupon ? true : false,
-          coupon: coupon ? coupon : {},
+      const order =
+        await prisma.order.create({
+          data: {
+            trackingNumber,
+            userId,
+            storeId,
+            addressId,
+            total,
+            paymentMethod,
+            isPaid: false,
+            isCouponUsed: Boolean(coupon),
+            coupon: coupon || {},
 
-          trackingEvents: {
-            create: {
-              status: "ORDER_PLACED",
-              actor: "ADMIN",
-              actorName: "System",
-              note: "Order placed successfully",
+            trackingEvents: {
+              create: {
+                status: "ORDER_PLACED",
+                actor: "ADMIN",
+                actorName: "System",
+                note:
+                  paymentMethod === "PAYSTACK"
+                    ? "Order created. Awaiting Paystack payment confirmation."
+                    : "Order placed successfully.",
+              },
+            },
+
+            orderItems: {
+              create: sellerItems.map(
+                (item) => {
+                  const variantImages =
+                    item.variant?.images
+                      ?.length > 0
+                      ? item.variant.images
+                      : item.variant?.image
+                      ? [item.variant.image]
+                      : [];
+
+                  return {
+                    productId: item.id,
+                    quantity:
+                      item.quantity,
+                    price: item.price,
+
+                    variantId:
+                      item.variant?.id ||
+                      null,
+                    variantName:
+                      item.variant?.name ||
+                      null,
+                    variantValue:
+                      item.variant?.value ||
+                      null,
+                    variantImage:
+                      variantImages[0] ||
+                      null,
+                    variantImages,
+                  };
+                }
+              ),
             },
           },
+        });
 
-          orderItems: {
-               create: sellerItems.map((item) => {
-               const variantImages =
-               item.variant?.images?.length > 0
-             ? item.variant.images
-             : item.variant?.image
-             ? [item.variant.image]
-             : [];
+      /*
+      |--------------------------------------------------------------------------
+      | REDUCE STOCK
+      |--------------------------------------------------------------------------
+      |
+      | This currently reserves stock immediately when the order is created.
+      | Later, failed or expired online payments should restore the quantity.
+      |
+      */
+      for (const item of sellerItems) {
+        const product = item.product;
+        const variantImages =
+          item.variant?.images?.length > 0
+            ? item.variant.images
+            : item.variant?.image
+            ? [item.variant.image]
+            : [];
 
-    return {
-      productId: item.id,
-      quantity: item.quantity,
-      price: item.price,
+        let oldStock;
+        let newStock;
+        let lowStockAt;
 
-      variantId: item.variantId || null,
-      variantName: item.variant?.name || null,
-      variantValue: item.variant?.value || null,
-      variantImage: variantImages[0] || null,
-      variantImages,
-    };
-  }),
-},
+        if (item.variantId) {
+          const updatedVariant =
+            await prisma.productVariant.update({
+              where: {
+                id: item.variantId,
+              },
+              data: {
+                stock: {
+                  decrement: item.quantity,
+                },
+              },
+            });
 
-        },
-      });
+          oldStock =
+            Number(updatedVariant.stock) +
+            item.quantity;
 
-   for (const item of sellerItems) {
-  const product = item.product;
+          newStock =
+            Number(updatedVariant.stock);
 
-  let oldStock = product.stock || 0;
-  let newStock = Math.max(oldStock - item.quantity, 0);
+          lowStockAt =
+            Number(
+              updatedVariant.lowStockAt
+            ) || 0;
 
-  if (item.variantId) {
-    const variant = await prisma.productVariant.findUnique({
-      where: { id: item.variantId },
-    });
+          /*
+           * Synchronize the parent product stock with
+           * the total active variant stock.
+           */
+          const variantStock =
+            await prisma.productVariant.aggregate({
+              where: {
+                productId: product.id,
+                isActive: true,
+              },
+              _sum: {
+                stock: true,
+              },
+            });
 
-    if (!variant) {
-      return NextResponse.json(
-        { error: "Selected product variant was not found." },
-        { status: 404 }
-      );
-    }
+          const totalVariantStock =
+            Number(
+              variantStock._sum.stock || 0
+            );
 
-    oldStock = variant.stock || 0;
-    newStock = Math.max(oldStock - item.quantity, 0);
+          await prisma.product.update({
+            where: {
+              id: product.id,
+            },
+            data: {
+              stock: totalVariantStock,
+              inStock:
+                totalVariantStock > 0,
+            },
+          });
+        } else {
+          const updatedProduct =
+            await prisma.product.update({
+              where: {
+                id: product.id,
+              },
+              data: {
+                stock: {
+                  decrement: item.quantity,
+                },
+              },
+            });
 
-    await prisma.productVariant.update({
-      where: { id: item.variantId },
-      data: {
-        stock: newStock,
-      },
-    });
-  } else {
-    await prisma.product.update({
-      where: { id: item.id },
-      data: {
-        stock: newStock,
-        inStock: newStock > 0,
-      },
-    });
-  }
+          oldStock =
+            Number(updatedProduct.stock) +
+            item.quantity;
 
- const variantImages =
-  item.variant?.images?.length > 0
-    ? item.variant.images
-    : item.variant?.image
-    ? [item.variant.image]
-    : [];
+          newStock =
+            Number(updatedProduct.stock);
 
-await prisma.inventoryLog.create({
-  data: {
-    productId: item.id,
-    storeId,
-    type: "SALE",
-    quantity: item.quantity,
-    oldStock,
-    newStock,
+          lowStockAt =
+            Number(
+              updatedProduct.lowStockAt
+            ) || 0;
 
-    variantId: item.variantId || null,
-    variantName: item.variant?.name || null,
-    variantValue: item.variant?.value || null,
-    variantImage: variantImages[0] || null,
-    variantImages,
+          if (
+            updatedProduct.stock <= 0
+          ) {
+            await prisma.product.update({
+              where: {
+                id: product.id,
+              },
+              data: {
+                inStock: false,
+              },
+            });
+          }
+        }
 
-    note: `Stock reduced by ${item.quantity} after order ${trackingNumber}.`,
-  },
-});
+        await prisma.inventoryLog.create({
+          data: {
+            productId: item.id,
+            storeId,
+            type: "SALE",
+            quantity: item.quantity,
+            oldStock,
+            newStock,
 
-  if (newStock === 0) {
-   await prisma.inventoryLog.create({
-  data: {
-    productId: item.id,
-    storeId,
-    type: "OUT_OF_STOCK",
-    quantity: 0,
-    oldStock,
-    newStock,
+            variantId:
+              item.variant?.id || null,
+            variantName:
+              item.variant?.name || null,
+            variantValue:
+              item.variant?.value || null,
+            variantImage:
+              variantImages[0] || null,
+            variantImages,
 
-    variantId: item.variantId || null,
-    variantName: item.variant?.name || null,
-    variantValue: item.variant?.value || null,
-    variantImage: variantImages[0] || null,
-    variantImages,
+            note: `Stock reserved for order ${trackingNumber}.`,
+          },
+        });
 
-    note: `${product.name} is now out of stock after order ${trackingNumber}.`,
-  },
-});
+        if (newStock <= 0) {
+          await prisma.inventoryLog.create({
+            data: {
+              productId: item.id,
+              storeId,
+              type: "OUT_OF_STOCK",
+              quantity: 0,
+              oldStock,
+              newStock,
 
-    await prisma.notification.create({
-      data: {
-        title: "Product Out of Stock",
-        message: `${product.name} is now out of stock.`,
-        type: "STORE",
-        role: "SELLER",
-        storeId,
-        link: "/store/manage-products",
-      },
-    });
-  } else if (newStock <= product.lowStockAt) {
-    
-    await prisma.inventoryLog.create({
-   data: {
-    productId: item.id,
-    storeId,
-    type: "LOW_STOCK",
-    quantity: newStock,
-    oldStock,
-    newStock,
+              variantId:
+                item.variant?.id || null,
+              variantName:
+                item.variant?.name || null,
+              variantValue:
+                item.variant?.value ||
+                null,
+              variantImage:
+                variantImages[0] || null,
+              variantImages,
 
-    variantId: item.variantId || null,
-    variantName: item.variant?.name || null,
-    variantValue: item.variant?.value || null,
-    variantImage: variantImages[0] || null,
-    variantImages,
+              note: `${product.name}${
+                item.variant
+                  ? ` — ${item.variant.value}`
+                  : ""
+              } is now out of stock.`,
+            },
+          });
 
-    note: `${product.name} is low in stock after order ${trackingNumber}.`,
-  },
-});
+          await prisma.notification.create({
+            data: {
+              title:
+                "Product Out of Stock",
+              message: `${product.name}${
+                item.variant
+                  ? ` — ${item.variant.value}`
+                  : ""
+              } is now out of stock.`,
+              type: "STORE",
+              role: "SELLER",
+              storeId,
+              link:
+                "/store/variant-inventory",
+            },
+          });
+        } else if (
+          newStock <= lowStockAt
+        ) {
+          await prisma.inventoryLog.create({
+            data: {
+              productId: item.id,
+              storeId,
+              type: "LOW_STOCK",
+              quantity: newStock,
+              oldStock,
+              newStock,
 
-    await prisma.notification.create({
-      data: {
-        title: "Low Stock Alert",
-        message: `${product.name} has only ${newStock} unit(s) left.`,
-        type: "STORE",
-        role: "SELLER",
-        storeId,
-        link: "/store/manage-products",
-      },
-    });
-  }
-}
+              variantId:
+                item.variant?.id || null,
+              variantName:
+                item.variant?.name || null,
+              variantValue:
+                item.variant?.value ||
+                null,
+              variantImage:
+                variantImages[0] || null,
+              variantImages,
+
+              note: `${product.name}${
+                item.variant
+                  ? ` — ${item.variant.value}`
+                  : ""
+              } has low stock.`,
+            },
+          });
+
+          await prisma.notification.create({
+            data: {
+              title: "Low Stock Alert",
+              message: `${product.name}${
+                item.variant
+                  ? ` — ${item.variant.value}`
+                  : ""
+              } has only ${newStock} unit(s) left.`,
+              type: "STORE",
+              role: "SELLER",
+              storeId,
+              link:
+                "/store/variant-inventory",
+            },
+          });
+        }
+      }
 
       await prisma.notification.createMany({
         data: [
           {
             title: "New Order Received",
-            message: `A new ${paymentMethod} order has been placed. Tracking number: ${trackingNumber}`,
+            message:
+              paymentMethod === "PAYSTACK"
+                ? `A Paystack order has been created and is awaiting payment. Tracking number: ${trackingNumber}`
+                : `A new ${paymentMethod} order has been placed. Tracking number: ${trackingNumber}`,
             type: "ORDER",
             role: "ADMIN",
             link: `/admin/deliveries/${order.id}`,
           },
           {
             title: "New Store Order",
-            message: `You received a new ${paymentMethod} order. Tracking number: ${trackingNumber}`,
+            message:
+              paymentMethod === "PAYSTACK"
+                ? `A Paystack order is awaiting payment confirmation. Tracking number: ${trackingNumber}`
+                : `You received a new ${paymentMethod} order. Tracking number: ${trackingNumber}`,
             type: "ORDER",
             role: "SELLER",
             storeId,
-            link: `/store/orders`,
+            link: "/store/orders",
           },
           {
-            title: "Order Placed Successfully",
-            message: `Your order has been placed. Tracking number: ${trackingNumber}`,
+            title: "Order Created",
+            message:
+              paymentMethod === "PAYSTACK"
+                ? `Complete your Paystack payment for order ${trackingNumber}.`
+                : `Your order has been placed. Tracking number: ${trackingNumber}`,
             type: "ORDER",
             role: "CUSTOMER",
             userId,
@@ -416,50 +729,119 @@ await prisma.inventoryLog.create({
       orderIds.push(order.id);
     }
 
+    fullAmount = Number(
+      fullAmount.toFixed(2)
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | STRIPE
+    |--------------------------------------------------------------------------
+    */
     if (paymentMethod === "STRIPE") {
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-      const origin = request.headers.get("origin");
+      const stripe = new Stripe(
+        process.env.STRIPE_SECRET_KEY
+      );
 
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        line_items: [
-          {
-            price_data: {
-              currency: "eur",
-              product_data: {
-                name: "Order",
+      const origin =
+        request.headers.get("origin") ||
+        process.env.NEXT_PUBLIC_APP_URL;
+
+      const session =
+        await stripe.checkout.sessions.create({
+          payment_method_types: ["card"],
+
+          line_items: [
+            {
+              price_data: {
+                currency: "eur",
+                product_data: {
+                  name: "Amoakay Deals Order",
+                },
+                unit_amount: Math.round(
+                  fullAmount * 100
+                ),
               },
-              unit_amount: Math.round(fullAmount * 100),
+              quantity: 1,
             },
-            quantity: 1,
-          },
-        ],
-        expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
-        mode: "payment",
-        success_url: `${origin}/loading?nextUrl=orders`,
-        cancel_url: `${origin}/cart`,
-        metadata: {
-          orderIds: orderIds.join(","),
-          userId,
-          appId: "gocart",
-        },
-      });
+          ],
 
-      return NextResponse.json({ session });
+          expires_at:
+            Math.floor(Date.now() / 1000) +
+            30 * 60,
+
+          mode: "payment",
+
+          success_url: `${origin}/loading?nextUrl=orders`,
+          cancel_url: `${origin}/cart`,
+
+          metadata: {
+            orderIds:
+              orderIds.join(","),
+            userId,
+            appId: "amoakay",
+          },
+        });
+
+      return NextResponse.json({
+        session,
+        orderIds,
+      });
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | PAYSTACK
+    |--------------------------------------------------------------------------
+    |
+    | The frontend must now call:
+    | POST /api/payments/paystack/initialize
+    | with the orderIds returned here.
+    |
+    */
+    if (paymentMethod === "PAYSTACK") {
+      return NextResponse.json({
+        message:
+          "Orders created. Continue to Paystack to complete payment.",
+        paymentRequired: true,
+        paymentProvider: "PAYSTACK",
+        orderIds,
+        fullAmount,
+      });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | CASH ON DELIVERY
+    |--------------------------------------------------------------------------
+    */
     await prisma.user.update({
-      where: { id: userId },
-      data: { cart: {} },
+      where: {
+        id: userId,
+      },
+      data: {
+        cart: {},
+      },
     });
 
     return NextResponse.json({
-      message: "Orders placed Successfully",
+      message:
+        "Orders placed successfully.",
+      orderIds,
     });
   } catch (error) {
-    console.error(error);
+    console.error(
+      "CREATE ORDER ERROR:",
+      error
+    );
+
     return NextResponse.json(
-      { error: error.code || error.message },
+      {
+        error:
+          error?.code ||
+          error?.message ||
+          "Failed to place order.",
+      },
       { status: 400 }
     );
   }
@@ -469,30 +851,79 @@ export async function GET(request) {
   try {
     const { userId } = getAuth(request);
 
-    const orders = await prisma.order.findMany({
-      where: {
-        userId,
-        OR: [
-          { paymentMethod: PaymentMethod.COD },
-          {
-            AND: [{ paymentMethod: PaymentMethod.STRIPE }, { isPaid: true }],
-          },
-        ],
-      },
-      include: {
-        orderItems: {
-          include: {
-            product: true,
-          },
-        },
-        address: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Not authorized." },
+        { status: 401 }
+      );
+    }
 
-    return NextResponse.json({ orders });
+    const orders =
+      await prisma.order.findMany({
+        where: {
+          userId,
+
+          OR: [
+            {
+              paymentMethod:
+                PaymentMethod.COD,
+            },
+            {
+              AND: [
+                {
+                  paymentMethod:
+                    PaymentMethod.STRIPE,
+                },
+                {
+                  isPaid: true,
+                },
+              ],
+            },
+            {
+              AND: [
+                {
+                  paymentMethod:
+                    PaymentMethod.PAYSTACK,
+                },
+                {
+                  isPaid: true,
+                },
+              ],
+            },
+          ],
+        },
+
+        include: {
+          orderItems: {
+            include: {
+              product: true,
+            },
+          },
+          address: true,
+          payment: true,
+        },
+
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+    return NextResponse.json({
+      orders,
+    });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error(
+      "GET ORDERS ERROR:",
+      error
+    );
+
+    return NextResponse.json(
+      {
+        error:
+          error?.message ||
+          "Failed to load orders.",
+      },
+      { status: 400 }
+    );
   }
 }
