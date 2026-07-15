@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
-import { HomeIcon, ShieldCheckIcon, StoreIcon, TicketPercentIcon, MessageCircleIcon, TruckIcon,SettingsIcon, RotateCcw, FolderTree } from "lucide-react"
+import { WalletCards, Wallet, BadgeCheck, HomeIcon, ShieldCheckIcon, StoreIcon, TicketPercentIcon, MessageCircleIcon, TruckIcon,SettingsIcon, RotateCcw, FolderTree } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { assets } from "@/assets/assets"
@@ -61,6 +61,9 @@ useEffect(() => {
         { name: "Deliveries", href: "/admin/deliveries", icon: TruckIcon, count: deliveryCount,},
         { name: "Returns", href: "/admin/returns", icon: RotateCcw,},
         { name: "Categories", href: "/admin/categories", icon: FolderTree,},
+        { name: "Seller Verification", href: "/admin/seller-verification", icon: BadgeCheck,},
+        { name: "Seller Payouts", href: "/admin/seller-payouts", icon: Wallet,},
+        { name: "Payout Settings", href: "/admin/payout-settings", icon: WalletCards,},
         { name: "Settings", href: "/admin/settings", icon: SettingsIcon },
     ]
 

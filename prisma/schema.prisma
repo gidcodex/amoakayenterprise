@@ -209,6 +209,8 @@ model Order {
   trackingEvents TrackingEvent[]
   returnRequests ReturnRequest[]
 
+  sellerPayout SellerPayout?
+
   user    User     @relation("BuyerRelation", fields: [userId], references: [id])
   store   Store    @relation(fields: [storeId], references: [id])
   address Address  @relation(fields: [addressId], references: [id])
@@ -254,6 +256,64 @@ model Payment {
 
   @@index([userId])
   @@index([status])
+  @@index([createdAt])
+}
+
+model SellerPayout {
+  id String @id @default(cuid())
+
+  orderId String @unique
+  storeId String
+
+  // Snapshot of the seller order amount
+  grossAmount Decimal @db.Decimal(12, 2)
+
+  // Percentages captured when payment succeeds
+  initialReleasePercent Float
+  finalReleasePercent   Float
+  commissionPercent     Float
+
+  // Calculated amounts
+  initialReleaseAmount Decimal @db.Decimal(12, 2)
+  finalReleaseAmount   Decimal @db.Decimal(12, 2)
+  commissionAmount     Decimal @db.Decimal(12, 2)
+
+  currency String @default("GHS")
+
+  // Overall payout state
+  status SellerPayoutStatus @default(HELD)
+
+  // First 20% transfer
+  initialTransferStatus    PayoutStageStatus @default(HELD)
+  initialTransferReference String?           @unique
+  initialTransferCode      String?
+  initialReleasedAt        DateTime?
+  initialReleasedBy        String?
+  initialFailureReason     String?
+  initialProviderResponse  Json?
+
+  // Final 76% transfer
+  finalTransferStatus    PayoutStageStatus @default(HELD)
+  finalTransferReference String?           @unique
+  finalTransferCode      String?
+  finalReleasedAt        DateTime?
+  finalReleasedBy        String?
+  finalFailureReason     String?
+  finalProviderResponse  Json?
+
+  // Paystack seller beneficiary
+  paystackRecipientCode String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([storeId])
+  @@index([status])
+  @@index([initialTransferStatus])
+  @@index([finalTransferStatus])
   @@index([createdAt])
 }
 
@@ -355,25 +415,46 @@ model Coupon {
 }
 
 model Store {
-  id          String   @id @default(cuid())
-  userId      String   @unique
+  id          String  @id @default(cuid())
+  userId      String  @unique
   name        String
   description String
-  username    String   @unique
+  username    String  @unique
   address     String
-  status      String   @default("pending")
-  isActive    Boolean  @default(false)
+  status      String  @default("pending")
+  isActive    Boolean @default(false)
   logo        String
   email       String
   contact     String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  registeredBusinessName  String?
+  taxIdentificationNumber String?
+
+  businessVerified   Boolean   @default(false)
+  businessVerifiedAt DateTime?
+  businessVerifiedBy String?
+
+  payoutMethod PayoutMethod?
+
+  payoutAccountName String?
+  payoutPhone       String?
+  payoutNetwork     MobileMoneyNetwork?
+
+  payoutBankCode      String?
+  payoutAccountNumber String?
+
+  paystackRecipientCode String? @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   Product       Product[]
   Order         Order[]
   InventoryLog  InventoryLog[]
   ReturnRequest ReturnRequest[]
-  user          User            @relation(fields: [userId], references: [id])
+  payouts       SellerPayout[]
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 model ContactMessage {
@@ -401,6 +482,10 @@ model AdminSettings {
 
   shippingFee      Float   @default(5)
   plusFreeShipping Boolean @default(true)
+
+  sellerInitialReleasePercent  Float @default(20)
+  sellerFinalReleasePercent    Float @default(76)
+  marketplaceCommissionPercent Float @default(4)
 
   monthlyRevenueGoal Float @default(5000)
 
@@ -522,5 +607,39 @@ enum PayoutStatus {
   PROCESSING
   PAID
   FAILED
+  CANCELLED
+}
+
+enum PayoutStageStatus {
+  HELD
+  ELIGIBLE
+  APPROVED
+  PROCESSING
+  PAID
+  FAILED
+  REVERSED
+  CANCELLED
+}
+
+enum PayoutMethod {
+  MOBILE_MONEY
+  BANK_ACCOUNT
+}
+
+enum MobileMoneyNetwork {
+  MTN
+  TELECEL
+  AIRTELTIGO
+}
+
+enum SellerPayoutStatus {
+  HELD
+  ELIGIBLE
+  APPROVED
+  PROCESSING
+  PARTIALLY_PAID
+  PAID
+  FAILED
+  REVERSED
   CANCELLED
 }

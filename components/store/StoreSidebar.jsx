@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { WalletCards, } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
@@ -103,6 +104,11 @@ const StoreSidebar = ({
       name: "Notifications",
       href: "/store/notifications",
       icon: Bell,
+    },
+    {
+      name: "Payout Settings",
+      href: "/store/payout-settings",
+      icon: WalletCards,
     },
   ];
 

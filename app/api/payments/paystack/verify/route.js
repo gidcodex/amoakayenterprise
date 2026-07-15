@@ -201,89 +201,237 @@ export async function GET(request) {
     /*
      * Safely mark the payment and its connected orders as paid.
      */
-    const result = await prisma.$transaction(
-      async (transactionClient) => {
-        const currentPayment =
-          await transactionClient.payment.findUnique({
-            where: {
-              id: payment.id,
-            },
+   const result = await prisma.$transaction(
+    async (transactionClient) => {
+    const currentPayment =
+      await transactionClient.payment.findUnique({
+        where: {
+          id: payment.id,
+        },
+        select: {
+          status: true,
+        },
+      });
+
+    /*
+     * The callback and webhook may run almost at the same time.
+     * Continue even if payment is already successful because payout
+     * records may still need to be created.
+     */
+    if (currentPayment?.status !== "SUCCESSFUL") {
+      await transactionClient.payment.update({
+        where: {
+          id: payment.id,
+        },
+        data: {
+          status: "SUCCESSFUL",
+          providerReference:
+            transaction.reference ||
+            payment.clientReference,
+          providerResponse: paystackResponse,
+          failureReason: null,
+          confirmedAt: new Date(),
+        },
+      });
+
+      await transactionClient.order.updateMany({
+        where: {
+          paymentId: payment.id,
+          userId,
+          isPaid: false,
+        },
+        data: {
+          isPaid: true,
+        },
+      });
+
+      /*
+       * Clear the customer cart only after successful payment.
+       */
+      await transactionClient.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          cart: {},
+        },
+      });
+    }
+
+    /*
+     * Load the current payout allocation.
+     */
+    const payoutSettings =
+      (await transactionClient.adminSettings.findFirst({
+        select: {
+          sellerInitialReleasePercent: true,
+          sellerFinalReleasePercent: true,
+          marketplaceCommissionPercent: true,
+        },
+      })) ||
+      (await transactionClient.adminSettings.create({
+        data: {},
+        select: {
+          sellerInitialReleasePercent: true,
+          sellerFinalReleasePercent: true,
+          marketplaceCommissionPercent: true,
+        },
+      }));
+
+    /*
+     * Load all seller orders linked to this customer payment.
+     */
+    const paidOrders =
+      await transactionClient.order.findMany({
+        where: {
+          paymentId: payment.id,
+          userId,
+        },
+        select: {
+          id: true,
+          storeId: true,
+          trackingNumber: true,
+          total: true,
+          status: true,
+          isPaid: true,
+
+          store: {
             select: {
-              status: true,
+              businessVerified: true,
+              paystackRecipientCode: true,
             },
-          });
-
-        /*
-         * A webhook and callback could arrive at nearly the same time.
-         * Prevent duplicate processing.
-         */
-        if (currentPayment?.status === "SUCCESSFUL") {
-          return {
-            alreadyProcessed: true,
-          };
-        }
-
-        const updatedPayment =
-          await transactionClient.payment.update({
-            where: {
-              id: payment.id,
-            },
-            data: {
-              status: "SUCCESSFUL",
-              providerReference:
-                transaction.reference ||
-                payment.clientReference,
-              providerResponse: paystackResponse,
-              failureReason: null,
-              confirmedAt: new Date(),
-            },
-          });
-
-        await transactionClient.order.updateMany({
-          where: {
-            paymentId: payment.id,
-            userId,
-            isPaid: false,
           },
-          data: {
-            isPaid: true,
-          },
-        });
+        },
+      });
 
-          /* Clear the customer's cart only after
-           * Paystack confirms the payment.
-        */
-         await transactionClient.user.update({
-         where: {
-             id: userId,
-            },
-             data: {
-             cart: {},
-            },
-            });
+    /*
+     * Create one payout record for every seller order.
+     * One order belongs to one store, so each order gets one payout.
+     */
+    for (const order of paidOrders) {
+      const grossAmount = Number(order.total || 0);
 
-        const updatedOrders =
-          await transactionClient.order.findMany({
-            where: {
-              paymentId: payment.id,
-              userId,
-            },
+      const initialReleasePercent = Number(
+        payoutSettings.sellerInitialReleasePercent || 0
+      );
+
+      const finalReleasePercent = Number(
+        payoutSettings.sellerFinalReleasePercent || 0
+      );
+
+      const commissionPercent = Number(
+        payoutSettings.marketplaceCommissionPercent || 0
+      );
+
+      const initialReleaseAmount = Number(
+        (
+          (grossAmount * initialReleasePercent) /
+          100
+        ).toFixed(2)
+      );
+
+      const finalReleaseAmount = Number(
+        (
+          (grossAmount * finalReleasePercent) /
+          100
+        ).toFixed(2)
+      );
+
+      /*
+       * Calculate commission from the remainder to avoid
+       * rounding differences.
+       */
+      const commissionAmount = Number(
+        (
+          grossAmount -
+          initialReleaseAmount -
+          finalReleaseAmount
+        ).toFixed(2)
+      );
+
+      await transactionClient.sellerPayout.upsert({
+        where: {
+          orderId: order.id,
+        },
+
+        create: {
+          orderId: order.id,
+          storeId: order.storeId,
+
+          grossAmount: grossAmount.toFixed(2),
+
+          initialReleasePercent,
+          finalReleasePercent,
+          commissionPercent,
+
+          initialReleaseAmount:
+            initialReleaseAmount.toFixed(2),
+
+          finalReleaseAmount:
+            finalReleaseAmount.toFixed(2),
+
+          commissionAmount:
+            commissionAmount.toFixed(2),
+
+          currency: "GHS",
+
+          /*
+           * Funds begin in HELD status.
+           * Admin release rules will change the stage status later.
+           */
+          status: "HELD",
+          initialTransferStatus: "HELD",
+          finalTransferStatus: "HELD",
+
+          paystackRecipientCode:
+            order.store.paystackRecipientCode ||
+            null,
+        },
+
+        update: {
+          /*
+           * Do not overwrite historical percentages or amounts.
+           * Only refresh the recipient code if it is now available.
+           */
+          paystackRecipientCode:
+            order.store.paystackRecipientCode ||
+            undefined,
+        },
+      });
+    }
+
+    const updatedOrders =
+      await transactionClient.order.findMany({
+        where: {
+          paymentId: payment.id,
+          userId,
+        },
+        select: {
+          id: true,
+          trackingNumber: true,
+          total: true,
+          status: true,
+          isPaid: true,
+
+          sellerPayout: {
             select: {
               id: true,
-              trackingNumber: true,
-              total: true,
               status: true,
-              isPaid: true,
+              initialReleaseAmount: true,
+              finalReleaseAmount: true,
+              commissionAmount: true,
             },
-          });
+          },
+        },
+      });
 
-        return {
-          alreadyProcessed: false,
-          payment: updatedPayment,
-          orders: updatedOrders,
-        };
-      }
-    );
+    return {
+      alreadyProcessed:
+        currentPayment?.status === "SUCCESSFUL",
+      orders: updatedOrders,
+    };
+  }
+);
 
     return NextResponse.json({
       message: result.alreadyProcessed
