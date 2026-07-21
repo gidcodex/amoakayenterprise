@@ -1,51 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import {
-  ChevronDown,
-  ChevronRight,
-  FolderTree,
-  ImageIcon,
-  Menu,
-} from "lucide-react";
+import { ChevronDown, ChevronRight, FolderTree, ImageIcon, Menu,} from "lucide-react";
 
 export default function CategoryMegaMenu({
   mode = "navbar",
   className = "",
   onNavigate,
+  initialCategories = [],
 }) {
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(initialCategories);
+  const [isLoading, setIsLoading] = useState(
+    initialCategories.length === 0
+  );
+
   const [menuOpen, setMenuOpen] = useState(false);
 
   const [activeCategory, setActiveCategory] = useState(null);
-  const [activeSubcategory, setActiveSubcategory] = useState(null);
+  const [activeSubcategory, setActiveSubcategory] =
+    useState(null);
 
-  const [mobileCategoryId, setMobileCategoryId] = useState(null);
-  const [mobileSubcategoryId, setMobileSubcategoryId] = useState(null);
+  const [mobileCategoryId, setMobileCategoryId] =
+    useState(null);
+  const [mobileSubcategoryId, setMobileSubcategoryId] =
+    useState(null);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch("/api/categories");
-        const data = await response.json();
-
-        if (!response.ok) return;
-
-        const loadedCategories = data.categories || [];
-
-        setCategories(loadedCategories);
-
-      
-
-      } catch (error) {
-        console.error("Failed to load categories:", error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
+ 
   const getChildren = (subcategory) => {
     return (
       subcategory?.childCategories ||
@@ -82,7 +63,23 @@ export default function CategoryMegaMenu({
     );
   };
 
-  if (categories.length === 0) return null;
+ if (isLoading) {
+  return (
+    <CategoryMenuSkeleton
+      mode={mode}
+      className={className}
+    />
+  );
+}
+
+if (categories.length === 0) {
+  return (
+    <CategoryMenuEmptyState
+      mode={mode}
+      className={className}
+    />
+  );
+}
 
   if (mode === "sidebar") {
     return (
@@ -324,6 +321,102 @@ export default function CategoryMegaMenu({
         </>
       )}
     </div>
+  );
+}
+
+function CategoryMenuSkeleton({
+  mode,
+  className = "",
+}) {
+  if (mode === "sidebar") {
+    return (
+      <aside
+        className={`hidden min-h-[500px] border border-slate-200 bg-white xl:block ${className}`}
+        aria-label="Loading product categories"
+        aria-busy="true"
+      >
+        <div className="flex items-center gap-3 border-b border-slate-200 px-5 py-4">
+          <div className="h-5 w-5 animate-pulse rounded bg-slate-200" />
+
+          <div className="h-5 w-36 animate-pulse rounded bg-slate-200" />
+        </div>
+
+        <div className="space-y-2 p-2">
+          {Array.from({ length: 10 }).map((_, index) => (
+            <div
+              key={index}
+              className="flex items-center gap-3 px-3 py-3"
+            >
+              <div className="h-6 w-6 shrink-0 animate-pulse rounded bg-slate-200" />
+
+              <div
+                className="h-4 animate-pulse rounded bg-slate-200"
+                style={{
+                  width: `${55 + (index % 4) * 9}%`,
+                }}
+              />
+
+              <div className="ml-auto h-4 w-4 animate-pulse rounded bg-slate-100" />
+            </div>
+          ))}
+        </div>
+      </aside>
+    );
+  }
+
+  return (
+    <div className={`relative ${className}`}>
+      <div className="h-12 w-full animate-pulse rounded-full border border-slate-200 bg-slate-100 lg:w-48" />
+    </div>
+  );
+}
+
+function CategoryMenuEmptyState({
+  mode,
+  className = "",
+}) {
+  if (mode === "sidebar") {
+    return (
+      <aside
+        className={`hidden min-h-[500px] border border-slate-200 bg-white xl:block ${className}`}
+      >
+        <div className="flex items-center gap-3 border-b border-slate-200 px-5 py-4">
+          <Menu size={19} />
+
+          <h2 className="font-bold text-slate-900">
+            Shop by category
+          </h2>
+        </div>
+
+        <div className="flex min-h-[420px] flex-col items-center justify-center px-5 text-center">
+          <FolderTree
+            size={32}
+            className="text-slate-300"
+          />
+
+          <p className="mt-3 text-sm font-semibold text-slate-600">
+            Categories are temporarily unavailable
+          </p>
+
+          <Link
+            href="/shop"
+            className="mt-4 text-sm font-bold text-green-700"
+          >
+            Browse all products
+          </Link>
+        </div>
+      </aside>
+    );
+  }
+
+  return (
+    <Link
+      href="/shop"
+      className={`inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 font-semibold text-slate-800 ${className}`}
+    >
+      <Menu size={19} />
+      Browse products
+    </Link>
   );
 }
 

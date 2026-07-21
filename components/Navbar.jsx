@@ -1,31 +1,16 @@
 "use client";
 
-import {
-  GitCompare,
-  Heart,
-  Menu,
-  PackageIcon,
-  Search,
-  ShoppingCart,
-  Truck,
-  User,
-  X,
-} from "lucide-react";
+import { GitCompare, Heart, Menu, PackageIcon, Search, ShoppingCart, Truck, User, X,} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import {
-  Protect,
-  UserButton,
-  useClerk,
-  useUser,
-} from "@clerk/nextjs";
+import { UserButton, useClerk, useUser,} from "@clerk/nextjs";
 
-import CategoryMegaMenu from "@/components/CategoryMegaMenu";
+import AnimatedAmoakayLogo from "@/components/AnimatedAmoakayLogo";
 import NotificationBell from "@/components/NotificationBell";
 
-const Navbar = () => {
+const Navbar = ({ categories = [] }) => {
   const { user } = useUser();
   const { openSignIn } = useClerk();
   const router = useRouter();
@@ -74,40 +59,9 @@ const Navbar = () => {
     <nav className="relative z-50 border-b border-slate-200 bg-white">
       <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4 py-4 lg:gap-5">
-          {/* Premium logo */}
-          <Link
-            href="/"
-            className="group relative inline-flex shrink-0 items-end pr-9 2xl:pr-11"
-            aria-label="Amoakay Deals homepage"
-          >
-            <span className="flex items-baseline whitespace-nowrap text-[25px] font-black tracking-[-0.045em] sm:text-[30px] 2xl:text-[32px]">
-              <span className="bg-gradient-to-r from-green-600 via-emerald-500 to-green-700 bg-clip-text text-transparent">
-                Amoakay
-              </span>
 
-              <span className="ml-0.5 text-slate-700 transition-colors duration-300 group-hover:text-slate-900">
-                deals
-              </span>
-
-              <span className="ml-0.5 text-4xl leading-none text-green-600 sm:text-5xl">
-                .
-              </span>
-            </span>
-
-            {/* Subtle logo underline */}
-            <span className="absolute bottom-[-4px] left-0 h-[2px] w-10 rounded-full bg-gradient-to-r from-green-600 to-emerald-400 transition-all duration-300 group-hover:w-24" />
-
-            <Protect plan="plus">
-              <span className="absolute right-0 top-[-9px] rounded-full bg-gradient-to-r from-green-600 to-emerald-500 px-3 py-1 text-[11px] font-bold lowercase tracking-wide text-white shadow-md shadow-green-200">
-                plus
-              </span>
-            </Protect>
-          </Link>
-
-          {/* Category menu with separate spacing */}
-          <div className="hidden shrink-0 xl:block xl:ml-2 2xl:ml-5">
-         <CategoryMegaMenu mode="navbar" />
-        </div>
+            {/* Premium animated Amoakay Deals logo */}
+          <AnimatedAmoakayLogo />
 
           {/* Desktop navigation */}
              <div className="hidden min-w-0 flex-1 items-center justify-end gap-2 text-slate-600 sm:flex xl:gap-3 2xl:gap-5">
@@ -127,6 +81,7 @@ const Navbar = () => {
               </Link>
 
               <Link
+                data-tour="tracking"
                 href="/track-order"
                 className="flex items-center gap-1 font-medium transition hover:text-green-600"
               >
@@ -152,10 +107,8 @@ const Navbar = () => {
             </div>
 
             {/* Desktop search */}
-            <form
-              onSubmit={handleSearch}
-              className="hidden xl:flex min-w-[210px] flex-1 xl:max-w-[320px] 2xl:max-w-[500px] items-center gap-3 rounded-full border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm transition-all duration-300 focus-within:border-green-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-green-100"
-              >
+            <form data-tour="search" onSubmit={handleSearch} className="hidden xl:flex min-w-[210px] flex-1 xl:max-w-[320px] 2xl:max-w-[500px] items-center gap-3 rounded-full border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm transition-all duration-300 focus-within:border-green-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-green-100"
+            >
              <Search
              size={18}
              className="shrink-0 text-slate-500"
@@ -173,6 +126,7 @@ const Navbar = () => {
 
             {/* Wishlist */}
             <Link
+              data-tour="wishlist"
               href="/wishlist"
               onClick={handleWishlistClick}
               className="relative rounded-full p-2.5 transition hover:bg-slate-100 hover:text-green-600"
@@ -189,6 +143,7 @@ const Navbar = () => {
 
             {/* Compare */}
             <Link
+              data-tour="compare"
               href="/compare"
               className="relative rounded-full p-2.5 transition hover:bg-slate-100 hover:text-green-600"
               title="Compare Products"
@@ -204,6 +159,7 @@ const Navbar = () => {
 
             {/* Cart */}
             <Link
+              data-tour="cart"
               href="/cart"
               className="relative rounded-full p-2.5 transition hover:bg-slate-100 hover:text-green-600"
               title="Cart"
@@ -283,12 +239,7 @@ const Navbar = () => {
       {mobileMenuOpen && (
          <div className="absolute left-0 top-full z-[100] w-full border-t border-slate-200 bg-white shadow-xl sm:hidden">
           <div className="flex max-h-[calc(100vh-80px)] flex-col gap-1 overflow-y-auto p-4 text-slate-700">
-            <div className="mb-3 border-b border-slate-100 pb-4">
-               <CategoryMegaMenu
-                     mode="navbar"
-                     onNavigate={handleNavClick}
-               />
-            </div>
+           
 
             <Link
               href="/"

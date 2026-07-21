@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth, useUser } from "@clerk/nextjs";
 
+
 import Banner from "@/components/Banner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -22,6 +23,8 @@ export default function PublicLayout({ children }) {
   const { getToken } = useAuth();
 
   const { cartItems } = useSelector((state) => state.cart);
+
+
 
   // Load products
   useEffect(() => {
@@ -44,6 +47,7 @@ useEffect(() => {
       dispatch(uploadCart({ getToken }));
     }
   }, [cartItems, user, dispatch, getToken]);
+
 
   return (
   <MaintenanceGuard

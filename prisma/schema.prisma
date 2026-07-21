@@ -310,10 +310,51 @@ model SellerPayout {
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
+  transferAttempts SellerPayoutTransferAttempt[]
+
   @@index([storeId])
   @@index([status])
   @@index([initialTransferStatus])
   @@index([finalTransferStatus])
+  @@index([createdAt])
+}
+
+model SellerPayoutTransferAttempt {
+  id String @id @default(cuid())
+
+  sellerPayoutId String
+
+  stage         PayoutTransferStage
+  attemptNumber Int
+
+  amount   Decimal @db.Decimal(12, 2)
+  currency String  @default("GHS")
+
+  status PayoutStageStatus @default(PROCESSING)
+
+  transferReference String  @unique
+  transferCode      String?
+
+  recipientCode String
+  initiatedBy   String?
+
+  providerResponse Json?
+  failureReason    String?
+
+  initiatedAt DateTime  @default(now())
+  completedAt DateTime?
+  failedAt    DateTime?
+  reversedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sellerPayout SellerPayout @relation(fields: [sellerPayoutId], references: [id], onDelete: Cascade)
+
+  @@unique([sellerPayoutId, stage, attemptNumber])
+  @@index([sellerPayoutId])
+  @@index([stage])
+  @@index([status])
   @@index([createdAt])
 }
 
@@ -642,4 +683,9 @@ enum SellerPayoutStatus {
   FAILED
   REVERSED
   CANCELLED
+}
+
+enum PayoutTransferStage {
+  INITIAL
+  FINAL
 }
