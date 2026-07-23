@@ -17,6 +17,53 @@ function cleanNumber(value) {
   return Number.isFinite(number) ? number : null;
 }
 
+const SEARCH_FILLER_WORDS = new Set([
+  "a",
+  "an",
+  "and",
+  "any",
+  "buy",
+  "can",
+  "could",
+  "display",
+  "find",
+  "for",
+  "give",
+  "i",
+  "in",
+  "is",
+  "looking",
+  "me",
+  "need",
+  "of",
+  "please",
+  "product",
+  "products",
+  "search",
+  "show",
+  "some",
+  "the",
+  "to",
+  "want",
+  "with",
+  "you",
+]);
+
+function getSearchTokens(value) {
+  return cleanString(value)
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]/gu, " ")
+    .split(/\s+/)
+    .map((word) => word.trim())
+    .filter(Boolean)
+    .filter(
+      (word) =>
+        !SEARCH_FILLER_WORDS.has(word)
+    )
+    .filter((word) => word.length >= 2)
+    .slice(0, 8);
+}
+
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -81,55 +128,44 @@ export async function POST(request) {
       }
     }
 
+
     const textConditions = [];
 
-    if (brand) {
-      textConditions.push({
-        OR: [
-          {
-            name: {
-              contains: brand,
-              mode: "insensitive",
-            },
-          },
-          {
-            description: {
-              contains: brand,
-              mode: "insensitive",
-            },
-          },
-        ],
-      });
-    }
+const searchTokens = [
+  ...new Set([
+    ...getSearchTokens(brand),
+    ...getSearchTokens(query),
+  ]),
+];
 
-    if (query) {
-      textConditions.push({
-        OR: [
-          {
-            name: {
-              contains: query,
-              mode: "insensitive",
-            },
-          },
-          {
-            description: {
-              contains: query,
-              mode: "insensitive",
-            },
-          },
-          {
-            category: {
-              contains: query,
-              mode: "insensitive",
-            },
-          },
-        ],
-      });
-    }
+searchTokens.forEach((token) => {
+  textConditions.push({
+    OR: [
+      {
+        name: {
+          contains: token,
+          mode: "insensitive",
+        },
+      },
+      {
+        description: {
+          contains: token,
+          mode: "insensitive",
+        },
+      },
+      {
+        category: {
+          contains: token,
+          mode: "insensitive",
+        },
+      },
+    ],
+  });
+});
 
-    if (textConditions.length > 0) {
-      where.AND = textConditions;
-    }
+if (textConditions.length > 0) {
+  where.AND = textConditions;
+}
 
     const products = await prisma.product.findMany({
       where,

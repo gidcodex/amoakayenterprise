@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Loading from "@/components/Loading";
 import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
@@ -33,6 +34,7 @@ export default function StoreOrders() {
   const [courierEmail, setCourierEmail] = useState("");
 
   const { getToken } = useAuth();
+  const searchParams = useSearchParams();
   const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
 
   const fetchOrders = async () => {
@@ -133,9 +135,41 @@ export default function StoreOrders() {
     setCourierEmail(order.courierEmail || "");
   };
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+ useEffect(() => {
+  const loadOrders = async () => {
+    try {
+      const token = await getToken();
+
+      const { data } = await axios.get("/api/store/orders", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setOrders(data.orders);
+
+      const orderId = searchParams.get("orderId");
+
+      if (orderId) {
+        const foundOrder = data.orders.find(
+          (order) => order.id === orderId
+        );
+
+        if (foundOrder) {
+          openOrder(foundOrder);
+        }
+      }
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.error || error.message
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  loadOrders();
+}, [getToken, searchParams]);
 
   if (loading) return <Loading />;
 

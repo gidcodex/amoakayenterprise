@@ -1,11 +1,26 @@
 "use client";
 
-import { GitCompare, Heart, Menu, PackageIcon, Search, ShoppingCart, Truck, User, X,} from "lucide-react";
+import {
+  GitCompare,
+  Heart,
+  Menu,
+  PackageIcon,
+  Search,
+  ShoppingCart,
+  Truck,
+  User,
+  X,
+} from "lucide-react";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { UserButton, useClerk, useUser,} from "@clerk/nextjs";
+import {
+  UserButton,
+  useClerk,
+  useUser,
+} from "@clerk/nextjs";
 
 import AnimatedAmoakayLogo from "@/components/AnimatedAmoakayLogo";
 import NotificationBell from "@/components/NotificationBell";
@@ -16,11 +31,10 @@ const Navbar = ({ categories = [] }) => {
   const router = useRouter();
 
   const [search, setSearch] = useState("");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] =
+    useState(false);
 
-  const cartCount = useSelector(
-    (state) => state.cart.total
-  );
+  const cartCount = useSelector((state) => state.cart.total );
 
   const wishlistCount = useSelector(
     (state) => state.wishlist.ids.length
@@ -38,7 +52,9 @@ const Navbar = ({ categories = [] }) => {
     if (!trimmedSearch) return;
 
     router.push(
-      `/shop?search=${encodeURIComponent(trimmedSearch)}`
+      `/shop?search=${encodeURIComponent(
+        trimmedSearch
+      )}`
     );
 
     setMobileMenuOpen(false);
@@ -59,13 +75,12 @@ const Navbar = ({ categories = [] }) => {
     <nav className="relative z-50 border-b border-slate-200 bg-white">
       <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4 py-4 lg:gap-5">
-
-            {/* Premium animated Amoakay Deals logo */}
+          {/* Premium animated Amoakay Deals logo */}
           <AnimatedAmoakayLogo />
 
           {/* Desktop navigation */}
-             <div className="hidden min-w-0 flex-1 items-center justify-end gap-2 text-slate-600 sm:flex xl:gap-3 2xl:gap-5">
-             <div className="hidden shrink-0 items-center gap-3 xl:flex 2xl:gap-5">
+          <div className="hidden min-w-0 flex-1 items-center justify-end gap-2 text-slate-600 sm:flex xl:gap-3 2xl:gap-5">
+            <div className="hidden shrink-0 items-center gap-3 xl:flex 2xl:gap-5">
               <Link
                 href="/"
                 className="font-medium transition hover:text-green-600"
@@ -88,41 +103,44 @@ const Navbar = ({ categories = [] }) => {
                 <Truck size={17} />
                 Track
               </Link>
-             <Link
-  href="/about"
-  className="hidden font-medium transition hover:text-green-600 2xl:block"
->
-  About
-</Link>
 
-<Link
-  href="/contact"
-  className="hidden font-medium transition hover:text-green-600 2xl:block"
->
-  Contact
-</Link>
-              
+              <Link
+                href="/about"
+                className="hidden font-medium transition hover:text-green-600 2xl:block"
+              >
+                About
+              </Link>
 
-              
+              <Link
+                href="/contact"
+                className="hidden font-medium transition hover:text-green-600 2xl:block"
+              >
+                Contact
+              </Link>
             </div>
 
             {/* Desktop search */}
-            <form data-tour="search" onSubmit={handleSearch} className="hidden xl:flex min-w-[210px] flex-1 xl:max-w-[320px] 2xl:max-w-[500px] items-center gap-3 rounded-full border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm transition-all duration-300 focus-within:border-green-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-green-100"
+            <form
+              data-tour="search"
+              onSubmit={handleSearch}
+              className="hidden min-w-[210px] flex-1 items-center gap-3 rounded-full border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm transition-all duration-300 focus-within:border-green-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-green-100 xl:flex xl:max-w-[320px] 2xl:max-w-[500px]"
             >
-             <Search
-             size={18}
-             className="shrink-0 text-slate-500"
-             />
+              <Search
+                size={18}
+                className="shrink-0 text-slate-500"
+              />
 
-           <input
-           type="text"
-           placeholder="Search products..."
-           value={search}
-           onChange={(e) => setSearch(e.target.value)}
-           required
-           className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-slate-400"
-           />
-           </form>
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={search}
+                onChange={(event) =>
+                  setSearch(event.target.value)
+                }
+                required
+                className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-slate-400"
+              />
+            </form>
 
             {/* Wishlist */}
             <Link
@@ -189,7 +207,9 @@ const Navbar = ({ categories = [] }) => {
                 <UserButton>
                   <UserButton.MenuItems>
                     <UserButton.Action
-                      labelIcon={<User size={16} />}
+                      labelIcon={
+                        <User size={16} />
+                      }
                       label="My Account"
                       onClick={() =>
                         router.push("/account")
@@ -215,8 +235,11 @@ const Navbar = ({ categories = [] }) => {
           <div className="sm:hidden">
             <button
               type="button"
+              data-tour="mobile-menu-toggle"
               onClick={() =>
-                setMobileMenuOpen((current) => !current)
+                setMobileMenuOpen(
+                  (current) => !current
+                )
               }
               className="rounded-lg p-2 text-slate-700 transition hover:bg-slate-100"
               aria-label={
@@ -224,6 +247,7 @@ const Navbar = ({ categories = [] }) => {
                   ? "Close navigation menu"
                   : "Open navigation menu"
               }
+              aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen ? (
                 <X size={25} />
@@ -237,10 +261,8 @@ const Navbar = ({ categories = [] }) => {
 
       {/* Mobile navigation */}
       {mobileMenuOpen && (
-         <div className="absolute left-0 top-full z-[100] w-full border-t border-slate-200 bg-white shadow-xl sm:hidden">
+        <div className="absolute left-0 top-full z-[100] w-full border-t border-slate-200 bg-white shadow-xl sm:hidden">
           <div className="flex max-h-[calc(100vh-80px)] flex-col gap-1 overflow-y-auto p-4 text-slate-700">
-           
-
             <Link
               href="/"
               onClick={handleNavClick}
@@ -258,6 +280,7 @@ const Navbar = ({ categories = [] }) => {
             </Link>
 
             <Link
+              data-tour="tracking-mobile"
               href="/track-order"
               onClick={handleNavClick}
               className="flex items-center gap-2 rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
@@ -283,6 +306,7 @@ const Navbar = ({ categories = [] }) => {
             </Link>
 
             <Link
+              data-tour="wishlist-mobile"
               href="/wishlist"
               onClick={(event) => {
                 handleWishlistClick(event);
@@ -297,6 +321,7 @@ const Navbar = ({ categories = [] }) => {
             </Link>
 
             <Link
+              data-tour="compare-mobile"
               href="/compare"
               onClick={handleNavClick}
               className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
@@ -305,6 +330,7 @@ const Navbar = ({ categories = [] }) => {
             </Link>
 
             <Link
+              data-tour="cart-mobile"
               href="/cart"
               onClick={handleNavClick}
               className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
@@ -313,6 +339,7 @@ const Navbar = ({ categories = [] }) => {
             </Link>
 
             <form
+              data-tour="search-mobile"
               onSubmit={handleSearch}
               className="mt-3 flex items-center gap-2 rounded-full bg-slate-100 px-4 py-3"
             >
@@ -341,40 +368,44 @@ const Navbar = ({ categories = [] }) => {
                 Login
               </button>
             ) : (
-              
-               <div className="relative z-[200] mt-3 flex items-center justify-between border-t border-slate-100 pt-4">
-                  <NotificationBell />
+              <div className="relative z-[200] mt-3 flex items-center justify-between border-t border-slate-100 pt-4">
+                <NotificationBell />
 
-                 <UserButton
-                   appearance={{
-                      elements: {
-                       userButtonPopoverCard: "z-[9999]",
-                       userButtonPopoverRootBox: "z-[9999]",
-                       },
-                       }}
-                  >
+                <UserButton
+                  appearance={{
+                    elements: {
+                      userButtonPopoverCard:
+                        "z-[9999]",
+                      userButtonPopoverRootBox:
+                        "z-[9999]",
+                    },
+                  }}
+                >
                   <UserButton.MenuItems>
-                   <UserButton.Action
-                       labelIcon={<User size={16} />}
-                       label="My Account"
-                        onClick={() => {
+                    <UserButton.Action
+                      labelIcon={
+                        <User size={16} />
+                      }
+                      label="My Account"
+                      onClick={() => {
                         setMobileMenuOpen(false);
                         router.push("/account");
-                       }}
-                   />
+                      }}
+                    />
 
-                   <UserButton.Action
-                    labelIcon={<PackageIcon size={16} />}
-                    label="My Orders"
-                    onClick={() => {
-                    setMobileMenuOpen(false);
-                    router.push("/orders");
-                     }}
-                   />
-                 </UserButton.MenuItems>
+                    <UserButton.Action
+                      labelIcon={
+                        <PackageIcon size={16} />
+                      }
+                      label="My Orders"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        router.push("/orders");
+                      }}
+                    />
+                  </UserButton.MenuItems>
                 </UserButton>
-           </div>
-
+              </div>
             )}
           </div>
         </div>

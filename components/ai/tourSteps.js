@@ -19,6 +19,8 @@ export const tourSteps = [
   {
     id: "search",
     selector: '[data-tour="search"]',
+    mobileSelector: '[data-tour="search-mobile"]',
+    requiresMobileMenu: true,
 
     en: {
       title: "Search quickly",
@@ -36,6 +38,8 @@ export const tourSteps = [
   {
     id: "wishlist",
     selector: '[data-tour="wishlist"]',
+    mobileSelector: '[data-tour="wishlist-mobile"]',
+    requiresMobileMenu: true,
 
     en: {
       title: "Save your favourites",
@@ -53,6 +57,8 @@ export const tourSteps = [
   {
     id: "compare",
     selector: '[data-tour="compare"]',
+    mobileSelector: '[data-tour="compare-mobile"]',
+    requiresMobileMenu: true,
 
     en: {
       title: "Compare before buying",
@@ -70,6 +76,8 @@ export const tourSteps = [
   {
     id: "tracking",
     selector: '[data-tour="tracking"]',
+    mobileSelector: '[data-tour="tracking-mobile"]',
+    requiresMobileMenu: true,
 
     en: {
       title: "Track your delivery",
@@ -87,6 +95,8 @@ export const tourSteps = [
   {
     id: "cart",
     selector: '[data-tour="cart"]',
+    mobileSelector: '[data-tour="cart-mobile"]',
+    requiresMobileMenu: true,
 
     en: {
       title: "Your shopping cart",

@@ -19,6 +19,7 @@ const TourCard = ({
   language,
   position,
   isMobile,
+  mobilePlacement,
   onNext,
   onPrevious,
   onSkip,
@@ -56,25 +57,72 @@ const TourCard = ({
 
   const desktopStyle = !isMobile
     ? {
-        left: `${position.left}px`,
-        top: `${position.top}px`,
-        width: `${position.width}px`,
+        left: `${position?.left || 0}px`,
+        top: `${position?.top || 0}px`,
+        width: `${position?.width || 370}px`,
       }
     : undefined;
+
+  const mobilePositionClass =
+    mobilePlacement === "top"
+      ? "top-0 rounded-b-[28px] border-b"
+      : "bottom-0 rounded-t-[28px] border-t";
 
   return (
     <section
       className={
         isMobile
-          ? "adeto-tour-card adeto-tour-bottom-sheet fixed inset-x-0 bottom-0 z-[10004] max-h-[68vh] overflow-y-auto rounded-t-[30px] border border-white/70 bg-white/95 px-5 pb-[max(22px,env(safe-area-inset-bottom))] pt-5 shadow-[0_-30px_90px_rgba(15,23,42,0.30)] backdrop-blur-2xl"
-          : "adeto-tour-card fixed z-[10004] rounded-[26px] border border-white/70 bg-white/95 p-5 shadow-[0_30px_90px_rgba(15,23,42,0.30)] backdrop-blur-2xl"
+          ? `
+              adeto-tour-card
+              adeto-tour-mobile-sheet
+              fixed inset-x-0
+              z-[10004]
+              max-h-[52dvh]
+              overflow-y-auto
+              border-white/70
+              bg-white/95
+              px-4
+              pb-[max(16px,env(safe-area-inset-bottom))]
+              pt-4
+              shadow-[0_18px_70px_rgba(15,23,42,0.32)]
+              backdrop-blur-2xl
+              transition-all
+              duration-500
+              ease-out
+              ${mobilePositionClass}
+            `
+          : `
+              adeto-tour-card
+              fixed
+              z-[10004]
+              rounded-[26px]
+              border border-white/70
+              bg-white/95
+              p-5
+              shadow-[0_30px_90px_rgba(15,23,42,0.30)]
+              backdrop-blur-2xl
+            `
       }
       style={desktopStyle}
       role="dialog"
       aria-modal="true"
       aria-labelledby="adeto-tour-step-title"
     >
-      <div className="absolute inset-x-0 top-0 h-1 rounded-t-[30px] bg-gradient-to-r from-lime-400 via-green-500 to-emerald-700" />
+      <div
+        className={`
+          absolute inset-x-0 h-1
+          bg-gradient-to-r
+          from-lime-400
+          via-green-500
+          to-emerald-700
+
+          ${
+            mobilePlacement === "top"
+              ? "bottom-0 rounded-b-[28px]"
+              : "top-0 rounded-t-[28px]"
+          }
+        `}
+      />
 
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
@@ -95,13 +143,40 @@ const TourCard = ({
           type="button"
           onClick={onSkip}
           aria-label={text.skip}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-100 hover:text-slate-950"
+          className="
+            flex h-9 w-9 shrink-0
+            items-center justify-center
+            rounded-full
+            border border-slate-200
+            bg-white
+            text-slate-500
+            shadow-sm
+            transition
+
+            hover:bg-slate-100
+            hover:text-slate-950
+          "
         >
           <X size={17} />
         </button>
       </div>
 
-      <div className="mt-5 rounded-[20px] border border-slate-200/80 bg-gradient-to-br from-white to-slate-50 p-4 shadow-sm">
+      <div
+        className={`
+          rounded-[20px]
+          border border-slate-200/80
+          bg-gradient-to-br
+          from-white
+          to-slate-50
+          shadow-sm
+
+          ${
+            isMobile
+              ? "mt-4 p-3.5"
+              : "mt-5 p-4"
+          }
+        `}
+      >
         <div className="mb-2 flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-green-100 text-green-700">
             <Sparkles size={14} />
@@ -112,30 +187,53 @@ const TourCard = ({
           </span>
         </div>
 
-          <TypingText
+        <TypingText
           key={`${language}-${step.id}-title`}
           text={content.title}
           speed={24}
           startDelay={stepIndex === 0 ? 1100 : 120}
           punctuationPause={180}
           thinkingText={
-          language === "tw"
-          ? "Adetɔ Boafo redwen ho…"
-          : "Adetɔ Boafo is thinking…"
-         }
-           showThinking={stepIndex === 0}
-           clickToComplete
-           className="text-lg font-black leading-tight text-slate-950"
-          />
+            language === "tw"
+              ? "Adetɔ Boafo redwen ho…"
+              : "Adetɔ Boafo is thinking…"
+          }
+          showThinking={stepIndex === 0}
+          clickToComplete
+          className={
+            isMobile
+              ? "text-base font-black leading-tight text-slate-950"
+              : "text-lg font-black leading-tight text-slate-950"
+          }
+        />
 
-        <p className="mt-3 text-sm leading-6 text-slate-600">
+        <p
+          className={
+            isMobile
+              ? "mt-2.5 text-[13px] leading-5 text-slate-600"
+              : "mt-3 text-sm leading-6 text-slate-600"
+          }
+        >
           {content.message}
         </p>
       </div>
 
-      <div className="mt-4 flex items-center justify-between gap-3">
+      <div
+        className={
+          isMobile
+            ? "mt-3.5 flex items-center justify-between gap-2"
+            : "mt-4 flex items-center justify-between gap-3"
+        }
+      >
         <div
-          className="inline-flex rounded-full border border-slate-200 bg-slate-100/80 backdrop-blur p-1"
+          className="
+            inline-flex
+            rounded-full
+            border border-slate-200
+            bg-slate-100/80
+            p-1
+            backdrop-blur
+          "
           aria-label={text.language}
         >
           <button
@@ -163,11 +261,14 @@ const TourCard = ({
           </button>
         </div>
 
-        <Languages size={16} className="text-slate-400" />
+        <Languages
+          size={16}
+          className="shrink-0 text-slate-400"
+        />
       </div>
 
       <div
-        className="mt-5"
+        className={isMobile ? "mt-4" : "mt-5"}
         role="progressbar"
         aria-label={text.progress}
         aria-valuemin={1}
@@ -175,7 +276,9 @@ const TourCard = ({
         aria-valuenow={stepIndex + 1}
       >
         <div className="flex gap-2">
-          {Array.from({ length: totalSteps }).map((_, index) => (
+          {Array.from({
+            length: totalSteps,
+          }).map((_, index) => (
             <span
               key={index}
               className={`h-2 flex-1 rounded-full transition-all duration-700 ${
@@ -188,12 +291,30 @@ const TourCard = ({
         </div>
       </div>
 
-      <div className="mt-5 flex items-center gap-3">
+      <div
+        className={
+          isMobile
+            ? "mt-4 flex items-center gap-2"
+            : "mt-5 flex items-center gap-3"
+        }
+      >
         {!isFirstStep && (
           <button
             type="button"
             onClick={onPrevious}
-            className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+            className="
+              flex min-h-11 flex-1
+              items-center justify-center gap-2
+              rounded-xl
+              border border-slate-200
+              bg-white
+              px-4
+              text-sm font-bold
+              text-slate-700
+              transition
+
+              hover:bg-slate-50
+            "
           >
             <ArrowLeft size={16} />
             {text.previous}
@@ -203,7 +324,24 @@ const TourCard = ({
         <button
           type="button"
           onClick={onNext}
-          className="group flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-emerald-700 px-4 text-sm font-black text-white shadow-lg shadow-green-200/70 transition hover:bg-slate-100 hover:shadow-md"
+          className="
+            group
+            flex min-h-11 flex-1
+            items-center justify-center gap-2
+            rounded-xl
+            bg-gradient-to-r
+            from-green-600
+            to-emerald-700
+            px-4
+            text-sm font-black
+            text-white
+            shadow-lg
+            shadow-green-200/70
+            transition
+
+            hover:-translate-y-0.5
+            hover:shadow-xl
+          "
         >
           {isFinalStep ? (
             <>
@@ -213,6 +351,7 @@ const TourCard = ({
           ) : (
             <>
               {text.next}
+
               <ArrowRight
                 size={17}
                 className="transition-transform group-hover:translate-x-1"
@@ -225,7 +364,16 @@ const TourCard = ({
       <button
         type="button"
         onClick={onSkip}
-        className="mt-3 w-full text-center text-xs font-semibold text-slate-400 transition hover:text-slate-700"
+        className="
+          mt-3
+          w-full
+          text-center
+          text-xs font-semibold
+          text-slate-400
+          transition
+
+          hover:text-slate-700
+        "
       >
         {text.skip}
       </button>

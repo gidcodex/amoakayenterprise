@@ -238,10 +238,6 @@ formData.append(
   "specifications",
   JSON.stringify(productInfo.specifications || {})
 );
-    formData.append(
-      "specifications",
-      JSON.stringify(productInfo.specifications || {})
-    );
 
     Object.keys(images).forEach((key) => {
       if (images[key]) {

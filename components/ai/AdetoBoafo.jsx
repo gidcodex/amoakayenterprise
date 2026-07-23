@@ -4,6 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { detectIntent } from "@/components/ai/engine/intentEngine";
+import AssistantProductCard from "@/components/ai/AssistantProductCard";
+import SellerOrderCard from "@/components/ai/SellerOrderCard";
+import SellerAnalyticsCard from "@/components/ai/SellerAnalyticsCard";
 import {
   ArrowRight,
   Check,
@@ -107,6 +110,92 @@ const CUSTOMER_QUICK_ACTIONS = [
   },
 ];
 
+const PENDING_SELLER_QUICK_ACTIONS = [
+  {
+    id: "seller-status",
+    label: "Check Store Status",
+    icon: Store,
+    href: "/create-store",
+  },
+  {
+    id: "browse",
+    label: "Browse Products",
+    icon: Search,
+    href: "/shop",
+  },
+  {
+    id: "tracking",
+    label: "Track My Order",
+    icon: PackageSearch,
+    href: "/track-order",
+  },
+  {
+    id: "support",
+    label: "Contact Support",
+    icon: MessageCircle,
+    href: "/contact",
+  },
+];
+
+const SELLER_QUICK_ACTIONS = [
+  {
+    id: "seller-dashboard",
+    label: "Seller Dashboard",
+    icon: Store,
+    href: "/store",
+  },
+  {
+    id: "manage-products",
+    label: "Manage Products",
+    icon: ShoppingBag,
+    href: "/store/manage-product",
+  },
+  {
+    id: "seller-orders",
+    label: "View Orders",
+    icon: PackageSearch,
+    href: "/store/orders",
+  },
+  {
+    id: "browse",
+    label: "Browse Marketplace",
+    icon: Search,
+    href: "/shop",
+  },
+  {
+    id: "support",
+    label: "Contact Support",
+    icon: MessageCircle,
+    href: "/contact",
+  },
+];
+
+const ADMIN_QUICK_ACTIONS = [
+  {
+    id: "admin-dashboard",
+    label: "Admin Dashboard",
+    icon: UserRound,
+    href: "/admin",
+  },
+  {
+    id: "admin-stores",
+    label: "Manage Stores",
+    icon: Store,
+    href: "/admin/stores",
+  },
+  {
+    id: "admin-messages",
+    label: "View Messages",
+    icon: MessageCircle,
+    href: "/admin/messages",
+  },
+  {
+    id: "browse",
+    label: "Browse Marketplace",
+    icon: Search,
+    href: "/shop",
+  },
+];
 
 
 const AdetoBoafo = () => {
@@ -114,11 +203,20 @@ const AdetoBoafo = () => {
   const { user, isLoaded, isSignedIn } = useUser();
   const { openSignIn } = useClerk();
 
-  const quickActions = useMemo(() => {
-  return isSignedIn
-    ? CUSTOMER_QUICK_ACTIONS
-    : GUEST_QUICK_ACTIONS;
-}, [isSignedIn]);
+  const [accountContext, setAccountContext] = useState({
+  authenticated: false,
+  role: "guest",
+  sellerStatus: null,
+  active: false,
+  businessVerified: false,
+  storeId: null,
+  storeName: null,
+  username: null,
+});
+
+const [accountContextLoading, setAccountContextLoading] =
+  useState(true);
+ 
 
   const [isOpen, setIsOpen] = useState(false);
   const [isFirstVisit, setIsFirstVisit] = useState(true);
@@ -129,8 +227,104 @@ const [chatInput, setChatInput] = useState("");
 const [assistantReply, setAssistantReply] = useState("");
 const [isAssistantThinking, setIsAssistantThinking] = useState(false);
 
+const [assistantProducts, setAssistantProducts] = useState([]);
+const [sellerProducts, setSellerProducts] = useState([]);
+const [sellerOrders, setSellerOrders] = useState([]);
+const [sellerAnalytics, setSellerAnalytics] = useState(null);
+const [productSearchError, setProductSearchError] = useState("");
+
 const [categoryTree, setCategoryTree] = useState([]);
 const [categoriesLoading, setCategoriesLoading] = useState(true);
+
+const [catalogueTerms, setCatalogueTerms] =
+  useState({
+    brands: [],
+    productNames: [],
+  });
+
+const [
+  catalogueTermsLoading,
+  setCatalogueTermsLoading,
+] = useState(true);
+
+useEffect(() => {
+  let ignoreRequest = false;
+
+  const loadAccountContext = async () => {
+    if (!isLoaded) return;
+
+    if (!isSignedIn) {
+      if (!ignoreRequest) {
+        setAccountContext({
+          authenticated: false,
+          role: "guest",
+          sellerStatus: null,
+          active: false,
+          businessVerified: false,
+          storeId: null,
+          storeName: null,
+          username: null,
+        });
+        setAccountContextLoading(false);
+      }
+      return;
+    }
+
+    try {
+      setAccountContextLoading(true);
+      const response = await fetch("/api/ai/account-context", {
+        method: "GET",
+        cache: "no-store",
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data?.error || "Unable to identify the current account.");
+      }
+      if (!ignoreRequest) {
+        setAccountContext({
+          authenticated: Boolean(data.authenticated),
+          role: data.role || "customer",
+          sellerStatus: data.sellerStatus || null,
+          active: Boolean(data.active),
+          businessVerified: Boolean(data.businessVerified),
+          storeId: data.storeId || null,
+          storeName: data.storeName || null,
+          username: data.username || null,
+        });
+      }
+    } catch (error) {
+      console.error("Adetɔ Boafo account-context error:", error);
+      if (!ignoreRequest) {
+        setAccountContext({
+          authenticated: true,
+          role: "customer",
+          sellerStatus: null,
+          active: false,
+          businessVerified: false,
+          storeId: null,
+          storeName: null,
+          username: null,
+        });
+      }
+    } finally {
+      if (!ignoreRequest) setAccountContextLoading(false);
+    }
+  };
+
+  loadAccountContext();
+  return () => { ignoreRequest = true; };
+}, [isLoaded, isSignedIn]);
+
+const quickActions = useMemo(() => {
+  if (!isSignedIn) return GUEST_QUICK_ACTIONS;
+  if (accountContext.role === "admin") return ADMIN_QUICK_ACTIONS;
+  if (accountContext.role === "seller") {
+    return accountContext.sellerStatus === "approved" && accountContext.active
+      ? SELLER_QUICK_ACTIONS
+      : PENDING_SELLER_QUICK_ACTIONS;
+  }
+  return CUSTOMER_QUICK_ACTIONS;
+}, [accountContext.active, accountContext.role, accountContext.sellerStatus, isSignedIn]);
 
 useEffect(() => {
   let ignoreRequest = false;
@@ -185,6 +379,68 @@ useEffect(() => {
   };
 }, []);
 
+useEffect(() => {
+  let ignoreRequest = false;
+
+  const loadCatalogueTerms = async () => {
+    try {
+      setCatalogueTermsLoading(true);
+
+      const response = await fetch(
+        "/api/ai/catalog-terms",
+        {
+          method: "GET",
+          cache: "no-store",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          "Unable to load assistant catalogue terms."
+        );
+      }
+
+      const data = await response.json();
+
+      if (!ignoreRequest) {
+        setCatalogueTerms({
+          brands: Array.isArray(data.brands)
+            ? data.brands
+            : [],
+
+          productNames: Array.isArray(
+            data.productNames
+          )
+            ? data.productNames
+            : [],
+        });
+      }
+    } catch (error) {
+      console.error(
+        "Adetɔ Boafo catalogue terms error:",
+        error
+      );
+
+      if (!ignoreRequest) {
+        setCatalogueTerms({
+          brands: [],
+          productNames: [],
+        });
+      }
+    } finally {
+      if (!ignoreRequest) {
+        setCatalogueTermsLoading(false);
+      }
+    }
+  };
+
+  loadCatalogueTerms();
+
+  return () => {
+    ignoreRequest = true;
+  };
+}, []);
+
   const {
     language,
     changeLanguage,
@@ -209,6 +465,31 @@ useEffect(() => {
 
     return content.guestGreeting;
   }, [content, firstName, isSignedIn]);
+
+  const accountLabel = useMemo(() => {
+    if (accountContextLoading) return "Identifying account...";
+    if (!isSignedIn) return "Guest shopper";
+    if (accountContext.role === "admin") return "Platform administrator";
+    if (accountContext.role === "seller") {
+      if (accountContext.sellerStatus === "approved" && accountContext.active) {
+        return accountContext.storeName
+          ? `Seller · ${accountContext.storeName}`
+          : "Approved seller";
+      }
+      if (accountContext.sellerStatus === "rejected") {
+        return "Seller application rejected";
+      }
+      return "Seller application pending";
+    }
+    return "Customer account";
+  }, [
+    accountContext.active,
+    accountContext.role,
+    accountContext.sellerStatus,
+    accountContext.storeName,
+    accountContextLoading,
+    isSignedIn,
+  ]);
 
   useEffect(() => {
     setMounted(true);
@@ -255,9 +536,14 @@ const closeAssistant = useCallback(() => {
   setIsOpen(false);
   setShowFeatures(false);
 
-  setChatInput("");
-  setAssistantReply("");
-  setIsAssistantThinking(false);
+setChatInput("");
+setAssistantReply("");
+setAssistantProducts([]);
+setSellerProducts([]);
+setSellerOrders([]);
+setSellerAnalytics(null);
+setProductSearchError("");
+setIsAssistantThinking(false);
 
   closeAssistantContext();
 
@@ -317,139 +603,450 @@ const handleChatSubmit = useCallback(
 
 const intent = detectIntent(
   message,
-  categoryTree
+  categoryTree,
+  catalogueTerms
 );
 
-    setChatInput("");
-    setAssistantReply("");
-    setIsAssistantThinking(true);
+console.log(
+  "Adetɔ Boafo detected intent:",
+  intent
+);
 
-    window.setTimeout(() => {
-      switch (intent.type) {
-       case "product-search": {
-  const filters = intent.filters || {};
+setChatInput("");
+setAssistantReply("");
+setAssistantProducts([]);
+setSellerProducts([]);
+setSellerOrders([]);
+setSellerAnalytics(null);
+setProductSearchError("");
+setIsAssistantThinking(true);
 
-  const detectedParts = [];
+    window.setTimeout(async () => {
+      try {
+        switch (intent.type) {
+          case "seller-product-search":
+          case "seller-product-summary": {
+            const isApprovedActiveSeller =
+              accountContext.role === "seller" &&
+              accountContext.sellerStatus === "approved" &&
+              accountContext.active === true;
 
-  if (filters.brand) {
-    detectedParts.push(`brand: ${filters.brand}`);
-  }
+            if (!isApprovedActiveSeller) {
+              setAssistantReply(
+                "Seller product search is available only to approved and active sellers."
+              );
+              break;
+            }
 
-  if (filters.category?.name) {
-    detectedParts.push(
-      `category: ${filters.category.name}`
-    );
-  }
+            const params = new URLSearchParams();
 
-  if (filters.subcategory?.name) {
-    detectedParts.push(
-      `subcategory: ${filters.subcategory.name}`
-    );
-  }
+            if (intent.query?.trim()) {
+              params.set("query", intent.query.trim());
+            }
 
-  if (filters.childCategory?.name) {
-    detectedParts.push(
-      `child category: ${filters.childCategory.name}`
-    );
-  }
+            params.set("status", intent.status || "all");
+            params.set("limit", "12");
 
-  if (filters.minPrice !== null) {
-    detectedParts.push(
-      `minimum price: GHS ${filters.minPrice}`
-    );
-  }
+            const response = await fetch(
+              `/api/ai/seller-products?${params.toString()}`,
+              {
+                method: "GET",
+                cache: "no-store",
+              }
+            );
 
-  if (filters.maxPrice !== null) {
-    detectedParts.push(
-      `maximum price: GHS ${filters.maxPrice}`
-    );
-  }
+            const data = await response.json();
 
-  if (detectedParts.length === 0) {
+            if (!response.ok) {
+              throw new Error(
+                data?.error ||
+                  "Unable to search your store products."
+              );
+            }
+
+            const products = Array.isArray(data?.products)
+              ? data.products
+              : [];
+
+            const summary = data?.summary || {
+              totalProducts: products.length,
+              inStock: 0,
+              lowStock: 0,
+              outOfStock: 0,
+              totalUnits: 0,
+            };
+
+            setSellerProducts(products);
+
+            if (intent.type === "seller-product-summary") {
+              setAssistantReply(
+                `Your store has ${summary.totalProducts} ${
+                  summary.totalProducts === 1
+                    ? "product"
+                    : "products"
+                }. ${summary.inStock} in stock, ${
+                  summary.lowStock
+                } low in stock, and ${
+                  summary.outOfStock
+                } out of stock.`
+              );
+              break;
+            }
+
+            if (products.length === 0) {
+              const queryText = intent.query?.trim()
+                ? ` matching “${intent.query.trim()}”`
+                : "";
+
+              const statusText =
+                intent.status && intent.status !== "all"
+                  ? ` with ${intent.status.replaceAll("-", " ")} status`
+                  : "";
+
+              setAssistantReply(
+                `I could not find any products in your store${queryText}${statusText}.`
+              );
+              break;
+            }
+
+            setAssistantReply(
+              `I found ${products.length} ${
+                products.length === 1 ? "product" : "products"
+              } in your store.`
+            );
+
+            break;
+          }
+
+          case "seller-orders-list":
+          case "seller-orders-summary":
+          case "seller-order-search":
+          case "seller-orders-by-status": {
+  if (
+    accountContext.role !== "seller" ||
+    accountContext.sellerStatus !== "approved" ||
+    !accountContext.active
+  ) {
     setAssistantReply(
-      "I understand that you are searching for a product, but I need a product name, brand or category."
+      "Only approved and active sellers can access seller order information."
+    );
+    break;
+  }
+  const params = new URLSearchParams();
+
+  params.set("limit", "4");
+
+  if (intent.type === "seller-order-search") {
+    params.set("query", intent.query || "");
+  }
+
+  if (intent.type === "seller-orders-by-status") {
+    params.set("status", intent.status || "all");
+  }
+
+  const response = await fetch(
+    `/api/ai/seller-orders?${params.toString()}`
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data?.error ||
+        "Unable to retrieve your store orders."
+    );
+  }
+
+  const orders = Array.isArray(data?.orders)
+    ? data.orders
+    : [];
+  setSellerOrders(orders);
+ 
+  const summary = data?.summary || {};
+
+  /*
+   * We will render professional order cards
+   * in the next step. For now, this confirms
+   * the API and intent connection are working.
+   */
+  if (intent.type === "seller-orders-summary") {
+    setAssistantReply(
+      `Your store has ${summary.total || 0} order${
+        summary.total === 1 ? "" : "s"
+      }. ${summary.placed || 0} are newly placed, ${
+        summary.processing || 0
+      } are processing, ${summary.shipped || 0} are shipped, and ${
+        summary.delivered || 0
+      } are delivered. Your total order value is ${
+        process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "GH₵"
+      }${Number(summary.totalRevenue || 0).toLocaleString()}.`
+    );
+
+    break;
+  }
+
+  if (orders.length === 0) {
+    if (intent.type === "seller-order-search") {
+      setAssistantReply(
+        `I could not find an order matching "${intent.query}".`
+      );
+    } else if (
+      intent.type === "seller-orders-by-status"
+    ) {
+      setAssistantReply(
+        `You currently have no ${intent.status} orders.`
+      );
+    } else {
+      setAssistantReply(
+        "No store orders were found."
+      );
+    }
+
+    break;
+  }
+
+  if (intent.type === "seller-order-search") {
+    setAssistantReply(
+      `I found ${orders.length} order${
+        orders.length === 1 ? "" : "s"
+      } matching "${intent.query}".`
+    );
+  } else if (
+    intent.type === "seller-orders-by-status"
+  ) {
+    setAssistantReply(
+      `I found ${data.totalMatchingOrders || orders.length} ${
+        intent.status
+      } order${
+        (data.totalMatchingOrders || orders.length) === 1
+          ? ""
+          : "s"
+      }.`
     );
   } else {
     setAssistantReply(
-      `I detected ${detectedParts.join(
-        ", "
-      )}. I will use these details to search the Amoakay Deals catalogue.`
+      `You have ${data.totalMatchingOrders || orders.length} order${
+        (data.totalMatchingOrders || orders.length) === 1
+          ? ""
+          : "s"
+      }. Showing the ${
+        orders.length === 1
+          ? "most recent order"
+          : `${orders.length} most recent orders`
+      }.`
     );
   }
 
+  console.log("Adetɔ Boafo seller orders:", orders );
+
+  break;
+         }
+
+         case "seller-analytics": {
+  if (
+    accountContext.role !== "seller" ||
+    accountContext.sellerStatus !== "approved" ||
+    !accountContext.active
+  ) {
+    setAssistantReply(
+      "Only approved and active sellers can access seller analytics."
+    );
+    break;
+  }
+
+  const response = await fetch(
+    "/api/ai/seller-analytics"
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data?.error ||
+      "Unable to retrieve seller analytics."
+    );
+  }
+
+  setSellerAnalytics(data.summary);
+
+  setAssistantReply(
+    "Here is your latest seller analytics."
+  );
+
   break;
 }
+          case "product-search": {
+            const filters = intent.filters || {};
 
-        case "track-order":
-          setAssistantReply(
-            "I can help you track your package. Opening the tracking page now."
-          );
+            const response = await fetch(
+              "/api/ai/search-products",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  brand: filters.brand || "",
 
-          window.setTimeout(() => {
-            setIsOpen(false);
-            setShowFeatures(false);
-            closeAssistantContext();
+                  query:
+                    filters.query ||
+                    filters.productName ||
+                    message,
 
-            router.push("/track-order");
-          }, 900);
-          break;
+                  categoryId:
+                    filters.category?.id || "",
 
-        case "cart":
-          setAssistantReply("Opening your shopping cart.");
+                  subcategoryId:
+                    filters.subcategory?.id || "",
 
-          window.setTimeout(() => {
-            setIsOpen(false);
-            setShowFeatures(false);
-            closeAssistantContext();
+                  childCategoryId:
+                    filters.childCategory?.id || "",
 
-            router.push("/cart");
-          }, 800);
-          break;
+                  minPrice:
+                    filters.minPrice ?? null,
 
-        case "seller":
-          setAssistantReply(
-            "I will take you to the seller registration section."
-          );
+                  maxPrice:
+                    filters.maxPrice ?? null,
+                }),
+              }
+            );
 
-          window.setTimeout(() => {
-            setIsOpen(false);
-            setShowFeatures(false);
-            closeAssistantContext();
+            const data = await response.json();
 
-            router.push("/create-store");
-          }, 900);
-          break;
+            if (!response.ok) {
+              throw new Error(
+                data?.error ||
+                  "Unable to search for products."
+              );
+            }
 
-        case "support":
-          setAssistantReply(
-            "I will connect you with the Amoakay Deals support page."
-          );
+            const products = Array.isArray(
+              data?.products
+            )
+              ? data.products
+              : [];
 
-          window.setTimeout(() => {
-            setIsOpen(false);
-            setShowFeatures(false);
-            closeAssistantContext();
+            setAssistantProducts(products);
 
-            router.push("/contact");
-          }, 900);
-          break;
+            if (products.length > 0) {
+              setAssistantReply(
+                `I found ${products.length} product${
+                  products.length === 1
+                    ? ""
+                    : "s"
+                } matching your search.`
+              );
+            } else {
+              setAssistantReply(
+                "I could not find an exact product match. Try another brand, product name, category, or price range."
+              );
+            }
 
-        default:
-          setAssistantReply(
-            "I can help you find products, open your cart, track an order, become a seller, or contact support."
-          );
+            break;
+          }
+
+          case "track-order": {
+            setAssistantReply(
+              "I can help you track your package. Opening the tracking page now."
+            );
+
+            window.setTimeout(() => {
+              setIsOpen(false);
+              setShowFeatures(false);
+              closeAssistantContext();
+
+              router.push("/track-order");
+            }, 900);
+
+            break;
+          }
+
+          case "cart": {
+            setAssistantReply(
+              "Opening your shopping cart."
+            );
+
+            window.setTimeout(() => {
+              setIsOpen(false);
+              setShowFeatures(false);
+              closeAssistantContext();
+
+              router.push("/cart");
+            }, 800);
+
+            break;
+          }
+
+          case "seller": {
+            setAssistantReply(
+              "I will take you to the seller registration section."
+            );
+
+            window.setTimeout(() => {
+              setIsOpen(false);
+              setShowFeatures(false);
+              closeAssistantContext();
+
+              router.push("/create-store");
+            }, 900);
+
+            break;
+          }
+
+          case "support": {
+            setAssistantReply(
+              "I will connect you with the Amoakay Deals support page."
+            );
+
+            window.setTimeout(() => {
+              setIsOpen(false);
+              setShowFeatures(false);
+              closeAssistantContext();
+
+              router.push("/contact");
+            }, 900);
+
+            break;
+          }
+
+          default: {
+            setAssistantReply(
+              "I can help you find products, open your cart, track an order, become a seller, or contact support."
+            );
+          }
+        }
+      } catch (error) {
+        console.error(
+          "Adetɔ Boafo product search error:",
+          error
+        );
+
+        setAssistantProducts([]);
+        setSellerProducts([]);
+        setProductSearchError(
+          error?.message ||
+            "Something went wrong while searching."
+        );
+
+        setAssistantReply(
+          "I could not complete the product search. Please try again."
+        );
+      } finally {
+        setIsAssistantThinking(false);
       }
-
-      setIsAssistantThinking(false);
     }, 650);
   },
-  [
+[
+  accountContext.active,
+  accountContext.role,
+  accountContext.sellerStatus,
+  catalogueTerms,
   categoryTree,
   chatInput,
   closeAssistantContext,
   isAssistantThinking,
   router,
-  ]
+]
 );
 
  const openAssistant = useCallback(() => {
@@ -619,7 +1216,7 @@ const intent = detectIntent(
             gap-4
 
             md:grid-cols-[170px_minmax(0,1fr)]
-            md:items-stretch
+            md:items-start
             md:gap-5
 
             lg:grid-cols-[210px_minmax(0,1fr)]
@@ -627,24 +1224,29 @@ const intent = detectIntent(
           "
         >
           {/* Orb panel */}
-          <aside
-            className="
-              relative
-              hidden
-              min-h-[390px]
-              overflow-hidden
-              rounded-[24px]
-              border border-green-100/80
-              bg-gradient-to-br from-green-50/90 via-white to-emerald-50/80
-              p-4
-              shadow-[0_15px_40px_rgba(22,163,74,0.09)]
+          
+  <aside
+   className="
+    relative
+    hidden
+    h-[390px]
+    overflow-hidden
+    rounded-[24px]
+    border border-green-100/80
+    bg-gradient-to-br from-green-50/90 via-white to-emerald-50/80
+    p-4
+    shadow-[0_15px_40px_rgba(22,163,74,0.09)]
 
-              md:flex
-              md:flex-col
-              md:items-center
-              md:justify-center
-            "
-          >
+    md:sticky
+    md:top-4
+    md:flex
+    md:flex-col
+    md:items-center
+    md:justify-center
+
+    lg:h-[420px]
+  "
+>
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(74,222,128,0.14),transparent_60%)]" />
 
             <div className="absolute left-5 top-6 h-2 w-2 rounded-full bg-lime-400" />
@@ -731,9 +1333,14 @@ const intent = detectIntent(
                   </p>
 
                   {isSignedIn && firstName && (
-                    <span className="max-w-[150px] truncate rounded-full bg-green-50 px-2.5 py-1 text-[10px] font-bold text-green-700">
-                      Hi, {firstName}
-                    </span>
+                    <div className="flex max-w-[190px] flex-col items-end">
+                      <span className="max-w-full truncate rounded-full bg-green-50 px-2.5 py-1 text-[10px] font-bold text-green-700">
+                        Hi, {firstName}
+                      </span>
+                      <span className="mt-1 max-w-full truncate text-[9px] font-semibold text-slate-400">
+                        {accountLabel}
+                      </span>
+                    </div>
                   )}
                 </div>
 
@@ -818,6 +1425,234 @@ const intent = detectIntent(
                   </div>
                 )}
 
+                {productSearchError && (
+  <div
+    className="
+      mb-3
+      rounded-2xl
+      border border-red-200
+      bg-red-50
+      px-4 py-3
+      text-sm
+      font-semibold
+      text-red-700
+    "
+  >
+    {productSearchError}
+  </div>
+)}
+
+{assistantProducts.length > 0 && (
+  <div className="mb-4">
+    <div className="mb-3 flex items-center justify-between gap-3">
+      <div>
+        <p className="text-sm font-black text-slate-900">
+          Products for you
+        </p>
+
+        <p className="text-xs text-slate-500">
+          Swipe or scroll to see more products.
+        </p>
+      </div>
+
+      <span className="shrink-0 rounded-full bg-green-100 px-3 py-1 text-[10px] font-black text-green-700">
+        {assistantProducts.length} found
+      </span>
+    </div>
+
+    <div
+      className="
+        flex
+        gap-4
+        overflow-x-auto
+        overscroll-x-contain
+        pb-4
+      "
+    >
+      {assistantProducts.map((product) => (
+        <AssistantProductCard
+          key={product.id}
+          product={product}
+          onCloseAssistant={closeAssistant}
+        />
+      ))}
+    </div>
+  </div>
+)}
+
+
+
+{sellerProducts.length > 0 && (
+  <div className="mb-4">
+    <div className="mb-3 flex items-center justify-between gap-3">
+      <div>
+        <p className="text-sm font-black text-slate-900">
+          Your store products
+        </p>
+
+        <p className="text-xs text-slate-500">
+          Product and stock information from your store.
+        </p>
+      </div>
+
+      <span className="shrink-0 rounded-full bg-green-100 px-3 py-1 text-[10px] font-black text-green-700">
+        {sellerProducts.length} found
+      </span>
+    </div>
+
+    <div className="flex gap-4 overflow-x-auto overscroll-x-contain pb-4">
+      {sellerProducts.map((product) => {
+        const stock =
+          product.effectiveStock ??
+          product.stock ??
+          0;
+
+        const inventoryStatus =
+          product.inventoryStatus ||
+          (stock <= 0
+            ? "out-of-stock"
+            : stock <= 5
+              ? "low-stock"
+              : "in-stock");
+
+        const statusLabel =
+          inventoryStatus === "out-of-stock"
+            ? "Out of stock"
+            : inventoryStatus === "low-stock"
+              ? "Low stock"
+              : "In stock";
+
+        const statusClass =
+          inventoryStatus === "out-of-stock"
+            ? "bg-red-100 text-red-700"
+            : inventoryStatus === "low-stock"
+              ? "bg-amber-100 text-amber-700"
+              : "bg-green-100 text-green-700";
+
+        const image =
+          product.image ||
+          product.images?.[0] ||
+          "";
+
+        return (
+          <article
+            key={product.id}
+            className="w-[230px] shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+          >
+            <div className="aspect-[4/3] w-full overflow-hidden bg-slate-100">
+              {image ? (
+                <img
+                  src={image}
+                  alt={product.name}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center text-slate-400">
+                  <ShoppingBag size={34} />
+                </div>
+              )}
+            </div>
+
+            <div className="p-3">
+              <p className="line-clamp-2 text-sm font-black text-slate-900">
+                {product.name}
+              </p>
+
+              <div className="mt-3 flex items-center justify-between gap-2">
+                <span className="text-sm font-black text-green-700">
+                  GH₵ {Number(product.price || 0).toLocaleString()}
+                </span>
+
+                <span
+                  className={`rounded-full px-2 py-1 text-[9px] font-black ${statusClass}`}
+                >
+                  {statusLabel}
+                </span>
+              </div>
+
+              <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
+                <span className="text-xs font-semibold text-slate-600">
+                  Stock
+                </span>
+
+                <span className="text-xs font-black text-slate-900">
+                  {stock}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  closeAssistantContext();
+                  setIsOpen(false);
+                  router.push("/store/manage-product");
+                }}
+                className="mt-3 flex w-full items-center justify-center rounded-xl bg-green-600 px-3 py-2 text-xs font-bold text-white transition hover:bg-green-700"
+              >
+                Manage Product
+              </button>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  </div>
+)}
+{sellerOrders.length > 0 && (
+  <div className="mb-4">
+    <div className="mb-3 flex items-center justify-between">
+      <div>
+        <p className="text-sm font-black text-slate-900">
+          Your store orders
+        </p>
+
+        <p className="text-xs text-slate-500">
+          Recent customer orders from your store.
+        </p>
+      </div>
+
+      <span className="rounded-full bg-blue-100 px-3 py-1 text-[10px] font-black text-blue-700">
+        {sellerOrders.length} found
+      </span>
+    </div>
+
+    <div className=" flex gap-5 overflow-x-auto overscroll-x-contain pb-5 snap-x snap-mandatory ">
+      
+{sellerOrders.map((order) => (
+  <SellerOrderCard
+    key={order.id}
+    order={order}
+    onViewOrder={(selectedOrder) => {
+      setIsOpen(false);
+      setShowFeatures(false);
+
+      closeAssistantContext();
+
+      document.body.style.overflow = "";
+
+      const selectedOrderId =
+        selectedOrder?.id || order.id;
+
+      window.setTimeout(() => {
+        router.push(
+          `/store/orders?orderId=${encodeURIComponent(
+            selectedOrderId
+          )}`
+        );
+      }, 100);
+    }}
+  />
+))}
+
+    </div>
+  </div>
+)}
+
+{sellerAnalytics && (
+  <SellerAnalyticsCard
+    summary={sellerAnalytics}
+  />
+)}
                 <form
                   onSubmit={handleChatSubmit}
                   className="
@@ -842,12 +1677,14 @@ const intent = detectIntent(
                     }
                     disabled={
                       isAssistantThinking ||
-                      categoriesLoading
+                       categoriesLoading ||
+                       catalogueTermsLoading
                     }
                     placeholder={
-                      categoriesLoading
-                        ? "Loading marketplace categories..."
-                        : "Find phones, laptops, accessories..."
+                    categoriesLoading ||
+                    catalogueTermsLoading
+                   ? "Loading marketplace catalogue..."
+                   : "Find phones, laptops, accessories..."
                     }
                     aria-label="Ask Adetɔ Boafo"
                     className="
@@ -865,8 +1702,9 @@ const intent = detectIntent(
                     disabled={
                       !chatInput.trim() ||
                       isAssistantThinking ||
-                      categoriesLoading
-                    }
+                      categoriesLoading ||
+                      catalogueTermsLoading
+                     }
                     aria-label="Send message"
                     className="
                       flex h-11 w-11 shrink-0 items-center justify-center

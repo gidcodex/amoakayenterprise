@@ -5,76 +5,123 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 
 export default function RelatedProducts({ product }) {
-  const products = useSelector((state) => state.product.list);
+  const products = useSelector(
+    (state) => state.product.list || []
+  );
 
   const relatedProducts = useMemo(() => {
-  if (!product) return [];
+    if (!product || products.length === 0) {
+      return [];
+    }
 
-  const scored = products
-    .filter((p) => p.id !== product.id)
-    .map((p) => {
-      let score = 0;
+    const scoredProducts = products
+      .filter((item) => item.id !== product.id)
+      .map((item) => {
+        let score = 0;
 
-      // Highest priority
-      if (
-        product.childCategoryId &&
-        p.childCategoryId === product.childCategoryId
-      ) {
-        score += 100;
-      }
+        if (
+          product.childCategoryId &&
+          item.childCategoryId === product.childCategoryId
+        ) {
+          score += 100;
+        }
 
-      // Second priority
-      if (
-        product.subcategoryId &&
-        p.subcategoryId === product.subcategoryId
-      ) {
-        score += 60;
-      }
+        if (
+          product.subcategoryId &&
+          item.subcategoryId === product.subcategoryId
+        ) {
+          score += 60;
+        }
 
-      // Third priority
-      if (p.categoryId === product.categoryId) {
-        score += 30;
-      }
+        if (
+          product.categoryId &&
+          item.categoryId === product.categoryId
+        ) {
+          score += 30;
+        }
 
-      // Same brand (if available)
-      if (
-        product.brand &&
-        p.brand &&
-        product.brand.toLowerCase() === p.brand.toLowerCase()
-      ) {
-        score += 25;
-      }
+        const productBrand =
+          product.brand ||
+          product.specifications?.brand;
 
-      // Higher-rated products get a small boost
-      if (p.rating?.length > 0) {
-        const avg =
-          p.rating.reduce((a, b) => a + b.rating, 0) / p.rating.length;
-        score += avg;
-      }
+        const itemBrand =
+          item.brand ||
+          item.specifications?.brand;
 
-      return {
-        ...p,
-        score,
-      };
-    })
-    .filter((p) => p.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 8);
+        if (
+          productBrand &&
+          itemBrand &&
+          productBrand.toLowerCase() ===
+            itemBrand.toLowerCase()
+        ) {
+          score += 25;
+        }
 
-  return scored;
-}, [products, product]);
+        if (
+          Array.isArray(item.rating) &&
+          item.rating.length > 0
+        ) {
+          const validRatings = item.rating
+            .map((ratingItem) =>
+              Number(ratingItem?.rating)
+            )
+            .filter(Number.isFinite);
 
-  if (relatedProducts.length === 0) return null;
+          if (validRatings.length > 0) {
+            const averageRating =
+              validRatings.reduce(
+                (total, value) => total + value,
+                0
+              ) / validRatings.length;
+
+            score += averageRating;
+          }
+        }
+
+        return {
+          ...item,
+          relatedScore: score,
+        };
+      })
+      .filter((item) => item.relatedScore > 0)
+      .sort(
+        (firstItem, secondItem) =>
+          secondItem.relatedScore -
+          firstItem.relatedScore
+      )
+      .slice(0, 8);
+
+    return scoredProducts;
+  }, [products, product]);
+
+  if (relatedProducts.length === 0) {
+    return null;
+  }
 
   return (
-    <section className="mt-16">
-      <h2 className="text-2xl font-bold text-slate-900 mb-6">
-        You May Also Like
-      </h2>
+    <section className="mt-14 w-full sm:mt-16">
+      <div className="mb-6">
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-green-600">
+          Recommended for you
+        </p>
 
-      <div className="grid grid-cols-2 sm:flex flex-wrap gap-6 xl:gap-12">
+        <h2 className="mt-2 text-xl font-black text-slate-950 sm:text-2xl">
+          You May Also Like
+        </h2>
+
+        <p className="mt-2 text-sm text-slate-500">
+          Similar products selected from Amoakay Deals.
+        </p>
+      </div>
+
+      <div className="grid w-full grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {relatedProducts.map((item) => (
-          <ProductCard key={item.id} product={item} />
+          <div
+            key={item.id}
+            className="min-w-0"
+          >
+            <ProductCard product={item} />
+          </div>
         ))}
       </div>
     </section>
