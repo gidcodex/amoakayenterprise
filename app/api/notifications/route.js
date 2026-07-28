@@ -7,31 +7,57 @@ export async function GET(request) {
     const { userId } = getAuth(request);
 
     if (!userId) {
-      return NextResponse.json({ error: "not authorized" }, { status: 401 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Not authorized.",
+        },
+        { status: 401 }
+      );
     }
 
-    const notifications = await prisma.notification.findMany({
-      where: {
-        userId,
-        role: "CUSTOMER",
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: 30,
-    });
+    const [notifications, unreadCount] =
+      await prisma.$transaction([
+        prisma.notification.findMany({
+          where: {
+            userId,
+            role: "CUSTOMER",
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 50,
+        }),
 
-    const unreadCount = await prisma.notification.count({
-      where: {
-        userId,
-        role: "CUSTOMER",
-        isRead: false,
-      },
-    });
+        prisma.notification.count({
+          where: {
+            userId,
+            role: "CUSTOMER",
+            isRead: false,
+          },
+        }),
+      ]);
 
-    return NextResponse.json({ notifications, unreadCount });
+    return NextResponse.json({
+      success: true,
+      notifications,
+      unreadCount,
+    });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error(
+      "GET customer notifications error:",
+      error
+    );
+
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          error.message ||
+          "Unable to retrieve notifications.",
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -40,22 +66,46 @@ export async function PATCH(request) {
     const { userId } = getAuth(request);
 
     if (!userId) {
-      return NextResponse.json({ error: "not authorized" }, { status: 401 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Not authorized.",
+        },
+        { status: 401 }
+      );
     }
 
-    await prisma.notification.updateMany({
-      where: {
-        userId,
-        role: "CUSTOMER",
-        isRead: false,
-      },
-      data: {
-        isRead: true,
-      },
-    });
+    const result =
+      await prisma.notification.updateMany({
+        where: {
+          userId,
+          role: "CUSTOMER",
+          isRead: false,
+        },
+        data: {
+          isRead: true,
+        },
+      });
 
-    return NextResponse.json({ message: "Notifications marked as read." });
+    return NextResponse.json({
+      success: true,
+      message: "Notifications marked as read.",
+      updatedCount: result.count,
+    });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    console.error(
+      "PATCH customer notifications error:",
+      error
+    );
+
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          error.message ||
+          "Unable to update notifications.",
+      },
+      { status: 500 }
+    );
   }
 }

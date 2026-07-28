@@ -2,11 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { WalletCards, } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
+import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
-import axios from "axios";
-import { useAuth } from "@clerk/nextjs";
 
 import {
   HomeIcon,
@@ -19,6 +18,9 @@ import {
   Star,
   RotateCcw,
   MessageSquareMore,
+  WalletCards,
+  ChevronRight,
+  Store,
 } from "lucide-react";
 
 const StoreSidebar = ({
@@ -29,7 +31,8 @@ const StoreSidebar = ({
   const pathname = usePathname();
   const { getToken } = useAuth();
 
-  const [questionsCount, setQuestionsCount] = useState(0);
+  const [questionsCount, setQuestionsCount] =
+    useState(0);
 
   useEffect(() => {
     const fetchQuestionsCount = async () => {
@@ -47,7 +50,10 @@ const StoreSidebar = ({
 
         setQuestionsCount(data.count || 0);
       } catch (error) {
-        console.error(error);
+        console.error(
+          "QUESTIONS COUNT ERROR:",
+          error
+        );
       }
     };
 
@@ -117,79 +123,102 @@ const StoreSidebar = ({
       return pathname === "/store";
     }
 
-    return pathname === href || pathname.startsWith(`${href}/`);
+    return (
+      pathname === href ||
+      pathname.startsWith(`${href}/`)
+    );
+  };
+
+  const handleNavigation = () => {
+    if (mobile && onNavigate) {
+      onNavigate();
+    }
   };
 
   return (
     <aside
-      className={`h-full shrink-0 overflow-y-auto border-r border-slate-200 bg-white ${
-        mobile ? "w-full" : "w-[68px] sm:w-64"
-      }`}
+      className={
+        mobile
+          ? "flex min-h-full w-full flex-col bg-white px-4 py-5"
+          : "h-full w-full overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/40"
+      }
     >
-      <div className="border-b border-slate-100 px-2 py-4 sm:px-5 sm:py-7">
-        <div className="flex items-center justify-center sm:justify-start sm:gap-3">
-          <Image
-            src={storeInfo?.logo || "/placeholder.png"}
-            alt={storeInfo?.name || "Store"}
-            width={64}
-            height={64}
-            className="h-10 w-10 rounded-xl border border-slate-200 object-cover shadow-sm sm:h-14 sm:w-14 sm:rounded-2xl"
-          />
+      {/* Store profile */}
+      <div
+        className={
+          mobile
+            ? "flex items-center gap-3 rounded-2xl bg-slate-50 p-4"
+            : "flex items-center gap-4 border-b border-slate-100 pb-5"
+        }
+      >
+        <Image
+          src={
+            storeInfo?.logo ||
+            "/placeholder.png"
+          }
+          alt={storeInfo?.name || "Store"}
+          width={64}
+          height={64}
+          className={
+            mobile
+              ? "h-12 w-12 shrink-0 rounded-2xl border border-slate-200 object-cover"
+              : "h-14 w-14 shrink-0 rounded-2xl border border-slate-200 object-cover shadow-sm"
+          }
+        />
 
-          <div className="hidden min-w-0 sm:block">
-            <h2 className="truncate font-bold text-slate-900">
-              {storeInfo?.name || "My Store"}
-            </h2>
+        <div className="min-w-0 flex-1">
+          <h2 className="truncate text-sm font-black text-slate-900">
+            {storeInfo?.name || "My Store"}
+          </h2>
 
-            <p className="mt-1 text-xs text-slate-400">
-              Seller Dashboard
-            </p>
-          </div>
+          <p className="mt-1 text-xs font-medium text-slate-500">
+            Seller Dashboard
+          </p>
         </div>
       </div>
 
-      <nav className="space-y-1 px-2 py-4 sm:px-3">
+      {/* Navigation */}
+      <nav
+        className={
+          mobile
+            ? "mt-5 flex-1 space-y-2"
+            : "mt-5 space-y-1.5"
+        }
+      >
         {sidebarLinks.map((link) => {
-          const active = isLinkActive(link.href);
+          const active =
+            isLinkActive(link.href);
+
           const Icon = link.icon;
 
           return (
             <Link
               key={link.href}
               href={link.href}
-              onClick={onNavigate}
-              title={link.name}
-              aria-label={link.name}
-              className={`group relative flex min-h-12 items-center justify-center rounded-xl px-2 py-3 transition sm:justify-start sm:gap-3 sm:px-4 ${
+              onClick={handleNavigation}
+              className={`group flex w-full items-center gap-3 rounded-xl px-4 py-3.5 transition-all duration-200 ${
                 active
-                  ? "bg-green-50 text-green-700 shadow-sm"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-green-700"
+                  ? "bg-green-600 text-white shadow-md shadow-green-200/70"
+                  : "text-slate-600 hover:bg-green-50 hover:text-green-700"
               }`}
             >
-              <div className="relative flex h-9 w-9 shrink-0 items-center justify-center">
+              <span
+                className={`relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                  active
+                    ? "bg-white/15 text-white"
+                    : "bg-slate-100 text-slate-600 group-hover:bg-white group-hover:text-green-700"
+                }`}
+              >
                 <Icon
-                  size={20}
-                  strokeWidth={active ? 2.4 : 2}
+                  size={19}
+                  strokeWidth={
+                    active ? 2.4 : 2
+                  }
                 />
 
                 {link.name === "Questions" &&
                   questionsCount > 0 && (
-                    <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white sm:hidden">
-                      {questionsCount > 99
-                        ? "99+"
-                        : questionsCount}
-                    </span>
-                  )}
-              </div>
-
-              <span className="hidden min-w-0 flex-1 items-center justify-between sm:flex">
-                <span className="truncate text-sm font-semibold">
-                  {link.name}
-                </span>
-
-                {link.name === "Questions" &&
-                  questionsCount > 0 && (
-                    <span className="ml-2 flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
+                    <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-black text-white">
                       {questionsCount > 99
                         ? "99+"
                         : questionsCount}
@@ -197,19 +226,43 @@ const StoreSidebar = ({
                   )}
               </span>
 
-              {active && (
-                <span className="absolute bottom-2 right-0 top-2 w-1 rounded-l-full bg-green-600" />
-              )}
+              <span className="min-w-0 flex-1 truncate text-sm font-bold">
+                {link.name}
+              </span>
 
-              {!mobile && (
-                <span className="pointer-events-none absolute left-full z-50 ml-3 hidden whitespace-nowrap rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white shadow-xl group-hover:block sm:hidden">
-                  {link.name}
-                </span>
+              {mobile && (
+                <ChevronRight
+                  size={17}
+                  className={
+                    active
+                      ? "text-white/80"
+                      : "text-slate-300"
+                  }
+                />
               )}
             </Link>
           );
         })}
       </nav>
+
+      {/* Bottom store section */}
+      <div className="mt-6 border-t border-slate-100 pt-5">
+        <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700">
+            <Store size={19} />
+          </div>
+
+          <div className="min-w-0">
+            <p className="truncate text-sm font-black text-slate-800">
+              Store management
+            </p>
+
+            <p className="mt-1 text-xs text-slate-500">
+              Products, orders and payouts
+            </p>
+          </div>
+        </div>
+      </div>
     </aside>
   );
 };

@@ -1,6 +1,10 @@
 "use client";
 
 import { addToCart } from "@/lib/features/cart/cartSlice";
+import {
+  toggleWishlist,
+} from "@/lib/features/wishlist/wishlistSlice";
+import { useAuth } from "@clerk/nextjs";
 import { ArrowLeft, ArrowRight, BadgeCheck, Banknote, CalendarDays, Check, ChevronLeft, ChevronRight, Cpu, CreditCard, Expand, HardDrive, Heart, MapPin, MemoryStick, MonitorSmartphone,
 PackageCheck, RefreshCcw, Share2, ShieldCheck, ShoppingCart, Star, Store, Tag, Truck, WalletCards, X, Zap, } from "lucide-react";
 import Image from "next/image";
@@ -9,6 +13,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import Counter from "./Counter";
+import FlashCountdown from "./flash-deals/FlashCountdown";
 
 const colorMap = {
   black: "#111827",
@@ -28,13 +33,22 @@ const colorMap = {
   beige: "#d6c7a1",
 };
 
-export default function ProductDetails({ product, children, }) {
+export default function ProductDetails({ product, flashDeal, loadingFlashDeal, children, }) {
   const dispatch = useDispatch();
   const router = useRouter();
+  const { getToken } = useAuth();
 
   const cart = useSelector(
     (state) => state.cart.cartItems || {}
   );
+
+  const wishlistIds = useSelector(
+  (state) => state.wishlist.ids || []
+);
+
+const isWishlisted = wishlistIds.includes(
+  product.id
+);
 
   const currency =
     process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "₵";
@@ -72,8 +86,7 @@ export default function ProductDetails({ product, children, }) {
   const [isFullscreenOpen, setIsFullscreenOpen] =
     useState(false);
 
-  const [isWishlisted, setIsWishlisted] =
-    useState(false);
+  
 
   const selectedVariantImages = useMemo(() => {
     if (
@@ -111,6 +124,23 @@ export default function ProductDetails({ product, children, }) {
             100
         )
       : 0;
+
+const hasFlashDeal = Boolean(flashDeal);
+
+const displayPrice = hasFlashDeal
+  ? Number(flashDeal.dealPrice)
+  : activePrice;
+
+const displayOriginalPrice = hasFlashDeal
+  ? Number(flashDeal.originalPrice)
+  : originalPrice;
+
+const displayDiscount = hasFlashDeal
+  ? flashDeal.discountPercent
+  : discountPercentage;
+
+const displaySavings =
+  displayOriginalPrice - displayPrice;      
 
   const activeStock = Number(
     selectedVariant?.stock ?? product?.stock ?? 0
@@ -267,6 +297,15 @@ const specificationHighlights = [
     router.push("/cart");
   };
 
+const handleWishlist = async () => {
+  await dispatch(
+    toggleWishlist({
+      productId: product.id,
+      getToken,
+    })
+  );
+};
+
   useEffect(() => {
   const handleStickyAddToCart = () => {
     handleAddToCart();
@@ -312,34 +351,49 @@ useEffect(() => {
     new CustomEvent(
       "amoakay:product-purchase-state",
       {
-        detail: {
-          productId: product.id,
-          productName: product.name,
-          price: activePrice,
-          originalPrice,
-          isAvailable,
-          selectedVariant: selectedVariant
-            ? {
-                id: selectedVariant.id,
-                name: selectedVariant.name,
-                value: selectedVariant.value,
-              }
-            : null,
-          inCart: Boolean(cart[cartKey]),
-        },
+         detail: {
+  productId: product.id,
+  productName: product.name,
+
+  price: displayPrice,
+  originalPrice: displayOriginalPrice,
+
+  hasFlashDeal,
+  flashDealEndsAt:
+    flashDeal?.endsAt || null,
+  flashDealDiscountPercent:
+    displayDiscount,
+
+  isAvailable,
+
+  selectedVariant: selectedVariant
+    ? {
+        id: selectedVariant.id,
+        name: selectedVariant.name,
+        value: selectedVariant.value,
+      }
+    : null,
+
+  inCart: Boolean(cart[cartKey]),
+},
       }
     )
   );
 }, [
   product.id,
   product.name,
-  activePrice,
-  originalPrice,
+  displayPrice,
+  displayOriginalPrice,
+  hasFlashDeal,
+  flashDeal,
+  displayDiscount,
   isAvailable,
   selectedVariant,
   cart,
   cartKey,
 ]);
+
+
 
   const handleShare = async () => {
     try {
@@ -522,11 +576,7 @@ useEffect(() => {
                 <div className="flex gap-2">
                   <button
                     type="button"
-                    onClick={() =>
-                      setIsWishlisted(
-                        (current) => !current
-                      )
-                    }
+                    onClick={handleWishlist}
                     className={`flex h-10 w-10 items-center justify-center rounded-full border transition ${
                       isWishlisted
                         ? "border-red-200 bg-red-50 text-red-600"
@@ -558,6 +608,55 @@ useEffect(() => {
               <h1 className="mt-5 text-2xl font-black leading-tight text-slate-950 sm:text-3xl xl:text-[34px]">
                 {product.name}
               </h1>
+              {hasFlashDeal && (
+  <div className="mt-5 overflow-hidden rounded-2xl border border-red-300 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 text-white shadow-lg">
+
+    <div className="flex flex-col gap-5 p-5 lg:flex-row lg:items-center lg:justify-between">
+
+      <div>
+
+        <div className="flex items-center gap-2">
+
+          <Zap
+            size={18}
+            fill="currentColor"
+          />
+
+          <span className="text-sm font-black uppercase tracking-widest">
+            Flash Deal
+          </span>
+
+        </div>
+
+        <p className="mt-3 text-3xl font-black">
+          {currency}
+          {displayPrice.toLocaleString()}
+        </p>
+
+        <p className="mt-2 text-red-100">
+          Save {currency}
+          {displaySavings.toLocaleString()}
+        </p>
+
+      </div>
+
+      <div className="rounded-xl bg-white/10 p-4 backdrop-blur-sm">
+
+        <p className="mb-2 text-xs font-bold uppercase tracking-wider">
+          Deal ends in
+        </p>
+
+        <FlashCountdown
+          endsAt={flashDeal.endsAt}
+          compact
+        />
+
+      </div>
+
+    </div>
+
+  </div>
+)}
 
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-1">
@@ -625,13 +724,13 @@ useEffect(() => {
                 <div className="flex flex-wrap items-end gap-x-3 gap-y-2">
                   <p className="text-3xl font-black text-slate-950 sm:text-4xl">
                     {currency}
-                    {activePrice.toLocaleString()}
+                    {displayPrice.toLocaleString()}
                   </p>
 
                   {originalPrice > activePrice && (
                     <p className="pb-1 text-lg font-semibold text-slate-400 line-through">
                       {currency}
-                      {originalPrice.toLocaleString()}
+                      {displayOriginalPrice.toLocaleString()}
                     </p>
                   )}
                 </div>
@@ -642,7 +741,7 @@ useEffect(() => {
 
                     Save {currency}
                     {(
-                      originalPrice - activePrice
+                      displaySavings
                     ).toLocaleString()}{" "}
                     today
                   </div>
@@ -650,31 +749,119 @@ useEffect(() => {
               </div>
 
               {/* Availability */}
-              <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 p-4">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                    Availability
-                  </p>
+<div className="mt-5 overflow-hidden rounded-2xl border border-slate-200">
 
-                  <p
-                    className={`mt-1 font-black ${
-                      isAvailable
-                        ? "text-green-700"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {isAvailable
-                      ? `${activeStock} unit${
-                          activeStock === 1 ? "" : "s"
-                        } available`
-                      : "Out of stock"}
-                  </p>
-                </div>
+  {/* Header */}
+  <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-5 py-3">
 
-                <div className="rounded-xl bg-green-50 px-3 py-2 text-xs font-bold text-green-700">
-                  Ready for checkout
-                </div>
-              </div>
+    <div>
+      <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+        Availability
+      </p>
+
+      <p
+        className={`mt-1 font-black ${
+          isAvailable
+            ? "text-green-700"
+            : "text-red-600"
+        }`}
+      >
+        {isAvailable
+          ? `${activeStock} units available`
+          : "Out of Stock"}
+      </p>
+    </div>
+
+    {activeStock <= 10 && isAvailable && (
+      <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-black text-red-700 animate-pulse">
+        Only {activeStock} Left
+      </span>
+    )}
+
+  </div>
+
+  {/* Stock Bar */}
+
+  <div className="px-5 py-5">
+
+    <div className="flex items-center justify-between text-sm">
+
+      <span className="font-semibold text-slate-600">
+        Stock Level
+      </span>
+
+      <span className="font-black">
+        {activeStock}
+      </span>
+
+    </div>
+
+    <div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-200">
+
+      <div
+        className={`h-full rounded-full transition-all duration-700 ${
+          activeStock > 20
+            ? "bg-green-600"
+            : activeStock > 10
+            ? "bg-yellow-500"
+            : "bg-red-600 animate-pulse"
+        }`}
+        style={{
+          width: `${Math.min(activeStock, 100)}%`,
+        }}
+      />
+
+    </div>
+
+    {activeStock <= 10 && isAvailable && (
+      <div className="mt-4 flex items-center gap-2 rounded-xl bg-red-50 p-3">
+
+        <Zap
+          size={18}
+          className="text-red-600"
+        />
+
+        <p className="text-sm font-bold text-red-700">
+          Selling fast. Order soon before this item sells out.
+        </p>
+
+      </div>
+    )}
+
+    {activeStock > 10 && activeStock <= 25 && (
+      <div className="mt-4 flex items-center gap-2 rounded-xl bg-yellow-50 p-3">
+
+        <PackageCheck
+          size={18}
+          className="text-yellow-700"
+        />
+
+        <p className="text-sm font-semibold text-yellow-700">
+          Popular item. Stock is moving quickly.
+        </p>
+
+      </div>
+    )}
+
+    {activeStock > 25 && (
+      <div className="mt-4 flex items-center gap-2 rounded-xl bg-green-50 p-3">
+
+        <Check
+          size={18}
+          className="text-green-700"
+        />
+
+        <p className="text-sm font-semibold text-green-700">
+          In stock and ready for immediate dispatch.
+        </p>
+
+      </div>
+    )}
+
+  </div>
+
+</div>
+              
 
               {/* Delivery estimate */}
 <div className="mt-4 overflow-hidden rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 via-white to-cyan-50">

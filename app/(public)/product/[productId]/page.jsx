@@ -6,10 +6,7 @@ import RelatedProducts from "@/components/RelatedProducts";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import ProductStickyBar from "@/components/ProductStickyBar";
 
-import {
-  ChevronRight,
-  Home,
-} from "lucide-react";
+import { ChevronRight, Home } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -23,7 +20,13 @@ export default function ProductPage() {
   );
 
   const [product, setProduct] = useState(null);
+  const [flashDeal, setFlashDeal] = useState(null);
+  const [loadingFlashDeal, setLoadingFlashDeal] =
+    useState(true);
 
+  /*
+   * Locate the selected product from Redux.
+   */
   useEffect(() => {
     const selectedProduct = products.find(
       (item) => item.id === productId
@@ -33,9 +36,7 @@ export default function ProductPage() {
 
     if (selectedProduct) {
       const existing = JSON.parse(
-        localStorage.getItem(
-          "recentlyViewed"
-        ) || "[]"
+        localStorage.getItem("recentlyViewed") || "[]"
       );
 
       const updated = [
@@ -57,6 +58,77 @@ export default function ProductPage() {
     });
   }, [productId, products]);
 
+  /*
+   * Fetch the active Flash Deal for this product.
+   */
+  useEffect(() => {
+    if (!productId) return;
+
+    const fetchFlashDeal = async () => {
+      setLoadingFlashDeal(true);
+      setFlashDeal(null);
+
+      try {
+        const response = await fetch(
+          "/api/flash-deals",
+          {
+            method: "GET",
+            cache: "no-store",
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error ||
+              "Unable to load Flash Deal information."
+          );
+        }
+
+        const flashDeals =
+          data.flashDeals || data.deals || [];
+
+        const matchingDeal = flashDeals.find(
+          (deal) => deal.productId === productId
+        );
+
+        if (!matchingDeal) {
+          setFlashDeal(null);
+          return;
+        }
+
+        const now = new Date();
+        const startDate = new Date(
+          matchingDeal.startsAt
+        );
+        const endDate = new Date(
+          matchingDeal.endsAt
+        );
+
+        const isCurrentlyActive =
+          matchingDeal.isActive &&
+          startDate <= now &&
+          endDate > now;
+
+        setFlashDeal(
+          isCurrentlyActive ? matchingDeal : null
+        );
+      } catch (error) {
+        console.error(
+          "Product Flash Deal loading error:",
+          error
+        );
+
+        setFlashDeal(null);
+      } finally {
+        setLoadingFlashDeal(false);
+      }
+    };
+
+    fetchFlashDeal();
+  }, [productId]);
+
   if (!product) {
     return (
       <main className="min-h-[70vh] bg-slate-50 px-4 py-10">
@@ -71,9 +143,14 @@ export default function ProductPage() {
 
   return (
     <main className="min-h-screen bg-slate-50 pb-24 lg:pb-28">
-        <ProductStickyBar product={product} />
-     <div className="mx-auto w-full max-w-[1900px] px-3 py-5 sm:px-5 sm:py-7 lg:px-8 2xl:px-10">
+      <ProductStickyBar
+        product={product}
+        flashDeal={flashDeal}
+      />
+
+      <div className="mx-auto w-full max-w-[1900px] px-3 py-5 sm:px-5 sm:py-7 lg:px-8 2xl:px-10">
         {/* Breadcrumb */}
+
         <nav className="mb-5 flex items-center gap-2 overflow-x-auto whitespace-nowrap text-sm text-slate-500">
           <Link
             href="/"
@@ -105,9 +182,13 @@ export default function ProductPage() {
           </span>
         </nav>
 
-       <ProductDetails product={product}>
-       <ProductDescription product={product} />
-       </ProductDetails>
+        <ProductDetails
+          product={product}
+          flashDeal={flashDeal}
+          loadingFlashDeal={loadingFlashDeal}
+        >
+          <ProductDescription product={product} />
+        </ProductDetails>
 
         <div className="mt-12">
           <RelatedProducts product={product} />

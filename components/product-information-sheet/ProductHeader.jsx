@@ -60,7 +60,7 @@ export default function ProductHeader({ product }) {
   );
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+   <section className="overflow-hidden border border-slate-200 bg-white shadow-sm">
       {/* Document heading */}
       <div className="border-b border-slate-200 bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-600 px-5 py-5 text-white sm:px-6">
         <div className="flex items-start justify-between gap-5">
@@ -87,7 +87,7 @@ export default function ProductHeader({ product }) {
       <div className="grid gap-7 p-5 lg:grid-cols-[minmax(260px,350px)_1fr] lg:p-6">
         {/* Product image and QR */}
         <div className="space-y-4">
-          <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-3xl border border-slate-200 bg-slate-50">
+          <div className="relative flex aspect-square items-center justify-center overflow-hidden border border-slate-200 bg-slate-50">
             <Image
               src={image}
               alt={product.name || "Product image"}
@@ -97,7 +97,7 @@ export default function ProductHeader({ product }) {
             />
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+          <div className="border border-slate-200 bg-slate-50 p-4">
             <div className="flex items-center gap-2">
               <ScanLine
                 size={18}
@@ -109,7 +109,7 @@ export default function ProductHeader({ product }) {
               </p>
             </div>
 
-            <div className="mt-4 flex flex-col items-center rounded-2xl border border-slate-200 bg-white p-4">
+            <div className="mt-4 flex flex-col items-center border-t border-slate-200 bg-white px-4 py-5">
               {productId && productUrl ? (
                 <>
                   <div className="rounded-xl bg-white p-2">
@@ -149,7 +149,7 @@ export default function ProductHeader({ product }) {
 
         {/* Product identity */}
         <div>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid border-t border-l border-slate-200 sm:grid-cols-2">
             <InfoCard
               icon={<Package size={18} />}
               title="Product Reference"
@@ -187,7 +187,7 @@ export default function ProductHeader({ product }) {
             />
           </div>
 
-          <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+          <div className="mt-6 border-y border-emerald-200 bg-emerald-50 px-5 py-5">
             <div className="flex items-start gap-3">
               <BadgeCheck
                 size={25}
@@ -214,7 +214,7 @@ export default function ProductHeader({ product }) {
             </div>
           </div>
 
-          <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50 p-4">
+          <div className="mt-6 border-y border-blue-200 bg-blue-50 px-5 py-4">
             <p className="text-xs font-black uppercase tracking-[0.14em] text-blue-700">
               Digital product address
             </p>
@@ -231,11 +231,11 @@ export default function ProductHeader({ product }) {
 
 function InfoCard({ icon, title, value }) {
   return (
-    <div className="min-w-0 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+    <div className="min-w-0 border-b border-slate-200 px-1 py-4 sm:border-r sm:px-5">
       <div className="flex items-center gap-2 text-blue-600">
         {icon}
 
-        <span className="text-[10px] font-black uppercase tracking-[0.12em] sm:text-xs">
+        <span className="text-[10px] font-black uppercase tracking-[0.14em] sm:text-xs">
           {title}
         </span>
       </div>

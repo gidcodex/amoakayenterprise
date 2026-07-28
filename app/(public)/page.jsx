@@ -6,6 +6,7 @@ import Newsletter from "@/components/Newsletter";
 import OurSpecs from "@/components/OurSpec";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import TrendingBrands from "@/components/TrendingBrands";
+import { FlashDeals } from "@/components/flash-deals";
 
 export default function Home() {
   return (
@@ -81,7 +82,8 @@ export default function Home() {
           <ShopByCategory />
         </div>
       </section>
-
+     
+       <FlashDeals />
       {/* =====================================================
           LATEST PRODUCTS
       ===================================================== */}

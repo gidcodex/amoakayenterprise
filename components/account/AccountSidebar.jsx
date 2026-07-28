@@ -13,9 +13,14 @@ import {
   Gift,
   Headphones,
   Settings,
+  ChevronRight,
 } from "lucide-react";
 
-export default function AccountSidebar({ user }) {
+export default function AccountSidebar({
+  user,
+  mobile = false,
+  onNavigate,
+}) {
   const pathname = usePathname();
 
   const links = [
@@ -66,28 +71,59 @@ export default function AccountSidebar({ user }) {
     },
   ];
 
+  const handleNavigation = () => {
+    if (mobile && onNavigate) {
+      onNavigate();
+    }
+  };
+
   return (
-    <aside className="w-16 sm:w-20 lg:w-full self-start shrink-0 bg-white border border-slate-200 rounded-xl sm:rounded-2xl shadow-lg shadow-slate-200/40 p-2 sm:p-3 lg:p-5">
-      {/* Desktop profile */}
-      <div className="hidden lg:flex items-center gap-4 pb-5 border-b border-slate-100">
+    <aside
+      className={
+        mobile
+          ? "flex min-h-full w-full flex-col bg-white px-4 py-5"
+          : "w-full self-start rounded-2xl border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/40"
+      }
+    >
+      {/* Profile */}
+      <div
+        className={
+          mobile
+            ? "flex items-center gap-3 rounded-2xl bg-slate-50 p-4"
+            : "flex items-center gap-4 border-b border-slate-100 pb-5"
+        }
+      >
         <img
-          src={user?.imageUrl}
+          src={user?.imageUrl || "/placeholder.png"}
           alt={user?.fullName || "Customer profile"}
-          className="w-14 h-14 rounded-xl object-cover shrink-0"
+          className={
+            mobile
+              ? "h-12 w-12 shrink-0 rounded-2xl object-cover"
+              : "h-14 w-14 shrink-0 rounded-xl object-cover"
+          }
         />
 
-        <div className="min-w-0">
-          <p className="font-bold text-slate-900 truncate">
-            {user?.fullName || user?.firstName || "Customer"}
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-black text-slate-900">
+            {user?.fullName ||
+              user?.firstName ||
+              "Customer"}
           </p>
 
-          <p className="text-xs text-slate-500 truncate">
+          <p className="mt-1 truncate text-xs text-slate-500">
             {user?.primaryEmailAddress?.emailAddress}
           </p>
         </div>
       </div>
 
-      <nav className="mt-1 lg:mt-5 space-y-1.5">
+      {/* Navigation */}
+      <nav
+        className={
+          mobile
+            ? "mt-5 flex-1 space-y-2"
+            : "mt-5 space-y-1.5"
+        }
+      >
         {links.map((link) => {
           const Icon = link.icon;
 
@@ -101,29 +137,63 @@ export default function AccountSidebar({ user }) {
             <Link
               key={link.label}
               href={link.href}
-              title={link.label}
-              className={`relative flex items-center justify-center lg:justify-start gap-3 px-2 lg:px-4 py-3 rounded-lg lg:rounded-xl transition-all duration-200 ${
+              onClick={handleNavigation}
+              className={`group flex w-full items-center gap-3 rounded-xl px-4 py-3.5 transition-all duration-200 ${
                 active
                   ? "bg-blue-600 text-white shadow-md shadow-blue-200/60"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}
             >
-              <Icon size={21} className="shrink-0" />
+              <span
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                  active
+                    ? "bg-white/15 text-white"
+                    : "bg-slate-100 text-slate-600 group-hover:bg-white"
+                }`}
+              >
+                <Icon size={19} />
+              </span>
 
-              <span className="hidden lg:inline font-semibold">
+              <span className="min-w-0 flex-1 truncate text-sm font-bold">
                 {link.label}
               </span>
 
-              {active && (
-                <span className="lg:hidden absolute right-0 top-2 bottom-2 w-1 rounded-l bg-blue-600" />
+              {mobile && (
+                <ChevronRight
+                  size={17}
+                  className={
+                    active
+                      ? "text-white/80"
+                      : "text-slate-300"
+                  }
+                />
               )}
             </Link>
           );
         })}
       </nav>
 
-      <div className="flex justify-center lg:justify-start pt-4 lg:pt-5 mt-4 lg:mt-5 border-t border-slate-100">
-        <UserButton />
+      {/* Account button */}
+      <div
+        className={
+          mobile
+            ? "mt-6 border-t border-slate-100 pt-5"
+            : "mt-5 border-t border-slate-100 pt-5"
+        }
+      >
+        <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
+          <UserButton />
+
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-bold text-slate-800">
+              Account settings
+            </p>
+
+            <p className="text-xs text-slate-500">
+              Manage profile and sign out
+            </p>
+          </div>
+        </div>
       </div>
     </aside>
   );

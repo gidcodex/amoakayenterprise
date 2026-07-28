@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ChevronRight,
+  CircleDollarSign,
   FileText,
   Package,
   RotateCcw,
@@ -23,6 +24,7 @@ const statusStyles = {
   SHIPPED: "bg-purple-50 text-purple-700 border-purple-200",
   DELIVERED: "bg-green-50 text-green-700 border-green-200",
   CANCELLED: "bg-red-50 text-red-700 border-red-200",
+  REFUNDED: "bg-cyan-50 text-cyan-700 border-cyan-200",
 };
 
 const statusLabels = {
@@ -31,30 +33,74 @@ const statusLabels = {
   SHIPPED: "Shipped",
   DELIVERED: "Completed",
   CANCELLED: "Cancelled",
+  REFUNDED: "Refunded",
 };
+
+const refundReasons = [
+  "Ordered by mistake",
+  "Changed my mind",
+  "Found a better price",
+  "Incorrect delivery information",
+  "Payment issue",
+  "Order is taking too long",
+  "Other",
+];
+
+const returnReasons = [
+  "Wrong item received",
+  "Damaged product",
+  "Product not as described",
+  "Changed my mind",
+  "Other",
+];
 
 const OrderItem = ({ order }) => {
   const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
 
   const [ratingModal, setRatingModal] = useState(null);
+
   const [returnModal, setReturnModal] = useState(null);
-  const [reason, setReason] = useState("");
-  const [details, setDetails] = useState("");
+  const [returnReason, setReturnReason] = useState("");
+  const [returnDetails, setReturnDetails] = useState("");
   const [loadingReturn, setLoadingReturn] = useState(false);
 
+  const [refundModal, setRefundModal] = useState(null);
+  const [refundReason, setRefundReason] = useState("");
+  const [refundDetails, setRefundDetails] = useState("");
+  const [loadingRefund, setLoadingRefund] = useState(false);
+
   const { ratings = [] } = useSelector((state) => state.rating);
+
+  const canRequestRefund = ["ORDER_PLACED", "PROCESSING"].includes(
+    order.status
+  );
+
+  const isCOD = order.paymentMethod === "COD";
+
+  const closeReturnModal = () => {
+    setReturnModal(null);
+    setReturnReason("");
+    setReturnDetails("");
+  };
+
+  const closeRefundModal = () => {
+    setRefundModal(null);
+    setRefundReason("");
+    setRefundDetails("");
+  };
 
   const submitReturnRequest = async () => {
     if (!returnModal) return;
 
-    if (!reason.trim()) {
-      return toast.error("Please select a return reason.");
+    if (!returnReason.trim()) {
+      toast.error("Please select a return reason.");
+      return;
     }
 
     try {
       setLoadingReturn(true);
 
-      const res = await fetch("/api/returns", {
+      const response = await fetch("/api/returns", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,28 +108,86 @@ const OrderItem = ({ order }) => {
         body: JSON.stringify({
           orderId: returnModal.orderId,
           productId: returnModal.productId,
-          reason,
-          details,
+          reason: returnReason,
+          details: returnDetails,
         }),
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
-      if (!res.ok) {
-        return toast.error(
-          data.error || "Failed to submit return request."
-        );
+      if (!response.ok) {
+        toast.error(data.error || "Failed to submit return request.");
+        return;
       }
 
       toast.success(data.message || "Return request submitted.");
-      setReturnModal(null);
-      setReason("");
-      setDetails("");
+      closeReturnModal();
     } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong.");
+      console.error("Submit return request error:", error);
+      toast.error("Something went wrong while submitting the return request.");
     } finally {
       setLoadingReturn(false);
+    }
+  };
+
+  const submitRefundRequest = async () => {
+    if (!refundModal) return;
+
+    if (!refundReason.trim()) {
+      toast.error(
+        isCOD
+          ? "Please select a cancellation reason."
+          : "Please select a refund reason."
+      );
+      return;
+    }
+
+    try {
+      setLoadingRefund(true);
+
+      const response = await fetch("/api/refunds", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId: refundModal.orderId,
+          orderItemId: refundModal.orderItemId,
+          reason: refundReason,
+          details: refundDetails,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(
+          data.error ||
+            (isCOD
+              ? "Failed to submit cancellation request."
+              : "Failed to submit refund request.")
+        );
+        return;
+      }
+
+      toast.success(
+        data.message ||
+          (isCOD
+            ? "Cancellation request submitted."
+            : "Refund request submitted.")
+      );
+
+      closeRefundModal();
+    } catch (error) {
+      console.error("Submit refund request error:", error);
+
+      toast.error(
+        isCOD
+          ? "Something went wrong while submitting the cancellation request."
+          : "Something went wrong while submitting the refund request."
+      );
+    } finally {
+      setLoadingRefund(false);
     }
   };
 
@@ -100,9 +204,7 @@ const OrderItem = ({ order }) => {
           <div className="flex min-w-0 items-center gap-3">
             <Package size={19} className="shrink-0 text-green-600" />
 
-            <p className="truncate font-bold text-slate-900">
-              {storeName}
-            </p>
+            <p className="truncate font-bold text-slate-900">{storeName}</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -142,6 +244,13 @@ const OrderItem = ({ order }) => {
                 {new Date(order.createdAt).toLocaleString()}
               </span>
             </p>
+
+            <p>
+              Payment:
+              <span className="ml-2 font-semibold text-slate-900">
+                {order.paymentMethod}
+              </span>
+            </p>
           </div>
 
           <div className="sm:text-right">
@@ -169,9 +278,11 @@ const OrderItem = ({ order }) => {
               item.variantImages?.[0] ||
               item.product?.images?.[0];
 
+            const productName = item.product?.name || "Product";
+
             return (
               <div
-                key={`${item.productId}-${item.variantId || index}`}
+                key={item.id || `${item.productId}-${item.variantId || index}`}
                 className="grid gap-4 px-4 py-5 sm:grid-cols-[96px_minmax(0,1fr)_auto] sm:items-center sm:px-6"
               >
                 <Link
@@ -181,7 +292,7 @@ const OrderItem = ({ order }) => {
                   {image ? (
                     <Image
                       src={image}
-                      alt={item.product?.name || "Product"}
+                      alt={productName}
                       width={88}
                       height={88}
                       className="h-20 w-20 object-contain p-1"
@@ -196,7 +307,7 @@ const OrderItem = ({ order }) => {
                     href={`/product/${item.product?.id || item.productId}`}
                     className="font-semibold leading-6 text-slate-900 transition hover:text-green-600"
                   >
-                    {item.product?.name || "Product"}
+                    {productName}
                   </Link>
 
                   {item.variantName && item.variantValue && (
@@ -230,13 +341,36 @@ const OrderItem = ({ order }) => {
                       <Rating value={existingRating.rating} />
                     </div>
                   )}
+
+                  {canRequestRefund && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setRefundModal({
+                          orderId: order.id,
+                          orderItemId: item.id,
+                          productId: item.productId,
+                          productName,
+                          quantity: item.quantity,
+                          amount: Number(item.price || 0) * item.quantity,
+                        })
+                      }
+                      className="mt-4 inline-flex items-center justify-center gap-2 border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 transition hover:border-red-300 hover:bg-red-100"
+                    >
+                      <CircleDollarSign size={16} />
+
+                      {isCOD
+                        ? "Request cancellation"
+                        : "Request refund"}
+                    </button>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-5 sm:justify-end">
                   <p className="text-lg font-bold text-slate-900">
                     {currency}
                     {Number(
-                      item.price * item.quantity
+                      Number(item.price || 0) * Number(item.quantity || 0)
                     ).toLocaleString()}
                   </p>
 
@@ -298,7 +432,7 @@ const OrderItem = ({ order }) => {
 
                 return (
                   <div
-                    key={`actions-${item.productId}-${item.variantId || ""}`}
+                    key={`actions-${item.id || item.productId}`}
                     className="contents"
                   >
                     {!existingRating && (
@@ -322,7 +456,7 @@ const OrderItem = ({ order }) => {
                         setReturnModal({
                           orderId: order.id,
                           productId: item.productId,
-                          productName: item.product?.name,
+                          productName: item.product?.name || "Product",
                         })
                       }
                       className="inline-flex items-center justify-center gap-2 border border-orange-300 bg-white px-4 py-2 text-sm font-semibold text-orange-600 transition hover:bg-orange-50"
@@ -354,17 +488,126 @@ const OrderItem = ({ order }) => {
         />
       )}
 
+      {/* Refund or cancellation modal */}
+      {refundModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto bg-white p-5 shadow-2xl sm:p-7">
+            <button
+              type="button"
+              onClick={closeRefundModal}
+              disabled={loadingRefund}
+              className="absolute right-4 top-4 text-slate-400 transition hover:text-slate-700 disabled:cursor-not-allowed"
+              aria-label="Close refund request"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-600">
+              <CircleDollarSign size={24} />
+            </div>
+
+            <h2 className="mt-4 pr-8 text-xl font-bold text-slate-900">
+              {isCOD
+                ? "Request Order Cancellation"
+                : "Request Cancellation & Refund"}
+            </h2>
+
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              {isCOD
+                ? "The seller will review your cancellation request before the order is shipped."
+                : "The seller will review your request first. The marketplace administrator will make the final refund decision."}
+            </p>
+
+            <div className="mt-5 border border-slate-200 bg-slate-50 p-4">
+              <p className="font-semibold text-slate-900">
+                {refundModal.productName}
+              </p>
+
+              <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-slate-500">
+                <span>Quantity: {refundModal.quantity}</span>
+
+                <span>
+                  Amount:{" "}
+                  <strong className="text-slate-800">
+                    {currency}
+                    {Number(refundModal.amount || 0).toLocaleString()}
+                  </strong>
+                </span>
+              </div>
+
+              <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Payment method: {order.paymentMethod}
+              </p>
+            </div>
+
+            <label className="mt-6 flex flex-col gap-2 text-sm font-medium text-slate-700">
+              {isCOD ? "Cancellation reason" : "Refund reason"}
+
+              <select
+                value={refundReason}
+                onChange={(event) => setRefundReason(event.target.value)}
+                disabled={loadingRefund}
+                className="border border-slate-200 bg-white px-4 py-3 outline-none focus:border-green-400 focus:ring-4 focus:ring-green-100 disabled:cursor-not-allowed disabled:bg-slate-100"
+              >
+                <option value="">Select a reason</option>
+
+                {refundReasons.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="mt-4 flex flex-col gap-2 text-sm font-medium text-slate-700">
+              Additional details
+
+              <textarea
+                value={refundDetails}
+                onChange={(event) => setRefundDetails(event.target.value)}
+                disabled={loadingRefund}
+                rows={4}
+                placeholder="Provide any additional information about your request..."
+                className="resize-none border border-slate-200 px-4 py-3 outline-none focus:border-green-400 focus:ring-4 focus:ring-green-100 disabled:cursor-not-allowed disabled:bg-slate-100"
+              />
+            </label>
+
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={closeRefundModal}
+                disabled={loadingRefund}
+                className="border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Keep order
+              </button>
+
+              <button
+                type="button"
+                onClick={submitRefundRequest}
+                disabled={loadingRefund}
+                className="bg-red-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {loadingRefund
+                  ? "Submitting..."
+                  : isCOD
+                    ? "Submit Cancellation Request"
+                    : "Submit Refund Request"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Existing delivered-product return modal */}
       {returnModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="relative w-full max-w-md bg-white p-5 shadow-2xl sm:p-6">
             <button
               type="button"
-              onClick={() => {
-                setReturnModal(null);
-                setReason("");
-                setDetails("");
-              }}
-              className="absolute right-4 top-4 text-slate-400 transition hover:text-slate-700"
+              onClick={closeReturnModal}
+              disabled={loadingReturn}
+              className="absolute right-4 top-4 text-slate-400 transition hover:text-slate-700 disabled:cursor-not-allowed"
               aria-label="Close return request"
             >
               <X size={20} />
@@ -380,32 +623,33 @@ const OrderItem = ({ order }) => {
 
             <label className="mt-6 flex flex-col gap-2 text-sm text-slate-600">
               Reason
+
               <select
-                value={reason}
-                onChange={(event) => setReason(event.target.value)}
-                className="border border-slate-200 px-4 py-3 outline-none focus:border-green-400 focus:ring-4 focus:ring-green-100"
+                value={returnReason}
+                onChange={(event) => setReturnReason(event.target.value)}
+                disabled={loadingReturn}
+                className="border border-slate-200 px-4 py-3 outline-none focus:border-green-400 focus:ring-4 focus:ring-green-100 disabled:cursor-not-allowed disabled:bg-slate-100"
               >
                 <option value="">Select reason</option>
-                <option value="Wrong item received">
-                  Wrong item received
-                </option>
-                <option value="Damaged product">Damaged product</option>
-                <option value="Product not as described">
-                  Product not as described
-                </option>
-                <option value="Changed my mind">Changed my mind</option>
-                <option value="Other">Other</option>
+
+                {returnReasons.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
               </select>
             </label>
 
             <label className="mt-4 flex flex-col gap-2 text-sm text-slate-600">
               Details
+
               <textarea
-                value={details}
-                onChange={(event) => setDetails(event.target.value)}
+                value={returnDetails}
+                onChange={(event) => setReturnDetails(event.target.value)}
+                disabled={loadingReturn}
                 rows={4}
                 placeholder="Explain the issue..."
-                className="resize-none border border-slate-200 px-4 py-3 outline-none focus:border-green-400 focus:ring-4 focus:ring-green-100"
+                className="resize-none border border-slate-200 px-4 py-3 outline-none focus:border-green-400 focus:ring-4 focus:ring-green-100 disabled:cursor-not-allowed disabled:bg-slate-100"
               />
             </label>
 

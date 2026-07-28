@@ -14,15 +14,17 @@ export async function GET(request) {
       where: { userId },
       include: {
         product: {
-          include: {
-            rating: true,
-            store: true,
-            variants: true,
-            categoryRef: true,
-            subcategoryRef: true,
-            childCategory: true,
+              include: {
+              rating: true,
+              store: true,
+              variants: true,
+              categoryRef: true,
+              subcategoryRef: true,
+              childCategory: true,
+
+              flashDeal: true,
+             },
           },
-        },
       },
       orderBy: { createdAt: "desc" },
     });

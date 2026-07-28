@@ -78,18 +78,35 @@ export async function POST(request) {
       );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | 4. HANDLE ONLY SUCCESSFUL PAYMENT EVENTS
-    |--------------------------------------------------------------------------
-    */
-    if (event?.event !== "charge.success") {
-      return NextResponse.json({
-        received: true,
-        ignored: true,
-        event: event?.event || "unknown",
-      });
-    }
+   /*
+|--------------------------------------------------------------------------
+| 4. ROUTE PAYSTACK WEBHOOK EVENTS
+|--------------------------------------------------------------------------
+*/
+const eventType = event?.event;
+
+const refundEvents = [
+  "refund.pending",
+  "refund.processing",
+  "refund.processed",
+  "refund.failed",
+  "refund.needs-attention",
+];
+
+if (refundEvents.includes(eventType)) {
+  return await handleRefundWebhook({
+    event,
+    eventType,
+  });
+}
+
+if (eventType !== "charge.success") {
+  return NextResponse.json({
+    received: true,
+    ignored: true,
+    event: eventType || "unknown",
+  });
+}
 
     const eventTransaction = event?.data;
     const reference = eventTransaction?.reference;
@@ -668,6 +685,209 @@ export async function POST(request) {
   }
 }
 
+async function handleRefundWebhook({
+  event,
+  eventType,
+}) {
+  const refundData = event?.data;
+
+  if (!refundData) {
+    return NextResponse.json(
+      {
+        error: "Refund webhook data is missing.",
+      },
+      { status: 400 }
+    );
+  }
+
+  const providerRefundId =
+    refundData.id !== undefined &&
+    refundData.id !== null
+      ? String(refundData.id)
+      : null;
+
+  const providerStatus =
+    refundData.status ||
+    eventType.replace("refund.", "");
+
+  const transactionReference =
+    refundData.transaction?.reference ||
+    refundData.transaction_reference ||
+    refundData.reference ||
+    null;
+
+  /*
+   * Paystack may provide either the refund ID,
+   * transaction reference or both. Try all known
+   * provider identifiers when locating the record.
+   */
+  const refundRequest =
+    await prisma.refundRequest.findFirst({
+      where: {
+        OR: [
+          ...(providerRefundId
+            ? [
+                {
+                  providerRefundId,
+                },
+              ]
+            : []),
+
+          ...(transactionReference
+            ? [
+                {
+                  providerReference:
+                    transactionReference,
+                },
+
+                {
+                  payment: {
+                    providerReference:
+                      transactionReference,
+                  },
+                },
+              ]
+            : []),
+        ],
+      },
+
+      include: {
+        payment: {
+          select: {
+            id: true,
+            providerReference: true,
+          },
+        },
+      },
+    });
+
+  /*
+   * Return 200 for unknown records so Paystack does
+   * not keep retrying an event that cannot be matched.
+   */
+  if (!refundRequest) {
+    console.error(
+      "PAYSTACK REFUND WEBHOOK RECORD NOT FOUND:",
+      {
+        eventType,
+        providerRefundId,
+        transactionReference,
+      }
+    );
+
+    return NextResponse.json({
+      received: true,
+      ignored: true,
+      reason: "Refund request not found.",
+      event: eventType,
+    });
+  }
+
+  const mappedStatus =
+    mapPaystackRefundStatus(providerStatus);
+
+  const now = new Date();
+
+  const updateData = {
+    provider: "PAYSTACK",
+
+    providerStatus:
+      String(providerStatus).toLowerCase(),
+
+    providerResponse: event,
+
+    failureReason:
+      mappedStatus === "FAILED"
+        ? refundData.failure_reason ||
+          refundData.message ||
+          refundData.refund_reason ||
+          "Paystack could not complete the refund."
+        : mappedStatus === "NEEDS_ATTENTION"
+          ? refundData.failure_reason ||
+            refundData.message ||
+            "Paystack requires additional attention."
+          : null,
+  };
+
+  if (
+    providerRefundId &&
+    !refundRequest.providerRefundId
+  ) {
+    updateData.providerRefundId =
+      providerRefundId;
+  }
+
+  if (
+    transactionReference &&
+    !refundRequest.providerReference
+  ) {
+    updateData.providerReference =
+      transactionReference;
+  }
+
+  switch (mappedStatus) {
+    case "PROCESSING":
+      updateData.status = "PROCESSING";
+
+      if (!refundRequest.processedAt) {
+        updateData.processedAt = now;
+      }
+
+      break;
+
+    case "REFUNDED":
+      updateData.status = "REFUNDED";
+      updateData.completedAt = now;
+      updateData.refundedAt = now;
+      updateData.failureReason = null;
+      break;
+
+    case "FAILED":
+      updateData.status = "FAILED";
+      break;
+
+    case "NEEDS_ATTENTION":
+      /*
+       * Keep the local request available for an admin
+       * retry rather than treating it as completed.
+       */
+      updateData.status = "FAILED";
+      break;
+
+    default:
+      updateData.status = "PROCESSING";
+  }
+
+  const updatedRefund =
+    await prisma.refundRequest.update({
+      where: {
+        id: refundRequest.id,
+      },
+
+      data: updateData,
+
+      select: {
+        id: true,
+        status: true,
+        provider: true,
+        providerStatus: true,
+        providerRefundId: true,
+        providerReference: true,
+        failureReason: true,
+        processedAt: true,
+        completedAt: true,
+        refundedAt: true,
+      },
+    });
+
+  return NextResponse.json({
+    received: true,
+    processed: true,
+    event: eventType,
+    refund: updatedRefund,
+  });
+}
+
 /*
 |--------------------------------------------------------------------------
 | HELPERS
@@ -748,6 +968,31 @@ function mapPaystackStatus(status) {
 
     case "failed":
     case "reversed":
+    default:
+      return "FAILED";
+  }
+}
+
+function mapPaystackRefundStatus(status) {
+  switch (
+    String(status || "")
+      .trim()
+      .toLowerCase()
+  ) {
+    case "pending":
+    case "processing":
+      return "PROCESSING";
+
+    case "processed":
+    case "success":
+    case "successful":
+      return "REFUNDED";
+
+    case "needs-attention":
+    case "needs_attention":
+      return "NEEDS_ATTENTION";
+
+    case "failed":
     default:
       return "FAILED";
   }

@@ -1,6 +1,7 @@
 import { Outfit } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import StoreProvider from "@/app/StoreProvider";
+import WishlistInitializer from "@/components/WishlistInitializer";
 import { ClerkProvider } from "@clerk/nextjs";
 import AdetoBoafo from "@/components/ai/AdetoBoafo";
 import AdetoBoafoProvider from "@/components/ai/core/AdetoBoafoProvider";
@@ -19,11 +20,12 @@ export default function RootLayout({ children }) {
           <html lang="en">
             <body className={`${outfit.className} antialiased`}>
                 <StoreProvider>
-                 <AdetoBoafoProvider>
-                     <Toaster />
-                       {children}
-                     <AdetoBoafo />
-                 </AdetoBoafoProvider>
+                   <WishlistInitializer />
+                         <AdetoBoafoProvider>
+                            <Toaster />
+                                 {children}
+                                 <AdetoBoafo />
+                         </AdetoBoafoProvider>
                 </StoreProvider>
             </body>
           </html> 
