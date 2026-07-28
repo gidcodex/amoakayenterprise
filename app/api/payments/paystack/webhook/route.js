@@ -71,6 +71,9 @@ export async function POST(request) {
 
     try {
       event = JSON.parse(rawBody);
+
+      console.log("PAYSTACK EVENT:", event.event);
+      console.log("PAYSTACK DATA:", event.data);
     } catch {
       return NextResponse.json(
         { error: "Invalid webhook payload." },
