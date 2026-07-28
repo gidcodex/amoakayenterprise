@@ -841,7 +841,6 @@ async function handleRefundWebhook({
     case "REFUNDED":
       updateData.status = "REFUNDED";
       updateData.completedAt = now;
-     
       updateData.failureReason = null;
       break;
 
