@@ -841,7 +841,7 @@ async function handleRefundWebhook({
     case "REFUNDED":
       updateData.status = "REFUNDED";
       updateData.completedAt = now;
-      updateData.refundedAt = now;
+     
       updateData.failureReason = null;
       break;
 
@@ -879,7 +879,6 @@ async function handleRefundWebhook({
         failureReason: true,
         processedAt: true,
         completedAt: true,
-        refundedAt: true,
       },
     });
 
