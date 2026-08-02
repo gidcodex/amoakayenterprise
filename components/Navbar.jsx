@@ -1,41 +1,29 @@
 "use client";
 
-import {
-  GitCompare,
-  Heart,
-  Menu,
-  PackageIcon,
-  Search,
-  ShoppingCart,
-  Truck,
-  User,
-  X,
-} from "lucide-react";
+import { GitCompare, Heart, Menu, PackageIcon, Search, ShoppingCart, Truck, User, X,} from "lucide-react";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import {
-  UserButton,
-  useClerk,
-  useUser,
-} from "@clerk/nextjs";
+import { UserButton, useClerk, useUser,} from "@clerk/nextjs";
 
 import AnimatedAmoakayLogo from "@/components/AnimatedAmoakayLogo";
 import NotificationBell from "@/components/NotificationBell";
 
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/context/LanguageContext";
+
 const Navbar = ({ categories = [] }) => {
+  const { t } = useLanguage();
   const { user } = useUser();
   const { openSignIn } = useClerk();
   const router = useRouter();
-
   const [search, setSearch] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] =
     useState(false);
 
   const cartCount = useSelector((state) => state.cart.total );
-
   const wishlistCount = useSelector(
     (state) => state.wishlist.ids.length
   );
@@ -85,14 +73,14 @@ const Navbar = ({ categories = [] }) => {
                 href="/"
                 className="font-medium transition hover:text-green-600"
               >
-                Home
+                {t("navbar.home")}
               </Link>
 
               <Link
                 href="/shop"
                 className="font-medium transition hover:text-green-600"
               >
-                Shop
+                {t("navbar.shop")}
               </Link>
 
               <Link
@@ -101,21 +89,21 @@ const Navbar = ({ categories = [] }) => {
                 className="flex items-center gap-1 font-medium transition hover:text-green-600"
               >
                 <Truck size={17} />
-                Track
+                {t("navbar.track")}
               </Link>
 
               <Link
                 href="/about"
                 className="hidden font-medium transition hover:text-green-600 2xl:block"
               >
-                About
+                {t("navbar.about")}
               </Link>
 
               <Link
                 href="/contact"
                 className="hidden font-medium transition hover:text-green-600 2xl:block"
               >
-                Contact
+                {t("navbar.contact")}
               </Link>
             </div>
 
@@ -132,7 +120,7 @@ const Navbar = ({ categories = [] }) => {
 
               <input
                 type="text"
-                placeholder="Search products..."
+                placeholder={t("navbar.searchPlaceholder")}
                 value={search}
                 onChange={(event) =>
                   setSearch(event.target.value)
@@ -142,13 +130,15 @@ const Navbar = ({ categories = [] }) => {
               />
             </form>
 
+            <LanguageSwitcher />
+
             {/* Wishlist */}
             <Link
               data-tour="wishlist"
               href="/wishlist"
               onClick={handleWishlistClick}
               className="relative rounded-full p-2.5 transition hover:bg-slate-100 hover:text-green-600"
-              title="Wishlist"
+              title={t("navbar.wishlist")}
             >
               <Heart size={21} />
 
@@ -164,7 +154,7 @@ const Navbar = ({ categories = [] }) => {
               data-tour="compare"
               href="/compare"
               className="relative rounded-full p-2.5 transition hover:bg-slate-100 hover:text-green-600"
-              title="Compare Products"
+              title={t("navbar.compareProducts")}
             >
               <GitCompare size={21} />
 
@@ -180,7 +170,7 @@ const Navbar = ({ categories = [] }) => {
               data-tour="cart"
               href="/cart"
               className="relative rounded-full p-2.5 transition hover:bg-slate-100 hover:text-green-600"
-              title="Cart"
+              title={t("navbar.cart")}
             >
               <ShoppingCart size={21} />
 
@@ -198,7 +188,7 @@ const Navbar = ({ categories = [] }) => {
                 onClick={() => openSignIn()}
                 className="rounded-full bg-gradient-to-r from-green-600 to-emerald-500 px-6 py-2.5 font-semibold text-white shadow-md shadow-green-200 transition hover:from-green-700 hover:to-emerald-600"
               >
-                Login
+                {t("navbar.login")}
               </button>
             ) : (
               <div className="flex items-center gap-3">
@@ -207,24 +197,16 @@ const Navbar = ({ categories = [] }) => {
                 <UserButton>
                   <UserButton.MenuItems>
                     <UserButton.Action
-                      labelIcon={
-                        <User size={16} />
-                      }
-                      label="My Account"
-                      onClick={() =>
-                        router.push("/account")
-                      }
-                    />
+  labelIcon={<User size={16} />}
+  label={t("navbar.myAccount")}
+  onClick={() => router.push("/account")}
+/>
 
-                    <UserButton.Action
-                      labelIcon={
-                        <PackageIcon size={16} />
-                      }
-                      label="My Orders"
-                      onClick={() =>
-                        router.push("/orders")
-                      }
-                    />
+<UserButton.Action
+  labelIcon={<PackageIcon size={16} />}
+  label={t("navbar.myOrders")}
+  onClick={() => router.push("/orders")}
+/>
                   </UserButton.MenuItems>
                 </UserButton>
               </div>
@@ -242,11 +224,11 @@ const Navbar = ({ categories = [] }) => {
                 )
               }
               className="rounded-lg p-2 text-slate-700 transition hover:bg-slate-100"
-              aria-label={
-                mobileMenuOpen
-                  ? "Close navigation menu"
-                  : "Open navigation menu"
-              }
+               aria-label={
+                   mobileMenuOpen
+                   ? t("navbar.closeMenu")
+                   : t("navbar.openMenu")
+             }
               aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen ? (
@@ -268,7 +250,7 @@ const Navbar = ({ categories = [] }) => {
               onClick={handleNavClick}
               className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
             >
-              Home
+              {t("navbar.home")}
             </Link>
 
             <Link
@@ -276,7 +258,7 @@ const Navbar = ({ categories = [] }) => {
               onClick={handleNavClick}
               className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
             >
-              Shop
+              {t("navbar.shop")}
             </Link>
 
             <Link
@@ -286,7 +268,7 @@ const Navbar = ({ categories = [] }) => {
               className="flex items-center gap-2 rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
             >
               <Truck size={17} />
-              Track Order
+              {t("navbar.trackOrder")}
             </Link>
 
             <Link
@@ -294,7 +276,7 @@ const Navbar = ({ categories = [] }) => {
               onClick={handleNavClick}
               className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
             >
-              About
+              {t("navbar.about")}
             </Link>
 
             <Link
@@ -302,8 +284,12 @@ const Navbar = ({ categories = [] }) => {
               onClick={handleNavClick}
               className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
             >
-              Contact
+              {t("navbar.contact")}
             </Link>
+
+            <div className="py-2">
+                <LanguageSwitcher mobile />
+            </div>
 
             <Link
               data-tour="wishlist-mobile"
@@ -317,7 +303,7 @@ const Navbar = ({ categories = [] }) => {
               }}
               className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
             >
-              Wishlist ({wishlistCount})
+              {t("navbar.wishlist")} ({wishlistCount})
             </Link>
 
             <Link
@@ -326,7 +312,7 @@ const Navbar = ({ categories = [] }) => {
               onClick={handleNavClick}
               className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
             >
-              Compare ({compareCount})
+              {t("navbar.compare")} ({compareCount})
             </Link>
 
             <Link
@@ -335,7 +321,7 @@ const Navbar = ({ categories = [] }) => {
               onClick={handleNavClick}
               className="rounded-lg px-3 py-3 font-medium hover:bg-green-50 hover:text-green-700"
             >
-              Cart ({cartCount})
+              {t("navbar.cart")} ({cartCount})
             </Link>
 
             <form
@@ -347,7 +333,7 @@ const Navbar = ({ categories = [] }) => {
 
               <input
                 type="text"
-                placeholder="Search products"
+                placeholder={t("navbar.searchPlaceholder")}
                 value={search}
                 onChange={(event) =>
                   setSearch(event.target.value)
@@ -365,7 +351,7 @@ const Navbar = ({ categories = [] }) => {
                 }}
                 className="mt-3 w-full rounded-full bg-gradient-to-r from-green-600 to-emerald-500 px-6 py-3 font-semibold text-white"
               >
-                Login
+                {t("navbar.login")}
               </button>
             ) : (
               <div className="relative z-[200] mt-3 flex items-center justify-between border-t border-slate-100 pt-4">
@@ -382,27 +368,23 @@ const Navbar = ({ categories = [] }) => {
                   }}
                 >
                   <UserButton.MenuItems>
-                    <UserButton.Action
-                      labelIcon={
-                        <User size={16} />
-                      }
-                      label="My Account"
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        router.push("/account");
-                      }}
-                    />
+                   <UserButton.Action
+  labelIcon={<User size={16} />}
+  label={t("navbar.myAccount")}
+  onClick={() => {
+    setMobileMenuOpen(false);
+    router.push("/account");
+  }}
+/>
 
-                    <UserButton.Action
-                      labelIcon={
-                        <PackageIcon size={16} />
-                      }
-                      label="My Orders"
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        router.push("/orders");
-                      }}
-                    />
+<UserButton.Action
+  labelIcon={<PackageIcon size={16} />}
+  label={t("navbar.myOrders")}
+  onClick={() => {
+    setMobileMenuOpen(false);
+    router.push("/orders");
+  }}
+/>
                   </UserButton.MenuItems>
                 </UserButton>
               </div>

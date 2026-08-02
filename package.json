@@ -7,7 +7,23 @@
     "build": "prisma generate  && next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    
+    "translate:hero": "node --env-file=.env scripts/generate-translations.mjs --section=home.heroSlider",
+    "translate:home": "node --env-file=.env scripts/generate-translations.mjs --section=home", 
+    "translate:navbar": "node --env-file=.env scripts/generate-translations.mjs --section=navbar",
+    "translate:footer": "node --env-file=.env scripts/generate-translations.mjs --section=footer",
+    "translate": "node --env-file=.env scripts/translate/cli.mjs",
+    "approve": "node scripts/approve-translations.mjs",
+
+    "translate:diff": "node scripts/translation-diff.mjs",
+    "translate:diff:hero": "node scripts/translation-diff.mjs --section=home.heroSlider",
+    "translate:review-diff": "node --env-file=.env scripts/review-translation-diff.mjs",
+    "translate:pending": "node --env-file=.env scripts/process-pending-translations.mjs",
+    "translate:status": "node scripts/translation-status.mjs",
+
+    "translate:cli": "node --env-file=.env scripts/translate/cli.mjs",
+    "translate:import-db": "node --env-file=.env scripts/import-translations-to-db.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.39.5",
@@ -26,6 +42,7 @@
     "inngest": "^4.5.1",
     "lucide-react": "^0.525.0",
     "next": "^15.5.19",
+    "next-intl": "^4.13.4",
     "nodemailer": "^9.0.3",
     "openai": "^6.45.0",
     "prisma": "^6.19.3",

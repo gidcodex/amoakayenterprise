@@ -1,0 +1,322 @@
+{
+  "generatedAt": "2026-07-29T15:31:39.308Z",
+  "section": "home.heroSlider",
+  "translated": [],
+  "glossary": [
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.shopPromotion",
+      "english": "Shop",
+      "translation": "Yaa jarayeli"
+    }
+  ],
+  "contextOverrides": [],
+  "finalOverrides": [],
+  "memory": [
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.carouselLabel",
+      "english": "Amoakay Deals promotional offers",
+      "sourceText": "Amoakay Deals promotional offers",
+      "translation": "Amoakay Deals hiɛyaa nibii",
+      "origin": "ghanaNLP",
+      "approved": false
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.openPromotion",
+      "english": "Open the promotion for",
+      "sourceText": "Open the special sales offer for",
+      "translation": "Gbelemɔ jarayeli krɛdɛɛ ni akɛhaa lɛ",
+      "origin": "ghanaNLP",
+      "approved": false
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.bannerLoadError",
+      "english": "The promotional banner could not be loaded.",
+      "sourceText": "The promotional banner could not be loaded.",
+      "translation": "Anyɛɛɛ akɛ nɔ ni akɛwoɔ hiɛ lɛ awo mli.",
+      "origin": "ghanaNLP",
+      "approved": false
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.todaysDeals",
+      "english": "Today's Deals",
+      "sourceText": "Today's Deals",
+      "translation": "Ŋmɛnɛŋmɛnɛ Beaŋ Nibii",
+      "origin": "ghanaNLP",
+      "approved": false
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.upTo30Off",
+      "english": "Up to 30% Off",
+      "sourceText": "Get a discount of up to 30 percent",
+      "translation": "Na nɔ ko ni baa shi fe oha mlijaa 30",
+      "origin": "ghanaNLP",
+      "approved": false
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.selectedElectronics",
+      "english": "Selected electronics",
+      "sourceText": "Selected electronics",
+      "translation": "Elɛktrɔnik nibii ni ahala",
+      "origin": "ghanaNLP",
+      "approved": false
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.fastDeliveryNationwide",
+      "english": "Fast delivery nationwide",
+      "sourceText": "Fast delivery nationwide",
+      "translation": "Nibii ni akɛhaa oya yɛ maŋ muu lɛ fɛɛ mli",
+      "origin": "ghanaNLP",
+      "approved": false
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.limitedTimeOffers",
+      "english": "Limited-time offers",
+      "sourceText": "Special offers available for a short time",
+      "translation": "Nibii krɛdɛɛi ni akɛhaa ni yɔɔ be kukuoo mli",
+      "origin": "ghanaNLP",
+      "approved": false
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.viewAllDeals",
+      "english": "View all deals",
+      "sourceText": "View all available special offers",
+      "translation": "Kwɛmɔ nibii krɛdɛɛi fɛɛ ni yɔɔ lɛ",
+      "origin": "ghanaNLP",
+      "approved": false
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.previousPromotion",
+      "english": "Show previous promotion",
+      "sourceText": "Show the previous special offer",
+      "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni akɛha tsutsu lɛ",
+      "origin": "ghanaNLP",
+      "approved": false
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.nextPromotion",
+      "english": "Show next promotion",
+      "sourceText": "Show the next special offer",
+      "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni nyiɛ sɛɛ nɛɛ",
+      "origin": "ghanaNLP",
+      "approved": false
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.showPromotion",
+      "english": "Show promotion for",
+      "sourceText": "Show the special offer for",
+      "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni akɛhaa lɛ",
+      "origin": "ghanaNLP",
+      "approved": false
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.resumeSlider",
+      "english": "Resume automatic slider",
+      "sourceText": "Continue rotating the promotional banners automatically",
+      "translation": "Yaa nɔ otsake nibii ni akɛwoɔ hiɛ lɛ ahe aflaŋaa lɛ diɛŋtsɛ",
+      "origin": "ghanaNLP",
+      "approved": false
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.pauseSlider",
+      "english": "Pause automatic slider",
+      "sourceText": "Temporarily stop rotating the promotional banners",
+      "translation": "Temporarilly kpa hiɛyaa he aflaŋaa lɛ tsakemɔ",
+      "origin": "ghanaNLP",
+      "approved": false
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.promotion",
+      "english": "promotional offer",
+      "sourceText": "special sales offer",
+      "translation": "Nihɔɔmɔ krɛdɛɛ ni akɛhaa",
+      "origin": "ghanaNLP",
+      "approved": false
+    }
+  ],
+  "review": [
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.carouselLabel",
+      "english": "Amoakay Deals promotional offers",
+      "sourceText": "Amoakay Deals promotional offers",
+      "translation": "Amoakay Deals hiɛyaa nibii",
+      "reasons": [
+        "Translation-memory entry has not yet been approved.",
+        "Possible untranslated English words: deals"
+      ],
+      "source": "translationMemory"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.openPromotion",
+      "english": "Open the promotion for",
+      "sourceText": "Open the special sales offer for",
+      "translation": "Gbelemɔ jarayeli krɛdɛɛ ni akɛhaa lɛ",
+      "reasons": [
+        "Translation-memory entry has not yet been approved."
+      ],
+      "source": "translationMemory"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.bannerLoadError",
+      "english": "The promotional banner could not be loaded.",
+      "sourceText": "The promotional banner could not be loaded.",
+      "translation": "Anyɛɛɛ akɛ nɔ ni akɛwoɔ hiɛ lɛ awo mli.",
+      "reasons": [
+        "Translation-memory entry has not yet been approved."
+      ],
+      "source": "translationMemory"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.todaysDeals",
+      "english": "Today's Deals",
+      "sourceText": "Today's Deals",
+      "translation": "Ŋmɛnɛŋmɛnɛ Beaŋ Nibii",
+      "reasons": [
+        "Translation-memory entry has not yet been approved."
+      ],
+      "source": "translationMemory"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.upTo30Off",
+      "english": "Up to 30% Off",
+      "sourceText": "Get a discount of up to 30 percent",
+      "translation": "Na nɔ ko ni baa shi fe oha mlijaa 30",
+      "reasons": [
+        "Translation-memory entry has not yet been approved."
+      ],
+      "source": "translationMemory"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.selectedElectronics",
+      "english": "Selected electronics",
+      "sourceText": "Selected electronics",
+      "translation": "Elɛktrɔnik nibii ni ahala",
+      "reasons": [
+        "Translation-memory entry has not yet been approved."
+      ],
+      "source": "translationMemory"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.fastDeliveryNationwide",
+      "english": "Fast delivery nationwide",
+      "sourceText": "Fast delivery nationwide",
+      "translation": "Nibii ni akɛhaa oya yɛ maŋ muu lɛ fɛɛ mli",
+      "reasons": [
+        "Translation-memory entry has not yet been approved."
+      ],
+      "source": "translationMemory"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.limitedTimeOffers",
+      "english": "Limited-time offers",
+      "sourceText": "Special offers available for a short time",
+      "translation": "Nibii krɛdɛɛi ni akɛhaa ni yɔɔ be kukuoo mli",
+      "reasons": [
+        "Translation-memory entry has not yet been approved."
+      ],
+      "source": "translationMemory"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.viewAllDeals",
+      "english": "View all deals",
+      "sourceText": "View all available special offers",
+      "translation": "Kwɛmɔ nibii krɛdɛɛi fɛɛ ni yɔɔ lɛ",
+      "reasons": [
+        "Translation-memory entry has not yet been approved."
+      ],
+      "source": "translationMemory"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.previousPromotion",
+      "english": "Show previous promotion",
+      "sourceText": "Show the previous special offer",
+      "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni akɛha tsutsu lɛ",
+      "reasons": [
+        "Translation-memory entry has not yet been approved."
+      ],
+      "source": "translationMemory"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.nextPromotion",
+      "english": "Show next promotion",
+      "sourceText": "Show the next special offer",
+      "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni nyiɛ sɛɛ nɛɛ",
+      "reasons": [
+        "Translation-memory entry has not yet been approved."
+      ],
+      "source": "translationMemory"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.showPromotion",
+      "english": "Show promotion for",
+      "sourceText": "Show the special offer for",
+      "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni akɛhaa lɛ",
+      "reasons": [
+        "Translation-memory entry has not yet been approved."
+      ],
+      "source": "translationMemory"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.resumeSlider",
+      "english": "Resume automatic slider",
+      "sourceText": "Continue rotating the promotional banners automatically",
+      "translation": "Yaa nɔ otsake nibii ni akɛwoɔ hiɛ lɛ ahe aflaŋaa lɛ diɛŋtsɛ",
+      "reasons": [
+        "Translation-memory entry has not yet been approved."
+      ],
+      "source": "translationMemory"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.pauseSlider",
+      "english": "Pause automatic slider",
+      "sourceText": "Temporarily stop rotating the promotional banners",
+      "translation": "Temporarilly kpa hiɛyaa he aflaŋaa lɛ tsakemɔ",
+      "reasons": [
+        "Translation-memory entry has not yet been approved.",
+        "Possible untranslated English words: temporarilly"
+      ],
+      "source": "translationMemory"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.promotion",
+      "english": "promotional offer",
+      "sourceText": "special sales offer",
+      "translation": "Nihɔɔmɔ krɛdɛɛ ni akɛhaa",
+      "reasons": [
+        "Translation-memory entry has not yet been approved."
+      ],
+      "source": "translationMemory"
+    }
+  ],
+  "failed": []
+}

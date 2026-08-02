@@ -810,3 +810,85 @@ enum SellerRefundDecision {
   APPROVE
   REJECT
 }
+
+model TranslationEntry {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  module      String   @default("frontend")
+  section     String
+  sourceText  String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  values     TranslationValue[]
+  queueItems TranslationQueueItem[]
+
+  @@index([module])
+  @@index([section])
+  @@index([module, section])
+  @@index([isActive])
+}
+
+model TranslationValue {
+  id             String            @id @default(cuid())
+  entryId        String
+  language       String
+  translation    String
+  sourceTextUsed String?
+  status         TranslationStatus @default(DRAFT)
+  origin         TranslationOrigin @default(MANUAL)
+  reviewedBy     String?
+  reviewedAt     DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  entry TranslationEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  @@unique([entryId, language])
+  @@index([language])
+  @@index([status])
+  @@index([language, status])
+}
+
+model TranslationQueueItem {
+  id            String                 @id @default(cuid())
+  entryId       String
+  language      String
+  sourceText    String
+  status        TranslationQueueStatus @default(PENDING)
+  attempts      Int                    @default(0)
+  lastError     String?
+  lastAttemptAt DateTime?
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+
+  entry TranslationEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  @@unique([entryId, language])
+  @@index([status])
+  @@index([language, status])
+}
+
+enum TranslationStatus {
+  DRAFT
+  REVIEW_REQUIRED
+  APPROVED
+  REJECTED
+}
+
+enum TranslationOrigin {
+  MANUAL
+  GLOSSARY
+  GHANA_NLP
+  IMPORTED
+}
+
+enum TranslationQueueStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  WAITING_FOR_QUOTA
+}

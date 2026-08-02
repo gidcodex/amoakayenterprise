@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/context/LanguageContext";
 
 function calculateTimeRemaining(endTime) {
   const difference =
@@ -51,7 +52,7 @@ export default function FlashCountdown({
   const [timeRemaining, setTimeRemaining] = useState(() =>
     calculateTimeRemaining(endsAt)
   );
-
+  const { t } = useLanguage();  
   useEffect(() => {
     const updateCountdown = () => {
       const nextTime = calculateTimeRemaining(endsAt);
@@ -73,48 +74,52 @@ export default function FlashCountdown({
   if (timeRemaining.expired) {
     return (
       <span className="inline-flex bg-slate-100 px-3 py-2 text-xs font-bold text-slate-500">
-        Deal expired
+        {t("product.dealEndsIn")}
       </span>
     );
   }
 
-  if (compact) {
-    return (
-      <div className="flex items-center gap-1">
-        {timeRemaining.days > 0 && (
-          <>
-            <TimeBox
-              value={timeRemaining.days}
-              label="Days"
-            />
+ if (compact) {
+  return (
+    <div className="flex items-center gap-1">
+      {timeRemaining.days > 0 && (
+        <>
+          <TimeBox
+            value={timeRemaining.days}
+            label={t("product.days")}
+          />
 
-            <span className="font-black text-slate-400">
-              :
-            </span>
-          </>
-        )}
+          <span className="font-black text-slate-400">
+            :
+          </span>
+        </>
+      )}
 
-        <TimeBox
-          value={timeRemaining.hours}
-          label="Hrs"
-        />
+      <TimeBox
+        value={timeRemaining.hours}
+        label={t("product.hrs")}
+      />
 
-        <span className="font-black text-slate-400">:</span>
+      <span className="font-black text-slate-400">
+        :
+      </span>
 
-        <TimeBox
-          value={timeRemaining.minutes}
-          label="Min"
-        />
+      <TimeBox
+        value={timeRemaining.minutes}
+        label={t("product.min")}
+      />
 
-        <span className="font-black text-slate-400">:</span>
+      <span className="font-black text-slate-400">
+        :
+      </span>
 
-        <TimeBox
-          value={timeRemaining.seconds}
-          label="Sec"
-        />
-      </div>
-    );
-  }
+      <TimeBox
+        value={timeRemaining.seconds}
+        label={t("product.sec")}
+      />
+    </div>
+  );
+}
 
   return (
     <div>
@@ -145,14 +150,14 @@ export default function FlashCountdown({
 
         <TimeBox
           value={timeRemaining.minutes}
-          label="Minutes"
+          label={t("product.minutes")}
         />
 
         <span className="font-black text-slate-400">:</span>
 
         <TimeBox
           value={timeRemaining.seconds}
-          label="Seconds"
+          label={t("product.seconds")}
         />
       </div>
     </div>

@@ -1,0 +1,280 @@
+{
+  "generatedAt": "2026-07-29T16:21:22.372Z",
+  "section": "home.heroSlider",
+  "totalEnglishStrings": 16,
+  "languages": {
+    "gaa": {
+      "exactMatches": [
+        {
+          "path": "home.heroSlider.carouselLabel",
+          "english": "Amoakay Deals promotional offers",
+          "translation": "Amoakay Deals hiɛyaa nibii",
+          "approved": true,
+          "origin": "ghanaNLP"
+        },
+        {
+          "path": "home.heroSlider.shopPromotion",
+          "english": "Shop",
+          "translation": "Yaa jarayeli",
+          "approved": true,
+          "origin": "glossary"
+        },
+        {
+          "path": "home.heroSlider.openPromotion",
+          "english": "Open the promotion for",
+          "translation": "Gbelemɔ jarayeli krɛdɛɛ ni akɛhaa lɛ",
+          "approved": true,
+          "origin": "ghanaNLP"
+        },
+        {
+          "path": "home.heroSlider.bannerLoadError",
+          "english": "The promotional banner could not be loaded.",
+          "translation": "Anyɛɛɛ akɛ nɔ ni akɛwoɔ hiɛ lɛ awo mli.",
+          "approved": true,
+          "origin": "ghanaNLP"
+        },
+        {
+          "path": "home.heroSlider.upTo30Off",
+          "english": "Up to 30% Off",
+          "translation": "Na nɔ ko ni baa shi fe oha mlijaa 30",
+          "approved": true,
+          "origin": "ghanaNLP"
+        },
+        {
+          "path": "home.heroSlider.selectedElectronics",
+          "english": "Selected electronics",
+          "translation": "Elɛktrɔnik nibii ni ahala",
+          "approved": true,
+          "origin": "ghanaNLP"
+        },
+        {
+          "path": "home.heroSlider.fastDeliveryNationwide",
+          "english": "Fast delivery nationwide",
+          "translation": "Nibii ni akɛhaa oya yɛ maŋ muu lɛ fɛɛ mli",
+          "approved": true,
+          "origin": "ghanaNLP"
+        },
+        {
+          "path": "home.heroSlider.limitedTimeOffers",
+          "english": "Limited-time offers",
+          "translation": "Nibii krɛdɛɛi ni akɛhaa ni yɔɔ be kukuoo mli",
+          "approved": true,
+          "origin": "ghanaNLP"
+        },
+        {
+          "path": "home.heroSlider.viewAllDeals",
+          "english": "View all deals",
+          "translation": "Kwɛmɔ nibii krɛdɛɛi fɛɛ ni yɔɔ lɛ",
+          "approved": true,
+          "origin": "ghanaNLP"
+        },
+        {
+          "path": "home.heroSlider.previousPromotion",
+          "english": "Show previous promotion",
+          "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni akɛha tsutsu lɛ",
+          "approved": true,
+          "origin": "ghanaNLP"
+        },
+        {
+          "path": "home.heroSlider.nextPromotion",
+          "english": "Show next promotion",
+          "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni nyiɛ sɛɛ nɛɛ",
+          "approved": true,
+          "origin": "ghanaNLP"
+        },
+        {
+          "path": "home.heroSlider.showPromotion",
+          "english": "Show promotion for",
+          "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni akɛhaa lɛ",
+          "approved": true,
+          "origin": "ghanaNLP"
+        },
+        {
+          "path": "home.heroSlider.resumeSlider",
+          "english": "Resume automatic slider",
+          "translation": "Yaa nɔ otsake nibii ni akɛwoɔ hiɛ lɛ ahe aflaŋaa lɛ diɛŋtsɛ",
+          "approved": true,
+          "origin": "ghanaNLP"
+        },
+        {
+          "path": "home.heroSlider.pauseSlider",
+          "english": "Pause automatic slider",
+          "translation": "Temporarilly kpa hiɛyaa he aflaŋaa lɛ tsakemɔ",
+          "approved": true,
+          "origin": "ghanaNLP"
+        },
+        {
+          "path": "home.heroSlider.promotion",
+          "english": "promotional offer",
+          "translation": "Nihɔɔmɔ krɛdɛɛ ni akɛhaa",
+          "approved": true,
+          "origin": "ghanaNLP"
+        }
+      ],
+      "changedStrings": [
+        {
+          "matchType": "samePath",
+          "oldEnglish": "Today's Deals",
+          "newEnglish": "Today's Special Deals",
+          "path": "home.heroSlider.todaysDeals",
+          "similarity": 0.619,
+          "oldTranslation": "Ŋmɛnɛŋmɛnɛ Beaŋ Nibii",
+          "approved": true,
+          "origin": "ghanaNLP",
+          "reviewedBy": "Gideon",
+          "reviewedAt": "2026-07-29T16:03:12.259Z"
+        }
+      ],
+      "similarSuggestions": [],
+      "newStrings": []
+    },
+    "tw": {
+      "exactMatches": [],
+      "changedStrings": [],
+      "similarSuggestions": [],
+      "newStrings": [
+        {
+          "path": "home.heroSlider.carouselLabel",
+          "english": "Amoakay Deals promotional offers"
+        },
+        {
+          "path": "home.heroSlider.shopPromotion",
+          "english": "Shop"
+        },
+        {
+          "path": "home.heroSlider.openPromotion",
+          "english": "Open the promotion for"
+        },
+        {
+          "path": "home.heroSlider.bannerLoadError",
+          "english": "The promotional banner could not be loaded."
+        },
+        {
+          "path": "home.heroSlider.todaysDeals",
+          "english": "Today's Special Deals"
+        },
+        {
+          "path": "home.heroSlider.upTo30Off",
+          "english": "Up to 30% Off"
+        },
+        {
+          "path": "home.heroSlider.selectedElectronics",
+          "english": "Selected electronics"
+        },
+        {
+          "path": "home.heroSlider.fastDeliveryNationwide",
+          "english": "Fast delivery nationwide"
+        },
+        {
+          "path": "home.heroSlider.limitedTimeOffers",
+          "english": "Limited-time offers"
+        },
+        {
+          "path": "home.heroSlider.viewAllDeals",
+          "english": "View all deals"
+        },
+        {
+          "path": "home.heroSlider.previousPromotion",
+          "english": "Show previous promotion"
+        },
+        {
+          "path": "home.heroSlider.nextPromotion",
+          "english": "Show next promotion"
+        },
+        {
+          "path": "home.heroSlider.showPromotion",
+          "english": "Show promotion for"
+        },
+        {
+          "path": "home.heroSlider.resumeSlider",
+          "english": "Resume automatic slider"
+        },
+        {
+          "path": "home.heroSlider.pauseSlider",
+          "english": "Pause automatic slider"
+        },
+        {
+          "path": "home.heroSlider.promotion",
+          "english": "promotional offer"
+        }
+      ]
+    },
+    "ee": {
+      "exactMatches": [],
+      "changedStrings": [],
+      "similarSuggestions": [],
+      "newStrings": [
+        {
+          "path": "home.heroSlider.carouselLabel",
+          "english": "Amoakay Deals promotional offers"
+        },
+        {
+          "path": "home.heroSlider.shopPromotion",
+          "english": "Shop"
+        },
+        {
+          "path": "home.heroSlider.openPromotion",
+          "english": "Open the promotion for"
+        },
+        {
+          "path": "home.heroSlider.bannerLoadError",
+          "english": "The promotional banner could not be loaded."
+        },
+        {
+          "path": "home.heroSlider.todaysDeals",
+          "english": "Today's Special Deals"
+        },
+        {
+          "path": "home.heroSlider.upTo30Off",
+          "english": "Up to 30% Off"
+        },
+        {
+          "path": "home.heroSlider.selectedElectronics",
+          "english": "Selected electronics"
+        },
+        {
+          "path": "home.heroSlider.fastDeliveryNationwide",
+          "english": "Fast delivery nationwide"
+        },
+        {
+          "path": "home.heroSlider.limitedTimeOffers",
+          "english": "Limited-time offers"
+        },
+        {
+          "path": "home.heroSlider.viewAllDeals",
+          "english": "View all deals"
+        },
+        {
+          "path": "home.heroSlider.previousPromotion",
+          "english": "Show previous promotion"
+        },
+        {
+          "path": "home.heroSlider.nextPromotion",
+          "english": "Show next promotion"
+        },
+        {
+          "path": "home.heroSlider.showPromotion",
+          "english": "Show promotion for"
+        },
+        {
+          "path": "home.heroSlider.resumeSlider",
+          "english": "Resume automatic slider"
+        },
+        {
+          "path": "home.heroSlider.pauseSlider",
+          "english": "Pause automatic slider"
+        },
+        {
+          "path": "home.heroSlider.promotion",
+          "english": "promotional offer"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "exactMemoryMatches": 15,
+    "changedAtSamePath": 1,
+    "similarTextSuggestions": 0,
+    "completelyNewStrings": 32
+  }
+}

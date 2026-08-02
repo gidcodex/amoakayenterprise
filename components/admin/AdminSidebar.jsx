@@ -1,10 +1,11 @@
 'use client'
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
+import { Languages } from "lucide-react";
 import { WalletCards, Wallet, BadgeCheck, HomeIcon, ShieldCheckIcon, StoreIcon, TicketPercentIcon, MessageCircleIcon, TruckIcon,SettingsIcon, RotateCcw, FolderTree, Zap,} from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { assets } from "@/assets/assets"
+
 import { useUser } from "@clerk/nextjs"
 
 const AdminSidebar = () => {
@@ -62,6 +63,7 @@ useEffect(() => {
         { name: "Deliveries", href: "/admin/deliveries", icon: TruckIcon, count: deliveryCount,},
         { name: "Returns", href: "/admin/returns", icon: RotateCcw,},
         { name: "Categories", href: "/admin/categories", icon: FolderTree,},
+        { name: "Translations", href: "/admin/translations", icon: Languages,},
         { name: "Seller Verification", href: "/admin/seller-verification", icon: BadgeCheck,},
         { name: "Seller Payouts", href: "/admin/seller-payouts", icon: Wallet,},
         { name: "Payout Settings", href: "/admin/payout-settings", icon: WalletCards,},

@@ -1,0 +1,186 @@
+{
+  "version": 1,
+  "updatedAt": "2026-07-30T08:21:06.589Z",
+  "entries": {
+    "tw": {},
+    "ee": {},
+    "gaa": {
+      "Amoakay Deals promotional offers": {
+        "translation": "Amoakay Deals hiɛyaa nibii",
+        "sourceText": "Amoakay Deals promotional offers",
+        "origin": "ghanaNLP",
+        "approved": true,
+        "path": "home.heroSlider.carouselLabel",
+        "firstSeenAt": "2026-07-29T14:22:46.127Z",
+        "updatedAt": "2026-07-29T16:02:58.475Z",
+        "reviewedBy": "Gideon",
+        "reviewedAt": "2026-07-29T16:02:58.471Z"
+      },
+      "Shop": {
+        "translation": "Yaa jarayeli",
+        "sourceText": "Shop",
+        "origin": "glossary",
+        "approved": true,
+        "path": "home.heroSlider.shopPromotion",
+        "firstSeenAt": "2026-07-29T14:22:46.379Z",
+        "updatedAt": "2026-07-30T08:05:51.641Z",
+        "reviewedBy": null,
+        "reviewedAt": null
+      },
+      "Open the promotion for": {
+        "translation": "Gbelemɔ jarayeli krɛdɛɛ ni akɛhaa lɛ",
+        "sourceText": "Open the special sales offer for",
+        "origin": "ghanaNLP",
+        "approved": true,
+        "path": "home.heroSlider.openPromotion",
+        "firstSeenAt": "2026-07-29T14:22:46.958Z",
+        "updatedAt": "2026-07-29T16:03:01.983Z",
+        "reviewedBy": "Gideon",
+        "reviewedAt": "2026-07-29T16:03:01.983Z"
+      },
+      "The promotional banner could not be loaded.": {
+        "translation": "Anyɛɛɛ akɛ nɔ ni akɛwoɔ hiɛ lɛ awo mli.",
+        "sourceText": "The promotional banner could not be loaded.",
+        "origin": "ghanaNLP",
+        "approved": true,
+        "path": "home.heroSlider.bannerLoadError",
+        "firstSeenAt": "2026-07-29T14:22:47.534Z",
+        "updatedAt": "2026-07-29T16:03:07.401Z",
+        "reviewedBy": "Gideon",
+        "reviewedAt": "2026-07-29T16:03:07.401Z"
+      },
+      "Today's Deals": {
+        "translation": "Ŋmɛnɛŋmɛnɛ Beaŋ Nibii",
+        "sourceText": "Today's Deals",
+        "origin": "ghanaNLP",
+        "approved": true,
+        "path": "home.heroSlider.todaysDeals",
+        "firstSeenAt": "2026-07-29T14:22:48.065Z",
+        "updatedAt": "2026-07-29T16:03:12.259Z",
+        "reviewedBy": "Gideon",
+        "reviewedAt": "2026-07-29T16:03:12.259Z"
+      },
+      "Up to 30% Off": {
+        "translation": "Na nɔ ko ni baa shi fe oha mlijaa 30",
+        "sourceText": "Get a discount of up to 30 percent",
+        "origin": "ghanaNLP",
+        "approved": true,
+        "path": "home.heroSlider.upTo30Off",
+        "firstSeenAt": "2026-07-29T14:22:48.616Z",
+        "updatedAt": "2026-07-29T16:03:18.425Z",
+        "reviewedBy": "Gideon",
+        "reviewedAt": "2026-07-29T16:03:18.425Z"
+      },
+      "Selected electronics": {
+        "translation": "Elɛktrɔnik nibii ni ahala",
+        "sourceText": "Selected electronics",
+        "origin": "ghanaNLP",
+        "approved": true,
+        "path": "home.heroSlider.selectedElectronics",
+        "firstSeenAt": "2026-07-29T14:22:49.154Z",
+        "updatedAt": "2026-07-29T16:03:19.627Z",
+        "reviewedBy": "Gideon",
+        "reviewedAt": "2026-07-29T16:03:19.627Z"
+      },
+      "Fast delivery nationwide": {
+        "translation": "Nibii ni akɛhaa oya yɛ maŋ muu lɛ fɛɛ mli",
+        "sourceText": "Fast delivery nationwide",
+        "origin": "ghanaNLP",
+        "approved": true,
+        "path": "home.heroSlider.fastDeliveryNationwide",
+        "firstSeenAt": "2026-07-29T14:22:49.703Z",
+        "updatedAt": "2026-07-29T16:03:20.729Z",
+        "reviewedBy": "Gideon",
+        "reviewedAt": "2026-07-29T16:03:20.729Z"
+      },
+      "Limited-time offers": {
+        "translation": "Nibii krɛdɛɛi ni akɛhaa ni yɔɔ be kukuoo mli",
+        "sourceText": "Special offers available for a short time",
+        "origin": "ghanaNLP",
+        "approved": true,
+        "path": "home.heroSlider.limitedTimeOffers",
+        "firstSeenAt": "2026-07-29T14:22:50.249Z",
+        "updatedAt": "2026-07-29T16:03:21.818Z",
+        "reviewedBy": "Gideon",
+        "reviewedAt": "2026-07-29T16:03:21.818Z"
+      },
+      "View all deals": {
+        "translation": "Kwɛmɔ nibii krɛdɛɛi fɛɛ ni yɔɔ lɛ",
+        "sourceText": "View all available special offers",
+        "origin": "ghanaNLP",
+        "approved": true,
+        "path": "home.heroSlider.viewAllDeals",
+        "firstSeenAt": "2026-07-29T14:22:50.788Z",
+        "updatedAt": "2026-07-29T16:03:22.894Z",
+        "reviewedBy": "Gideon",
+        "reviewedAt": "2026-07-29T16:03:22.894Z"
+      },
+      "Show previous promotion": {
+        "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni akɛha tsutsu lɛ",
+        "sourceText": "Show the previous special offer",
+        "origin": "ghanaNLP",
+        "approved": true,
+        "path": "home.heroSlider.previousPromotion",
+        "firstSeenAt": "2026-07-29T14:22:51.318Z",
+        "updatedAt": "2026-07-29T16:03:23.937Z",
+        "reviewedBy": "Gideon",
+        "reviewedAt": "2026-07-29T16:03:23.937Z"
+      },
+      "Show next promotion": {
+        "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni nyiɛ sɛɛ nɛɛ",
+        "sourceText": "Show the next special offer",
+        "origin": "ghanaNLP",
+        "approved": true,
+        "path": "home.heroSlider.nextPromotion",
+        "firstSeenAt": "2026-07-29T14:22:51.858Z",
+        "updatedAt": "2026-07-29T16:03:24.912Z",
+        "reviewedBy": "Gideon",
+        "reviewedAt": "2026-07-29T16:03:24.912Z"
+      },
+      "Show promotion for": {
+        "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni akɛhaa lɛ",
+        "sourceText": "Show the special offer for",
+        "origin": "ghanaNLP",
+        "approved": true,
+        "path": "home.heroSlider.showPromotion",
+        "firstSeenAt": "2026-07-29T14:22:52.605Z",
+        "updatedAt": "2026-07-29T16:03:26.053Z",
+        "reviewedBy": "Gideon",
+        "reviewedAt": "2026-07-29T16:03:26.053Z"
+      },
+      "Resume automatic slider": {
+        "translation": "Yaa nɔ otsake nibii ni akɛwoɔ hiɛ lɛ ahe aflaŋaa lɛ diɛŋtsɛ",
+        "sourceText": "Continue rotating the promotional banners automatically",
+        "origin": "ghanaNLP",
+        "approved": true,
+        "path": "home.heroSlider.resumeSlider",
+        "firstSeenAt": "2026-07-29T14:22:53.177Z",
+        "updatedAt": "2026-07-29T16:03:27.196Z",
+        "reviewedBy": "Gideon",
+        "reviewedAt": "2026-07-29T16:03:27.195Z"
+      },
+      "Pause automatic slider": {
+        "translation": "Temporarilly kpa hiɛyaa he aflaŋaa lɛ tsakemɔ",
+        "sourceText": "Temporarily stop rotating the promotional banners",
+        "origin": "ghanaNLP",
+        "approved": true,
+        "path": "home.heroSlider.pauseSlider",
+        "firstSeenAt": "2026-07-29T14:22:53.750Z",
+        "updatedAt": "2026-07-29T16:03:43.920Z",
+        "reviewedBy": "Gideon",
+        "reviewedAt": "2026-07-29T16:03:43.920Z"
+      },
+      "promotional offer": {
+        "translation": "Nihɔɔmɔ krɛdɛɛ ni akɛhaa",
+        "sourceText": "special sales offer",
+        "origin": "ghanaNLP",
+        "approved": true,
+        "path": "home.heroSlider.promotion",
+        "firstSeenAt": "2026-07-29T14:22:54.406Z",
+        "updatedAt": "2026-07-29T16:03:46.245Z",
+        "reviewedBy": "Gideon",
+        "reviewedAt": "2026-07-29T16:03:46.245Z"
+      }
+    }
+  }
+}

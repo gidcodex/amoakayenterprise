@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronRight, FolderTree, ImageIcon, Menu,} from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function CategoryMegaMenu({
   mode = "navbar",
@@ -14,6 +15,7 @@ export default function CategoryMegaMenu({
   const [isLoading, setIsLoading] = useState(
     initialCategories.length === 0
   );
+  const { t } = useLanguage();
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -92,6 +94,7 @@ if (categories.length === 0) {
        selectDesktopCategory={selectDesktopCategory}
        getChildren={getChildren}
        className={className}
+       t={t}
      />
     );
   }
@@ -106,7 +109,7 @@ if (categories.length === 0) {
       >
         <span className="flex items-center gap-3">
           <Menu size={20} />
-          All Categories
+          {t("categories.allCategories")}
         </span>
 
         <ChevronDown
@@ -266,7 +269,7 @@ if (categories.length === 0) {
                 onClick={closeMenu}
                 className="flex items-center justify-between px-4 py-4 text-sm font-bold text-green-700"
               >
-                View all products
+                {t("categories.viewAllProducts")}
                 <ChevronRight size={17} />
               </Link>
             </div>
@@ -314,6 +317,7 @@ if (categories.length === 0) {
                   }
                   getChildren={getChildren}
                   onNavigate={closeMenu}
+                  t={t}
                 />
               )}
             </div>
@@ -384,7 +388,7 @@ function CategoryMenuEmptyState({
           <Menu size={19} />
 
           <h2 className="font-bold text-slate-900">
-            Shop by category
+            {t("categories.shopByCategory")}
           </h2>
         </div>
 
@@ -395,14 +399,14 @@ function CategoryMenuEmptyState({
           />
 
           <p className="mt-3 text-sm font-semibold text-slate-600">
-            Categories are temporarily unavailable
+            {t("categories.unavailable")}
           </p>
 
           <Link
             href="/shop"
             className="mt-4 text-sm font-bold text-green-700"
           >
-            Browse all products
+            {t("categories.browseProducts")}
           </Link>
         </div>
       </aside>
@@ -429,6 +433,7 @@ function DesktopSidebar({
   selectDesktopCategory,
   getChildren,
   className,
+  t,
 }) {
   return (
      <aside
@@ -441,7 +446,7 @@ function DesktopSidebar({
       <div className="flex items-center gap-3 border-b border-slate-200 px-5 py-4">
         <Menu size={19} />
         <h2 className="font-bold text-slate-900">
-          Shop by category
+          {t("categories.shopByCategory")}
         </h2>
       </div>
 
@@ -489,6 +494,7 @@ function DesktopSidebar({
             activeSubcategory={activeSubcategory}
             setActiveSubcategory={setActiveSubcategory}
             getChildren={getChildren}
+            t={t}
           />
         </div>
       )}
@@ -502,6 +508,7 @@ function MegaMenuContent({
   setActiveSubcategory,
   getChildren,
   onNavigate,
+  t,
 }) {
   const children = getChildren(activeSubcategory);
 
@@ -525,7 +532,7 @@ function MegaMenuContent({
           onClick={onNavigate}
           className="shrink-0 text-sm font-bold text-green-700"
         >
-          View all
+          {t("categories.viewAll")}
         </Link>
       </div>
 
@@ -574,7 +581,7 @@ function MegaMenuContent({
                     onClick={onNavigate}
                     className="shrink-0 text-xs font-bold text-green-700"
                   >
-                    View all
+                    {t("categories.viewAll")}
                   </Link>
                 </div>
 

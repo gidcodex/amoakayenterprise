@@ -1,0 +1,312 @@
+{
+  "en": {
+    "navbar": {
+      "home": "Home",
+      "shop": "Shop",
+      "track": "Track",
+      "trackOrder": "Track Order",
+      "about": "About",
+      "contact": "Contact",
+      "wishlist": "Wishlist",
+      "compare": "Compare",
+      "compareProducts": "Compare Products",
+      "cart": "Cart",
+      "login": "Login",
+      "myAccount": "My Account",
+      "myOrders": "My Orders",
+      "searchPlaceholder": "Search products...",
+      "openMenu": "Open navigation menu",
+      "closeMenu": "Close navigation menu",
+      "language": "Language"
+    },
+    "footer": {
+      "description": "Welcome to Amoakay Enterprise Ltd, your destination for quality electronics, smart gadgets, accessories, and everyday technology products.",
+      "productsTitle": "PRODUCTS",
+      "websiteTitle": "WEBSITE",
+      "contactTitle": "CONTACT",
+      "earphones": "Earphones",
+      "headphones": "Headphones",
+      "smartphones": "Smartphones",
+      "laptops": "Laptops",
+      "home": "Home",
+      "privacyPolicy": "Privacy Policy",
+      "plusMember": "Become a Plus Member",
+      "createStore": "Create Your Store",
+      "copyright": "Copyright 2026 © Amoakay Enterprise Ltd. All Rights Reserved."
+    },
+    "home": {
+      "heroStrip": {
+        "freeShippingBefore": "Free shipping on orders above",
+        "securePayments": "Secure payments and buyer protection",
+        "customerSupport": "Customer support when you need it",
+        "exploreMarketplace": "Explore marketplace"
+      },
+      "heroSlider": {
+        "carouselLabel": "Amoakay Deals promotional offers",
+        "shopPromotion": "Shop",
+        "openPromotion": "Open the promotion for",
+        "bannerLoadError": "The promotional banner could not be loaded.",
+        "todaysDeals": "Today's Deals",
+        "upTo30Off": "Up to 30% Off",
+        "selectedElectronics": "Selected electronics",
+        "fastDeliveryNationwide": "Fast delivery nationwide",
+        "limitedTimeOffers": "Limited-time offers",
+        "viewAllDeals": "View all deals",
+        "previousPromotion": "Show previous promotion",
+        "nextPromotion": "Show next promotion",
+        "showPromotion": "Show promotion for",
+        "resumeSlider": "Resume automatic slider",
+        "pauseSlider": "Pause automatic slider",
+        "promotion": "promotional offer"
+      }
+    }
+  },
+  "tw": {
+    "navbar": {
+      "home": "Fie",
+      "shop": "Tɔ Nneɛma",
+      "track": "Hwɛ Order",
+      "trackOrder": "Hwɛ Wo Order",
+      "about": "Yɛn Ho Nsɛm",
+      "contact": "Wo ne Yɛn Nkasɛ",
+      "wishlist": "Nneɛma a Wopɛ",
+      "compare": "Fa Toto Ho",
+      "compareProducts": "Fa Nneɛma Toto Ho",
+      "cart": "Adetɔ Kɛntɛn",
+      "login": "Kɔ Mu",
+      "myAccount": "Me Akonta",
+      "myOrders": "Me Orders",
+      "searchPlaceholder": "Hwehwɛ nneɛma...",
+      "openMenu": "Bue menu no",
+      "closeMenu": "To menu no mu",
+      "language": "Kasa"
+    },
+    "footer": {
+      "description": "Amoakay Enterprise Ltd ma wo akwaaba. Yɛma wo ɛlɛtrɔnik nneɛma, smart gadgets, accessories ne mfiridwuma nneɛma a ɛyɛ papa.",
+      "productsTitle": "NNEƐMA",
+      "websiteTitle": "WƐBSAET",
+      "contactTitle": "YƐN ADWUMAKUO",
+      "earphones": "Earphones",
+      "headphones": "Headphones",
+      "smartphones": "Smartphones",
+      "laptops": "Laptops",
+      "home": "Fie",
+      "privacyPolicy": "Kokoam Nsɛm Ho Mmara",
+      "plusMember": "Bɛyɛ Plus Member",
+      "createStore": "Yɛ Wo Store",
+      "copyright": "Copyright 2026 © Amoakay Enterprise Ltd. Hokwan Nyinaa Wɔ Yɛn Nsa."
+    },
+    "home": {
+      "heroStrip": {
+        "freeShippingBefore": "Yɛde nneɛma brɛ wo kwa sɛ wo adetɔ boro",
+        "securePayments": "Sika tua a ahobammɔ wom ne adetɔfo banbɔ",
+        "customerSupport": "Yɛwɔ ha de aboa wo bere biara",
+        "exploreMarketplace": "Hwɛ Amoakay adetɔnbea no"
+      },
+      "heroSlider": {
+        "carouselLabel": "Amoakay Deals dawurubɔ ahorow",
+        "shopPromotion": "Tɔ",
+        "openPromotion": "Bue dawurubɔ no ma",
+        "bannerLoadError": "Yɛantumi ankyerɛ dawurubɔ mfonini no.",
+        "todaysDeals": "Nnɛyi Nneɛma a Wɔate So",
+        "upTo30Off": "Te So Kɔsi 30%",
+        "selectedElectronics": "Ɛlɛtrɔnik nneɛma a wɔapaw",
+        "fastDeliveryNationwide": "Nneɛma a wɔde kɔ ntɛm wɔ Ghana nyinaa",
+        "limitedTimeOffers": "Nneɛma a bere tiaa bi mu nko ara na ɛwɔ hɔ",
+        "viewAllDeals": "Hwɛ nneɛma a wɔate so nyinaa",
+        "previousPromotion": "Kyerɛ dawurubɔ a edi kan",
+        "nextPromotion": "Kyerɛ dawurubɔ a edi hɔ",
+        "showPromotion": "Kyerɛ dawurubɔ ma",
+        "resumeSlider": "Toa slider no so bio",
+        "pauseSlider": "Gyina slider no kakra",
+        "promotion": "adetɔn ho dawurubɔ"
+      }
+    }
+  },
+  "ha": {
+    "navbar": {
+      "home": "Gida",
+      "shop": "Shago",
+      "track": "Bibiyar Oda",
+      "trackOrder": "Bi Oda",
+      "about": "Game da Mu",
+      "contact": "Tuntuɓe Mu",
+      "wishlist": "Jerin Abubuwan So",
+      "compare": "Kwatanta",
+      "compareProducts": "Kwatanta Kayayyaki",
+      "cart": "Kwando",
+      "login": "Shiga",
+      "myAccount": "Asusuna",
+      "myOrders": "Ododina",
+      "searchPlaceholder": "Nemo kayayyaki...",
+      "openMenu": "Buɗe menu",
+      "closeMenu": "Rufe menu",
+      "language": "Harshe"
+    },
+    "footer": {
+      "description": "Barka da zuwa Amoakay Enterprise Ltd, wurin samun ingantattun kayan lantarki, na'urori masu wayo, kayan haɗi da kayayyakin fasaha.",
+      "productsTitle": "KAYAYYAKI",
+      "websiteTitle": "GIDAN YANAR GIZO",
+      "contactTitle": "TUNTUƁA",
+      "earphones": "Kunnen Sauti",
+      "headphones": "Na'urar Sauraro",
+      "smartphones": "Wayoyin Hannu",
+      "laptops": "Kwamfutocin Tafi-da-gidanka",
+      "home": "Gida",
+      "privacyPolicy": "Dokar Sirri",
+      "plusMember": "Kasance Plus Member",
+      "createStore": "Ƙirƙiri Shag naka",
+      "copyright": "Copyright 2026 © Amoakay Enterprise Ltd. Duk Haƙƙoƙi Sun Kiyaye."
+    },
+    "home": {
+      "heroStrip": {
+        "freeShippingBefore": "Isarwa kyauta ga odar da ta haura",
+        "securePayments": "Amintattun biyan kuɗi da kariyar mai saye",
+        "customerSupport": "Taimakon abokin ciniki lokacin da kake buƙata",
+        "exploreMarketplace": "Bincika kasuwar Amoakay"
+      },
+      "heroSlider": {
+        "carouselLabel": "Tallace-tallacen Amoakay Deals",
+        "shopPromotion": "Sayi",
+        "openPromotion": "Buɗe tayin don",
+        "bannerLoadError": "Ba a iya loda hoton talla ba.",
+        "todaysDeals": "Tayin Yau",
+        "upTo30Off": "Rangwame Har Zuwa 30%",
+        "selectedElectronics": "Zaɓaɓɓun kayan lantarki",
+        "fastDeliveryNationwide": "Isarwa cikin sauri a faɗin ƙasa",
+        "limitedTimeOffers": "Tayin na ɗan lokaci",
+        "viewAllDeals": "Duba duk tayin",
+        "previousPromotion": "Nuna tallar da ta gabata",
+        "nextPromotion": "Nuna talla ta gaba",
+        "showPromotion": "Nuna talla don",
+        "resumeSlider": "Ci gaba da juyawar slider",
+        "pauseSlider": "Dakatar da slider",
+        "promotion": "tayin talla"
+      }
+    }
+  },
+  "ee": {
+    "navbar": {
+      "home": "Aƒe",
+      "shop": "Fle Nuwo",
+      "track": "Dze Ŋku ɖe Order Ŋu",
+      "trackOrder": "Dze Ŋku ɖe Wò Order Ŋu",
+      "about": "Mía Ŋu",
+      "contact": "Te ƒe Mía Ŋu",
+      "wishlist": "Nu Siwo Nèdi",
+      "compare": "Sɔ Nuwo",
+      "compareProducts": "Sɔ Nudzadzrawo",
+      "cart": "Wò Kusi",
+      "login": "Ge Ɖe Eme",
+      "myAccount": "Nye Account",
+      "myOrders": "Nye Orderwo",
+      "searchPlaceholder": "Di nudzadzrawo...",
+      "openMenu": "Ʋu menu la",
+      "closeMenu": "Tu menu la",
+      "language": "Gbegbɔgblɔ"
+    },
+    "footer": {
+      "description": "Woezɔ̃ ɖe Amoakay Enterprise Ltd. Míetsɔ̃a electronics, smart gadgets, accessories kple technology nudzadzra nyuiwo na mi.",
+      "productsTitle": "NUDZADZRAWO",
+      "websiteTitle": "WEBSITE",
+      "contactTitle": "TE ƑE MÍA ŊU",
+      "earphones": "Earphones",
+      "headphones": "Headphones",
+      "smartphones": "Smartphones",
+      "laptops": "Laptops",
+      "home": "Aƒe",
+      "privacyPolicy": "Nugɔmedzedze Ƒe Se",
+      "plusMember": "Zu Plus Member",
+      "createStore": "Dze Wò Store Gɔme",
+      "copyright": "Copyright 2026 © Amoakay Enterprise Ltd. Mɔnuwo Katã Le Mía Si."
+    },
+    "home": {
+      "heroStrip": {
+        "freeShippingBefore": "Míatsɔ nudzadzra na wò femaxee ne eƒe home wu",
+        "securePayments": "Fetuɖuɖu si le dedie kple asiƒlela ƒe dedienɔnɔ",
+        "customerSupport": "Míele afi ma be míakpe ɖe ŋuwò ne èhiã kpekpeɖeŋu",
+        "exploreMarketplace": "Kpɔ Amoakay Marketplace"
+      },
+      "heroSlider": {
+        "carouselLabel": "Amoakay Deals ƒe asiƒeɖeɖewo",
+        "shopPromotion": "Fle",
+        "openPromotion": "Ʋu asiƒeɖeɖe la na",
+        "bannerLoadError": "Womete ŋu tsɔ asiƒeɖeɖe ƒe nɔnɔmetata la vɛ o.",
+        "todaysDeals": "Egbe Ƒe Tɔtrɔwo",
+        "upTo30Off": "Dzoe Va Se ɖe 30%",
+        "selectedElectronics": "Electronics siwo wo tia",
+        "fastDeliveryNationwide": "Nukpekpe kabakaba le dukɔ blibo la me",
+        "limitedTimeOffers": "Nudzadzra siwo le anyi le ɣeyiɣi kpui aɖe ko me",
+        "viewAllDeals": "Kpɔ tɔtrɔwo katã",
+        "previousPromotion": "Kpɔ asiƒeɖeɖe si va yi",
+        "nextPromotion": "Kpɔ asiƒeɖeɖe si gbɔna",
+        "showPromotion": "Kpɔ asiƒeɖeɖe na",
+        "resumeSlider": "Gbugbɔ dze slider la gɔme",
+        "pauseSlider": "Lé slider la ɖe te",
+        "promotion": "asiƒeɖeɖe"
+      }
+    }
+  },
+  "gaa": {
+    "navbar": {
+      "home": "Shia",
+      "shop": "Feemɔ",
+      "track": "Kɛ Order No",
+      "trackOrder": "Kɛ O Order No",
+      "about": "Wɔŋ Ŋuti",
+      "contact": "Kasa Kɛ Wɔŋ",
+      "wishlist": "Nɛɛ Ni Ohe",
+      "compare": "Susu Ahe",
+      "compareProducts": "Susu Nɛɛ Ahe",
+      "cart": "Adesaa Kɛntɛn",
+      "login": "Ya Mli",
+      "myAccount": "Mi Account",
+      "myOrders": "Mi Orderwo",
+      "searchPlaceholder": "Hwehwɛ nɛɛ...",
+      "openMenu": "Bue menu no",
+      "closeMenu": "Tu menu no",
+      "language": "Gbee"
+    },
+    "footer": {
+      "description": "Ojekoo kɛ Amoakay Enterprise Ltd. Wɔnaa electronics, smart gadgets, accessories kɛ technology nɛɛ ni yɛ nyuie.",
+      "productsTitle": "NƐƐ",
+      "websiteTitle": "WEBSITE",
+      "contactTitle": "KASA KƐ WƆŊ",
+      "earphones": "Earphones",
+      "headphones": "Headphones",
+      "smartphones": "Smartphones",
+      "laptops": "Laptops",
+      "home": "Shia",
+      "privacyPolicy": "Kokoamɔ Shishi",
+      "plusMember": "Ba Plus Member",
+      "createStore": "Tɔ O Store",
+      "copyright": "Copyright 2026 © Amoakay Enterprise Ltd. Mɔ Fɛɛ Mɔ Le WɔŊ DƐŊ."
+    },
+    "home": {
+      "heroStrip": {
+        "freeShippingBefore": "Free shipping on orders above",
+        "securePayments": "Secure payments and buyer protection",
+        "customerSupport": "Customer support when you need it",
+        "exploreMarketplace": "Explore marketplace"
+      },
+      "heroSlider": {
+        "carouselLabel": "Amoakay Deals hiɛyaa nibii",
+        "shopPromotion": "Yaa jarayeli",
+        "openPromotion": "Gbelemɔ jarayeli krɛdɛɛ ni akɛhaa lɛ",
+        "bannerLoadError": "Anyɛɛɛ akɛ nɔ ni akɛwoɔ hiɛ lɛ awo mli.",
+        "todaysDeals": "Ŋmɛnɛŋmɛnɛ Beaŋ Nibii",
+        "upTo30Off": "Na nɔ ko ni baa shi fe oha mlijaa 30",
+        "selectedElectronics": "Elɛktrɔnik nibii ni ahala",
+        "fastDeliveryNationwide": "Nibii ni akɛhaa oya yɛ maŋ muu lɛ fɛɛ mli",
+        "limitedTimeOffers": "Nibii krɛdɛɛi ni akɛhaa ni yɔɔ be kukuoo mli",
+        "viewAllDeals": "Kwɛmɔ nibii krɛdɛɛi fɛɛ ni yɔɔ lɛ",
+        "previousPromotion": "Tsɔɔmɔ nibii krɛdɛɛi ni akɛha tsutsu lɛ",
+        "nextPromotion": "Tsɔɔmɔ nibii krɛdɛɛi ni nyiɛ sɛɛ nɛɛ",
+        "showPromotion": "Tsɔɔmɔ nibii krɛdɛɛi ni akɛhaa lɛ",
+        "resumeSlider": "Yaa nɔ otsake nibii ni akɛwoɔ hiɛ lɛ ahe aflaŋaa lɛ diɛŋtsɛ",
+        "pauseSlider": "Temporarilly kpa hiɛyaa he aflaŋaa lɛ tsakemɔ",
+        "promotion": "Nihɔɔmɔ krɛdɛɛ ni akɛhaa"
+      }
+    }
+  }
+}

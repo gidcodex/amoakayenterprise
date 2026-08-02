@@ -1,16 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import {
-  Flame,
-  LoaderCircle,
-  RefreshCw,
-} from "lucide-react";
+import { Flame, LoaderCircle, RefreshCw,} from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 import FlashDealsCarousel from "./FlashDealsCarousel";
 import FlashCountdown from "./FlashCountdown";
 
 export default function FlashDeals() {
+  const { t } = useLanguage();
   const [flashDeals, setFlashDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -132,7 +130,7 @@ export default function FlashDeals() {
           />
 
           <h2 className="mt-4 text-xl font-bold text-slate-900">
-            Flash Deals could not be loaded
+           {t("home.flashDeals.loadError")}
           </h2>
 
           <p className="mx-auto mt-2 max-w-md text-sm text-slate-600">
@@ -145,7 +143,7 @@ export default function FlashDeals() {
             className="mt-6 inline-flex items-center gap-2 bg-red-500 px-5 py-3 text-sm font-bold text-white transition hover:bg-red-600"
           >
             <RefreshCw size={17} />
-            Try Again
+            {t("common.tryAgain")}
           </button>
         </div>
       </section>
@@ -172,17 +170,16 @@ export default function FlashDeals() {
               <div>
                 <div className="flex flex-wrap items-center gap-3">
                   <h2 className="text-2xl font-black tracking-tight sm:text-3xl">
-                    Flash Deals
+                    {t("home.flashDeals.title")}
                   </h2>
 
                   <span className="bg-yellow-300 px-3 py-1 text-xs font-black uppercase tracking-wider text-slate-900">
-                    Limited Time
+                    {t("home.flashDeals.limitedTime")}
                   </span>
                 </div>
 
                 <p className="mt-2 max-w-2xl text-sm text-red-50 sm:text-base">
-                  Save more on selected products before these
-                  offers expire.
+                  {t("home.flashDeals.description")}
                 </p>
               </div>
             </div>
@@ -191,7 +188,7 @@ export default function FlashDeals() {
               {nearestEndingDeal && (
                 <div className="rounded-md bg-white/10 p-3 backdrop-blur-sm">
                   <p className="mb-2 text-xs font-bold uppercase tracking-wider text-red-50">
-                    Nearest deal ends in
+                    {t("home.flashDeals.endsIn")}
                   </p>
 
                   <FlashCountdown
@@ -205,8 +202,7 @@ export default function FlashDeals() {
               <div className="flex items-center gap-2 text-sm font-semibold">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-yellow-300" />
 
-                {flashDeals.length} active deal
-                {flashDeals.length === 1 ? "" : "s"}
+                {flashDeals.length} {t("home.flashDeals.activeDeals")}
               </div>
             </div>
           </div>

@@ -3,8 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, Star } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function BestSellingCard({ product }) {
+  const { t } = useLanguage();
+
   const image =
     product.images?.[0] ||
     product.image ||
@@ -26,7 +29,7 @@ export default function BestSellingCard({ product }) {
   const category =
     product.categoryRef?.name ||
     product.category ||
-    "Product";
+    t("product.information");
 
   const brand =
     product.brand ||
@@ -44,7 +47,7 @@ export default function BestSellingCard({ product }) {
         >
           <Image
             src={image}
-            alt={product.name || "Product"}
+            alt={product.name || t("product.information")}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
             className="object-contain p-3 transition duration-300 group-hover:scale-[1.03]"
@@ -53,7 +56,7 @@ export default function BestSellingCard({ product }) {
 
         <button
           type="button"
-          aria-label="Add to wishlist"
+          aria-label={t("product.addWishlist")}
           className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:text-red-500"
         >
           <Heart size={15} />
@@ -106,27 +109,27 @@ export default function BestSellingCard({ product }) {
           </p>
 
           <p className="mt-1 text-xs font-semibold text-emerald-600">
-            Free shipping
+            {t("product.freeShipping")}
           </p>
         </div>
 
         <div className="mt-2 flex flex-wrap gap-1.5">
           {product.stock > 0 && (
             <span className="bg-emerald-100 px-2 py-1 text-[10px] font-bold text-emerald-700">
-              In stock
+              {t("product.inStock")}
             </span>
           )}
 
           {product.isFeatured && (
             <span className="bg-orange-100 px-2 py-1 text-[10px] font-bold text-orange-700">
-              Bestseller
+              {t("product.bestseller")}
             </span>
           )}
         </div>
 
         {product.store?.name && (
           <p className="mt-2 truncate bg-slate-100 px-2 py-1 text-[10px] font-medium text-slate-600">
-            Seller: {product.store.name}
+            {t("product.seller")}: {product.store.name}
           </p>
         )}
       </div>

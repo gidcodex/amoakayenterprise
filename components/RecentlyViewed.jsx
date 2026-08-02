@@ -4,9 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Clock3, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useLanguage } from "@/context/LanguageContext";
 import { useSelector } from "react-redux";
 
 export default function RecentlyViewed() {
+  const { t } = useLanguage();
   const products = useSelector(
     (state) => state.product.list || []
   );
@@ -62,12 +64,12 @@ export default function RecentlyViewed() {
               <Clock3 size={17} />
 
               <p className="text-xs font-black uppercase tracking-[0.18em]">
-                Continue shopping
+                {t("home.recentlyViewed.continueShopping")}
               </p>
             </div>
 
             <h2 className="mt-2 text-2xl font-black text-slate-950 sm:text-3xl">
-              Recently Viewed
+              {t("home.recentlyViewed.title")}
             </h2>
           </div>
 
@@ -75,7 +77,7 @@ export default function RecentlyViewed() {
             href="/shop"
             className="inline-flex items-center gap-2 text-sm font-bold text-slate-700 transition hover:text-emerald-600"
           >
-            View all products
+           {t("home.recentlyViewed.viewAll")}
             <ArrowRight size={16} />
           </Link>
         </div>
@@ -84,7 +86,7 @@ export default function RecentlyViewed() {
         <div className="grid gap-4 lg:grid-cols-[1.65fr_1fr]">
           {/* Left column */}
           <div className="grid gap-4">
-            <FeaturedTile product={featuredProduct} />
+            <FeaturedTile product={featuredProduct} t={t} />
 
             {secondaryProducts.length > 0 && (
               <div className="grid gap-4 sm:grid-cols-2">
@@ -101,11 +103,11 @@ export default function RecentlyViewed() {
           {/* Right column */}
           <div className="border border-slate-200 bg-slate-50 p-4 sm:p-5">
             <h3 className="text-lg font-black text-slate-900">
-              Continue exploring
+              {t("home.recentlyViewed.continueExploring")}
             </h3>
 
             <p className="mt-1 text-sm text-slate-500">
-              Products you recently opened.
+              {t("home.recentlyViewed.description")}
             </p>
 
             <div className="mt-5 grid gap-4">
@@ -113,6 +115,7 @@ export default function RecentlyViewed() {
                 <WideTile
                   key={product.id}
                   product={product}
+                  t={t}
                 />
               ))}
 
@@ -126,7 +129,7 @@ export default function RecentlyViewed() {
               </div>
 
               {secondaryProducts.length < 3 && (
-                <EmptyPromotionTile />
+                <EmptyPromotionTile t={t} />
               )}
             </div>
           </div>
@@ -141,7 +144,7 @@ export default function RecentlyViewed() {
 
             <div className="min-w-0">
               <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
-                Your last viewed product
+                {t("home.recentlyViewed.lastViewed")}
               </p>
 
               <p className="mt-1 truncate text-base font-black text-slate-900 sm:text-lg">
@@ -154,7 +157,7 @@ export default function RecentlyViewed() {
             href={`/product/${featuredProduct.id}`}
             className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border-2 border-slate-900 px-6 py-3 text-sm font-black text-slate-900 transition hover:bg-slate-900 hover:text-white"
           >
-            Continue viewing
+            {t("home.recentlyViewed.continueViewing")}
             <ArrowRight size={16} />
           </Link>
         </div>
@@ -163,7 +166,7 @@ export default function RecentlyViewed() {
   );
 }
 
-function FeaturedTile({ product }) {
+function FeaturedTile({ product, t }) {
   const image = getProductImage(product);
 
   return (
@@ -185,7 +188,7 @@ function FeaturedTile({ product }) {
 
       <div className="relative z-10 flex min-h-[320px] max-w-[48%] flex-col justify-center p-6 sm:min-h-[390px] sm:p-10">
         <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-700">
-          Recently explored
+          {t("home.recentlyViewed.recentlyExplored")}
         </p>
 
         <h3 className="mt-3 text-2xl font-black leading-tight text-slate-950 sm:text-4xl">
@@ -197,7 +200,7 @@ function FeaturedTile({ product }) {
         </p>
 
         <span className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-black text-white">
-          View product
+          {t("home.recentlyViewed.viewProduct")}
           <ArrowRight size={16} />
         </span>
       </div>
@@ -236,7 +239,7 @@ function MediumTile({ product }) {
   );
 }
 
-function WideTile({ product }) {
+function WideTile({ product, t }) {
   const image = getProductImage(product);
 
   return (
@@ -256,7 +259,7 @@ function WideTile({ product }) {
 
       <div className="relative z-10 flex min-h-[220px] max-w-[50%] flex-col justify-center p-5">
         <p className="text-xs font-black uppercase tracking-[0.14em] text-rose-700">
-          Continue viewing
+          {t("home.recentlyViewed.continueViewing")}
         </p>
 
         <h3 className="mt-2 line-clamp-3 text-xl font-black leading-tight text-slate-950">
@@ -264,7 +267,7 @@ function WideTile({ product }) {
         </h3>
 
         <span className="mt-4 inline-flex w-fit rounded-full bg-slate-900 px-5 py-2.5 text-xs font-black text-white">
-          Open product
+          {t("home.recentlyViewed.openProduct")}
         </span>
       </div>
     </Link>
@@ -298,22 +301,22 @@ function SmallTile({ product }) {
   );
 }
 
-function EmptyPromotionTile() {
+function EmptyPromotionTile({ t }) {
   return (
     <Link
       href="/shop"
       className="flex min-h-[220px] flex-col items-center justify-center border border-dashed border-slate-300 bg-white p-6 text-center"
     >
       <p className="text-lg font-black text-slate-900">
-        Discover more products
+        {t("home.recentlyViewed.discoverMore")}
       </p>
 
       <p className="mt-2 text-sm text-slate-500">
-        Continue browsing the Amoakay Deals marketplace.
+        {t("home.recentlyViewed.browseDescription")}
       </p>
 
       <span className="mt-5 inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-sm font-black text-white">
-        Browse shop
+       {t("home.recentlyViewed.browseShop")}
         <ArrowRight size={16} />
       </span>
     </Link>

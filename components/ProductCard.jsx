@@ -1,30 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Eye,
-  FileText,
-  GitCompare,
-  HeartIcon,
-  StarIcon,
-} from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
+import {  Eye, FileText, GitCompare, HeartIcon, StarIcon,} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-
 import ProductInformationSheet from "@/components/product-information-sheet/ProductInformationSheet";
 import { toggleWishlist } from "@/lib/features/wishlist/wishlistSlice";
 import { addToCompare } from "@/lib/features/compare/compareSlice";
 
 const ProductCard = ({ product }) => {
+
+  const { t } = useLanguage();
   const currency =
     process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
 
   const { getToken } = useAuth();
   const { user } = useUser();
   const dispatch = useDispatch();
+  
 
   const [informationSheetOpen, setInformationSheetOpen] =
     useState(false);
@@ -158,7 +155,7 @@ const ProductCard = ({ product }) => {
 
             {!isAvailable && (
               <span className="rounded-full bg-red-600 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.1em] text-white">
-                Out of stock
+                {t("product.outOfStock")}
               </span>
             )}
           </div>
@@ -174,9 +171,9 @@ const ProductCard = ({ product }) => {
               transition hover:scale-110 hover:bg-white
             "
             aria-label={
-              isWished
-                ? "Remove from wishlist"
-                : "Add to wishlist"
+                isWished
+                 ? t("product.removeWishlist")
+                 : t("product.addWishlist")
             }
           >
             <HeartIcon
@@ -234,7 +231,7 @@ const ProductCard = ({ product }) => {
               "
             >
               <FileText size={14} />
-              Product Information
+              {t("product.information")}
             </button>
 
             <Link
@@ -296,7 +293,7 @@ const ProductCard = ({ product }) => {
           <div className="mt-auto flex items-end justify-between gap-2 pt-4">
             <div>
               <p className="text-[10px] font-semibold text-slate-400">
-                Price
+                {t("product.price")}
               </p>
 
               <p className="text-base font-black text-slate-950 sm:text-lg">
@@ -316,7 +313,7 @@ const ProductCard = ({ product }) => {
                 }
               `}
             >
-              {isAvailable ? "In stock" : "Sold out"}
+              {isAvailable ? t("product.inStock") : t("product.soldOut")}
             </span>
           </div>
         </Link>
@@ -339,8 +336,8 @@ const ProductCard = ({ product }) => {
             <GitCompare size={14} />
 
             {isCompared
-              ? "Added to Compare"
-              : "Compare"}
+             ? t("product.addedToCompare")
+             : t("product.compare")}
           </button>
         </div>
       </article>

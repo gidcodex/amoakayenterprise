@@ -1,0 +1,33 @@
+### English to Twi
+POST http://localhost:3000/api/translate
+Content-Type: application/json
+
+{
+  "text": "Today's Deals",
+  "from": "eng",
+  "to": "twi"
+}
+
+###
+
+### English to Ewe
+POST http://localhost:3000/api/translate
+Content-Type: application/json
+
+{
+  "text": "Today's Deals",
+  "from": "eng",
+  "to": "ewe"
+}
+
+###
+
+### English to Ga
+POST http://localhost:3000/api/translate
+Content-Type: application/json
+
+{
+  "text": "Today's Deals",
+  "from": "eng",
+  "to": "gaa"
+}

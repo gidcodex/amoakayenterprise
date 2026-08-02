@@ -1,0 +1,265 @@
+{
+  "generatedAt": "2026-07-29T15:31:39.308Z",
+  "section": "home.heroSlider",
+  "translated": [
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.carouselLabel",
+      "english": "Amoakay Deals promotional offers",
+      "translation": "Amoakay Deals hiɛyaa nibii"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.shopPromotion",
+      "english": "Shop",
+      "translation": "Yaa jarayeli"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.openPromotion",
+      "english": "Open the promotion for",
+      "translation": "Gbelemɔ jarayeli krɛdɛɛ ni akɛhaa lɛ"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.bannerLoadError",
+      "english": "The promotional banner could not be loaded.",
+      "translation": "Anyɛɛɛ akɛ nɔ ni akɛwoɔ hiɛ lɛ awo mli."
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.todaysDeals",
+      "english": "Today's Deals",
+      "translation": "Ŋmɛnɛŋmɛnɛ Beaŋ Nibii"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.upTo30Off",
+      "english": "Up to 30% Off",
+      "translation": "Na nɔ ko ni baa shi fe oha mlijaa 30"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.selectedElectronics",
+      "english": "Selected electronics",
+      "translation": "Elɛktrɔnik nibii ni ahala"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.fastDeliveryNationwide",
+      "english": "Fast delivery nationwide",
+      "translation": "Nibii ni akɛhaa oya yɛ maŋ muu lɛ fɛɛ mli"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.limitedTimeOffers",
+      "english": "Limited-time offers",
+      "translation": "Nibii krɛdɛɛi ni akɛhaa ni yɔɔ be kukuoo mli"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.viewAllDeals",
+      "english": "View all deals",
+      "translation": "Kwɛmɔ nibii krɛdɛɛi fɛɛ ni yɔɔ lɛ"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.previousPromotion",
+      "english": "Show previous promotion",
+      "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni akɛha tsutsu lɛ"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.nextPromotion",
+      "english": "Show next promotion",
+      "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni nyiɛ sɛɛ nɛɛ"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.showPromotion",
+      "english": "Show promotion for",
+      "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni akɛhaa lɛ"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.resumeSlider",
+      "english": "Resume automatic slider",
+      "translation": "Yaa nɔ otsake nibii ni akɛwoɔ hiɛ lɛ ahe aflaŋaa lɛ diɛŋtsɛ"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.pauseSlider",
+      "english": "Pause automatic slider",
+      "translation": "Temporarilly kpa hiɛyaa he aflaŋaa lɛ tsakemɔ"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.promotion",
+      "english": "promotional offer",
+      "translation": "Nihɔɔmɔ krɛdɛɛ ni akɛhaa"
+    }
+  ],
+  "preserved": [
+    {
+      "language": "tw",
+      "path": "home.heroSlider.carouselLabel",
+      "value": "Amoakay Deals dawurubɔ ahorow"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.shopPromotion",
+      "value": "Tɔ"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.openPromotion",
+      "value": "Bue dawurubɔ no ma"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.bannerLoadError",
+      "value": "Yɛantumi ankyerɛ dawurubɔ mfonini no."
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.todaysDeals",
+      "value": "Nnɛyi Nneɛma a Wɔate So"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.upTo30Off",
+      "value": "Te So Kɔsi 30%"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.selectedElectronics",
+      "value": "Ɛlɛtrɔnik nneɛma a wɔapaw"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.fastDeliveryNationwide",
+      "value": "Nneɛma a wɔde kɔ ntɛm wɔ Ghana nyinaa"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.limitedTimeOffers",
+      "value": "Nneɛma a bere tiaa bi mu nko ara na ɛwɔ hɔ"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.viewAllDeals",
+      "value": "Hwɛ nneɛma a wɔate so nyinaa"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.previousPromotion",
+      "value": "Kyerɛ dawurubɔ a edi kan"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.nextPromotion",
+      "value": "Kyerɛ dawurubɔ a edi hɔ"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.showPromotion",
+      "value": "Kyerɛ dawurubɔ ma"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.resumeSlider",
+      "value": "Toa slider no so bio"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.pauseSlider",
+      "value": "Gyina slider no kakra"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.promotion",
+      "value": "adetɔn ho dawurubɔ"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.carouselLabel",
+      "value": "Amoakay Deals ƒe asiƒeɖeɖewo"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.shopPromotion",
+      "value": "Fle"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.openPromotion",
+      "value": "Ʋu asiƒeɖeɖe la na"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.bannerLoadError",
+      "value": "Womete ŋu tsɔ asiƒeɖeɖe ƒe nɔnɔmetata la vɛ o."
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.todaysDeals",
+      "value": "Egbe Ƒe Tɔtrɔwo"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.upTo30Off",
+      "value": "Dzoe Va Se ɖe 30%"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.selectedElectronics",
+      "value": "Electronics siwo wo tia"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.fastDeliveryNationwide",
+      "value": "Nukpekpe kabakaba le dukɔ blibo la me"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.limitedTimeOffers",
+      "value": "Nudzadzra siwo le anyi le ɣeyiɣi kpui aɖe ko me"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.viewAllDeals",
+      "value": "Kpɔ tɔtrɔwo katã"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.previousPromotion",
+      "value": "Kpɔ asiƒeɖeɖe si va yi"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.nextPromotion",
+      "value": "Kpɔ asiƒeɖeɖe si gbɔna"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.showPromotion",
+      "value": "Kpɔ asiƒeɖeɖe na"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.resumeSlider",
+      "value": "Gbugbɔ dze slider la gɔme"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.pauseSlider",
+      "value": "Lé slider la ɖe te"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.promotion",
+      "value": "asiƒeɖeɖe"
+    }
+  ],
+  "failed": []
+}

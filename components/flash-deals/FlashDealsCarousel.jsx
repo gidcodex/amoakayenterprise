@@ -5,15 +5,18 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-
+import { useLanguage } from "@/context/LanguageContext";
 import FlashDealCard from "./FlashDealCard";
 
 export default function FlashDealsCarousel({
   flashDeals = [],
   onDealExpired,
 }) {
+  const { t } = useLanguage();
   const carouselRef = useRef(null);
   const dealCount = flashDeals.length;
+
+
 
   const scrollCarousel = (direction) => {
     const container = carouselRef.current;
@@ -102,7 +105,7 @@ export default function FlashDealsCarousel({
       <button
         type="button"
         onClick={() => scrollCarousel("left")}
-        aria-label="Previous Flash Deals"
+        aria-label={t("home.flashDeals.previous")}
         className="absolute left-3 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 items-center justify-center border border-slate-200 bg-white text-slate-700 shadow-lg transition hover:border-red-500 hover:bg-red-50 hover:text-red-600 md:flex"
       >
         <ChevronLeft size={22} />
@@ -128,7 +131,7 @@ export default function FlashDealsCarousel({
       <button
         type="button"
         onClick={() => scrollCarousel("right")}
-        aria-label="Next Flash Deals"
+        aria-label={t("home.flashDeals.next")}
         className="absolute right-3 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 items-center justify-center border border-slate-200 bg-white text-slate-700 shadow-lg transition hover:border-red-500 hover:bg-red-50 hover:text-red-600 md:flex"
       >
         <ChevronRight size={22} />

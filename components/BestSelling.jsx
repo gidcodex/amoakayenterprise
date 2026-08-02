@@ -4,8 +4,10 @@ import BestSellingCard from "./BestSellingCard";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import Link from "next/link";
+import { useLanguage } from "@/context/LanguageContext";
 
 const BestSelling = () => {
+  const { t } = useLanguage();
   const displayQuantity = 8;
 
   const products = useSelector(
@@ -33,16 +35,18 @@ const BestSelling = () => {
         <div className="mb-7 flex items-end justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-600">
-              Popular choices
+              {t("home.bestSelling.popularChoices")}
             </p>
 
             <h2 className="mt-2 text-2xl font-black text-slate-950 sm:text-3xl">
-              Best Selling
+              {t("home.bestSelling.title")}
             </h2>
 
             <p className="mt-1 text-sm text-slate-500">
-              Showing {bestSellingProducts.length} of{" "}
-              {products.length} products
+              {t("home.bestSelling.showing", {
+               shown: bestSellingProducts.length,
+               total: products.length,
+              })}
             </p>
           </div>
 
@@ -50,7 +54,7 @@ const BestSelling = () => {
             href="/shop"
             className="shrink-0 text-sm font-bold text-emerald-600 transition hover:text-emerald-700"
           >
-            View more →
+            {t("home.bestSelling.viewMore")} →
           </Link>
         </div>
 

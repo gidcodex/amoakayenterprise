@@ -1,0 +1,819 @@
+{
+  "generatedAt": "2026-07-30T08:05:46.233Z",
+  "section": "all",
+  "translated": [
+    {
+      "language": "gaa",
+      "path": "navbar.shop",
+      "english": "Shop",
+      "translation": "Yaa jarayeli"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.carouselLabel",
+      "english": "Amoakay Deals promotional offers",
+      "translation": "Amoakay Deals hiɛyaa nibii"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.shopPromotion",
+      "english": "Shop",
+      "translation": "Yaa jarayeli"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.openPromotion",
+      "english": "Open the promotion for",
+      "translation": "Gbelemɔ jarayeli krɛdɛɛ ni akɛhaa lɛ"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.bannerLoadError",
+      "english": "The promotional banner could not be loaded.",
+      "translation": "Anyɛɛɛ akɛ nɔ ni akɛwoɔ hiɛ lɛ awo mli."
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.upTo30Off",
+      "english": "Up to 30% Off",
+      "translation": "Na nɔ ko ni baa shi fe oha mlijaa 30"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.selectedElectronics",
+      "english": "Selected electronics",
+      "translation": "Elɛktrɔnik nibii ni ahala"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.fastDeliveryNationwide",
+      "english": "Fast delivery nationwide",
+      "translation": "Nibii ni akɛhaa oya yɛ maŋ muu lɛ fɛɛ mli"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.limitedTimeOffers",
+      "english": "Limited-time offers",
+      "translation": "Nibii krɛdɛɛi ni akɛhaa ni yɔɔ be kukuoo mli"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.viewAllDeals",
+      "english": "View all deals",
+      "translation": "Kwɛmɔ nibii krɛdɛɛi fɛɛ ni yɔɔ lɛ"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.previousPromotion",
+      "english": "Show previous promotion",
+      "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni akɛha tsutsu lɛ"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.nextPromotion",
+      "english": "Show next promotion",
+      "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni nyiɛ sɛɛ nɛɛ"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.showPromotion",
+      "english": "Show promotion for",
+      "translation": "Tsɔɔmɔ nibii krɛdɛɛi ni akɛhaa lɛ"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.resumeSlider",
+      "english": "Resume automatic slider",
+      "translation": "Yaa nɔ otsake nibii ni akɛwoɔ hiɛ lɛ ahe aflaŋaa lɛ diɛŋtsɛ"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.pauseSlider",
+      "english": "Pause automatic slider",
+      "translation": "Temporarilly kpa hiɛyaa he aflaŋaa lɛ tsakemɔ"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.promotion",
+      "english": "promotional offer",
+      "translation": "Nihɔɔmɔ krɛdɛɛ ni akɛhaa"
+    }
+  ],
+  "preserved": [
+    {
+      "language": "tw",
+      "path": "navbar.home",
+      "value": "Fie"
+    },
+    {
+      "language": "tw",
+      "path": "navbar.shop",
+      "value": "Tɔ Nneɛma"
+    },
+    {
+      "language": "tw",
+      "path": "navbar.track",
+      "value": "Hwɛ Order"
+    },
+    {
+      "language": "tw",
+      "path": "navbar.trackOrder",
+      "value": "Hwɛ Wo Order"
+    },
+    {
+      "language": "tw",
+      "path": "navbar.about",
+      "value": "Yɛn Ho Nsɛm"
+    },
+    {
+      "language": "tw",
+      "path": "navbar.contact",
+      "value": "Wo ne Yɛn Nkasɛ"
+    },
+    {
+      "language": "tw",
+      "path": "navbar.wishlist",
+      "value": "Nneɛma a Wopɛ"
+    },
+    {
+      "language": "tw",
+      "path": "navbar.compare",
+      "value": "Fa Toto Ho"
+    },
+    {
+      "language": "tw",
+      "path": "navbar.compareProducts",
+      "value": "Fa Nneɛma Toto Ho"
+    },
+    {
+      "language": "tw",
+      "path": "navbar.cart",
+      "value": "Adetɔ Kɛntɛn"
+    },
+    {
+      "language": "tw",
+      "path": "navbar.login",
+      "value": "Kɔ Mu"
+    },
+    {
+      "language": "tw",
+      "path": "navbar.myAccount",
+      "value": "Me Akonta"
+    },
+    {
+      "language": "tw",
+      "path": "navbar.myOrders",
+      "value": "Me Orders"
+    },
+    {
+      "language": "tw",
+      "path": "navbar.searchPlaceholder",
+      "value": "Hwehwɛ nneɛma..."
+    },
+    {
+      "language": "tw",
+      "path": "navbar.openMenu",
+      "value": "Bue menu no"
+    },
+    {
+      "language": "tw",
+      "path": "navbar.closeMenu",
+      "value": "To menu no mu"
+    },
+    {
+      "language": "tw",
+      "path": "navbar.language",
+      "value": "Kasa"
+    },
+    {
+      "language": "tw",
+      "path": "footer.description",
+      "value": "Amoakay Enterprise Ltd ma wo akwaaba. Yɛma wo ɛlɛtrɔnik nneɛma, smart gadgets, accessories ne mfiridwuma nneɛma a ɛyɛ papa."
+    },
+    {
+      "language": "tw",
+      "path": "footer.productsTitle",
+      "value": "NNEƐMA"
+    },
+    {
+      "language": "tw",
+      "path": "footer.websiteTitle",
+      "value": "WƐBSAET"
+    },
+    {
+      "language": "tw",
+      "path": "footer.contactTitle",
+      "value": "YƐN ADWUMAKUO"
+    },
+    {
+      "language": "tw",
+      "path": "footer.home",
+      "value": "Fie"
+    },
+    {
+      "language": "tw",
+      "path": "footer.privacyPolicy",
+      "value": "Kokoam Nsɛm Ho Mmara"
+    },
+    {
+      "language": "tw",
+      "path": "footer.plusMember",
+      "value": "Bɛyɛ Plus Member"
+    },
+    {
+      "language": "tw",
+      "path": "footer.createStore",
+      "value": "Yɛ Wo Store"
+    },
+    {
+      "language": "tw",
+      "path": "footer.copyright",
+      "value": "Copyright 2026 © Amoakay Enterprise Ltd. Hokwan Nyinaa Wɔ Yɛn Nsa."
+    },
+    {
+      "language": "tw",
+      "path": "home.heroStrip.freeShippingBefore",
+      "value": "Yɛde nneɛma brɛ wo kwa sɛ wo adetɔ boro"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroStrip.securePayments",
+      "value": "Sika tua a ahobammɔ wom ne adetɔfo banbɔ"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroStrip.customerSupport",
+      "value": "Yɛwɔ ha de aboa wo bere biara"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroStrip.exploreMarketplace",
+      "value": "Hwɛ Amoakay adetɔnbea no"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.carouselLabel",
+      "value": "Amoakay Deals dawurubɔ ahorow"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.shopPromotion",
+      "value": "Tɔ"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.openPromotion",
+      "value": "Bue dawurubɔ no ma"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.bannerLoadError",
+      "value": "Yɛantumi ankyerɛ dawurubɔ mfonini no."
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.todaysDeals",
+      "value": "Nnɛyi Nneɛma a Wɔate So"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.upTo30Off",
+      "value": "Te So Kɔsi 30%"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.selectedElectronics",
+      "value": "Ɛlɛtrɔnik nneɛma a wɔapaw"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.fastDeliveryNationwide",
+      "value": "Nneɛma a wɔde kɔ ntɛm wɔ Ghana nyinaa"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.limitedTimeOffers",
+      "value": "Nneɛma a bere tiaa bi mu nko ara na ɛwɔ hɔ"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.viewAllDeals",
+      "value": "Hwɛ nneɛma a wɔate so nyinaa"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.previousPromotion",
+      "value": "Kyerɛ dawurubɔ a edi kan"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.nextPromotion",
+      "value": "Kyerɛ dawurubɔ a edi hɔ"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.showPromotion",
+      "value": "Kyerɛ dawurubɔ ma"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.resumeSlider",
+      "value": "Toa slider no so bio"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.pauseSlider",
+      "value": "Gyina slider no kakra"
+    },
+    {
+      "language": "tw",
+      "path": "home.heroSlider.promotion",
+      "value": "adetɔn ho dawurubɔ"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.home",
+      "value": "Aƒe"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.shop",
+      "value": "Fle Nuwo"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.track",
+      "value": "Dze Ŋku ɖe Order Ŋu"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.trackOrder",
+      "value": "Dze Ŋku ɖe Wò Order Ŋu"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.about",
+      "value": "Mía Ŋu"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.contact",
+      "value": "Te ƒe Mía Ŋu"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.wishlist",
+      "value": "Nu Siwo Nèdi"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.compare",
+      "value": "Sɔ Nuwo"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.compareProducts",
+      "value": "Sɔ Nudzadzrawo"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.cart",
+      "value": "Wò Kusi"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.login",
+      "value": "Ge Ɖe Eme"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.myAccount",
+      "value": "Nye Account"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.myOrders",
+      "value": "Nye Orderwo"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.searchPlaceholder",
+      "value": "Di nudzadzrawo..."
+    },
+    {
+      "language": "ee",
+      "path": "navbar.openMenu",
+      "value": "Ʋu menu la"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.closeMenu",
+      "value": "Tu menu la"
+    },
+    {
+      "language": "ee",
+      "path": "navbar.language",
+      "value": "Gbegbɔgblɔ"
+    },
+    {
+      "language": "ee",
+      "path": "footer.description",
+      "value": "Woezɔ̃ ɖe Amoakay Enterprise Ltd. Míetsɔ̃a electronics, smart gadgets, accessories kple technology nudzadzra nyuiwo na mi."
+    },
+    {
+      "language": "ee",
+      "path": "footer.productsTitle",
+      "value": "NUDZADZRAWO"
+    },
+    {
+      "language": "ee",
+      "path": "footer.contactTitle",
+      "value": "TE ƑE MÍA ŊU"
+    },
+    {
+      "language": "ee",
+      "path": "footer.home",
+      "value": "Aƒe"
+    },
+    {
+      "language": "ee",
+      "path": "footer.privacyPolicy",
+      "value": "Nugɔmedzedze Ƒe Se"
+    },
+    {
+      "language": "ee",
+      "path": "footer.plusMember",
+      "value": "Zu Plus Member"
+    },
+    {
+      "language": "ee",
+      "path": "footer.createStore",
+      "value": "Dze Wò Store Gɔme"
+    },
+    {
+      "language": "ee",
+      "path": "footer.copyright",
+      "value": "Copyright 2026 © Amoakay Enterprise Ltd. Mɔnuwo Katã Le Mía Si."
+    },
+    {
+      "language": "ee",
+      "path": "home.heroStrip.freeShippingBefore",
+      "value": "Míatsɔ nudzadzra na wò femaxee ne eƒe home wu"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroStrip.securePayments",
+      "value": "Fetuɖuɖu si le dedie kple asiƒlela ƒe dedienɔnɔ"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroStrip.customerSupport",
+      "value": "Míele afi ma be míakpe ɖe ŋuwò ne èhiã kpekpeɖeŋu"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroStrip.exploreMarketplace",
+      "value": "Kpɔ Amoakay Marketplace"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.carouselLabel",
+      "value": "Amoakay Deals ƒe asiƒeɖeɖewo"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.shopPromotion",
+      "value": "Fle"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.openPromotion",
+      "value": "Ʋu asiƒeɖeɖe la na"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.bannerLoadError",
+      "value": "Womete ŋu tsɔ asiƒeɖeɖe ƒe nɔnɔmetata la vɛ o."
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.todaysDeals",
+      "value": "Egbe Ƒe Tɔtrɔwo"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.upTo30Off",
+      "value": "Dzoe Va Se ɖe 30%"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.selectedElectronics",
+      "value": "Electronics siwo wo tia"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.fastDeliveryNationwide",
+      "value": "Nukpekpe kabakaba le dukɔ blibo la me"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.limitedTimeOffers",
+      "value": "Nudzadzra siwo le anyi le ɣeyiɣi kpui aɖe ko me"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.viewAllDeals",
+      "value": "Kpɔ tɔtrɔwo katã"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.previousPromotion",
+      "value": "Kpɔ asiƒeɖeɖe si va yi"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.nextPromotion",
+      "value": "Kpɔ asiƒeɖeɖe si gbɔna"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.showPromotion",
+      "value": "Kpɔ asiƒeɖeɖe na"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.resumeSlider",
+      "value": "Gbugbɔ dze slider la gɔme"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.pauseSlider",
+      "value": "Lé slider la ɖe te"
+    },
+    {
+      "language": "ee",
+      "path": "home.heroSlider.promotion",
+      "value": "asiƒeɖeɖe"
+    }
+  ],
+  "failed": [
+    {
+      "language": "tw",
+      "path": "footer.earphones",
+      "english": "Earphones",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:14.\" }"
+    },
+    {
+      "language": "tw",
+      "path": "footer.headphones",
+      "english": "Headphones",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:13.\" }"
+    },
+    {
+      "language": "tw",
+      "path": "footer.smartphones",
+      "english": "Smartphones",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:13.\" }"
+    },
+    {
+      "language": "tw",
+      "path": "footer.laptops",
+      "english": "Laptops",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:13.\" }"
+    },
+    {
+      "language": "ee",
+      "path": "footer.websiteTitle",
+      "english": "WEBSITE",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:13.\" }"
+    },
+    {
+      "language": "ee",
+      "path": "footer.earphones",
+      "english": "Earphones",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:13.\" }"
+    },
+    {
+      "language": "ee",
+      "path": "footer.headphones",
+      "english": "Headphones",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:13.\" }"
+    },
+    {
+      "language": "ee",
+      "path": "footer.smartphones",
+      "english": "Smartphones",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:13.\" }"
+    },
+    {
+      "language": "ee",
+      "path": "footer.laptops",
+      "english": "Laptops",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:12.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.home",
+      "english": "Home",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:12.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.track",
+      "english": "Track",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:12.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.trackOrder",
+      "english": "Track Order",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:12.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.about",
+      "english": "About",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:12.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.contact",
+      "english": "Contact",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:12.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.wishlist",
+      "english": "Wishlist",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:12.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.compare",
+      "english": "Compare",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:12.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.compareProducts",
+      "english": "Compare Products",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:12.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.cart",
+      "english": "Cart",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:11.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.login",
+      "english": "Login",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:11.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.myAccount",
+      "english": "My Account",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:11.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.myOrders",
+      "english": "My Orders",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:11.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.searchPlaceholder",
+      "english": "Search products...",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:11.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.openMenu",
+      "english": "Open navigation menu",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:11.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.closeMenu",
+      "english": "Close navigation menu",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:11.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "navbar.language",
+      "english": "Language",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:11.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "footer.description",
+      "english": "Welcome to Amoakay Enterprise Ltd, your destination for quality electronics, smart gadgets, accessories, and everyday technology products.",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:11.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "footer.productsTitle",
+      "english": "PRODUCTS",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:10.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "footer.websiteTitle",
+      "english": "WEBSITE",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:10.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "footer.contactTitle",
+      "english": "CONTACT",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:10.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "footer.earphones",
+      "english": "Earphones",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:10.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "footer.headphones",
+      "english": "Headphones",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:10.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "footer.smartphones",
+      "english": "Smartphones",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:10.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "footer.laptops",
+      "english": "Laptops",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:10.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "footer.home",
+      "english": "Home",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:10.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "footer.privacyPolicy",
+      "english": "Privacy Policy",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:10.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "footer.plusMember",
+      "english": "Become a Plus Member",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:10.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "footer.createStore",
+      "english": "Create Your Store",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:09.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "footer.copyright",
+      "english": "Copyright 2026 © Amoakay Enterprise Ltd. All Rights Reserved.",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:09.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroStrip.freeShippingBefore",
+      "english": "Free shipping on orders above",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:09.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroStrip.securePayments",
+      "english": "Secure payments and buyer protection",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:09.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroStrip.customerSupport",
+      "english": "Customer support when you need it",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:09.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroStrip.exploreMarketplace",
+      "english": "Explore marketplace",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:09.\" }"
+    },
+    {
+      "language": "gaa",
+      "path": "home.heroSlider.todaysDeals",
+      "english": "Today's Special Deals",
+      "error": "{ \"statusCode\": 403, \"message\": \"Out of call volume quota. Quota will be replenished in 17.23:24:09.\" }"
+    }
+  ]
+}
